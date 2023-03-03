@@ -1,12 +1,4 @@
-import {
-  SortDirection,
-  Table as MuiTable,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-} from '@mui/material'
+import { Table as MuiTable, TableBody, TableCell, TableHead, TableRow, TableSortLabel } from '@mui/material'
 import { FC, useState } from 'react'
 import { Orders } from '@prisma/client'
 import { TableOrderDirection } from '@src/types'

@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, Unstable_Grid2 as Grid, Typography, Paper, TextField } from '@mui/material'
 import { NextPage } from 'next'
 import { signIn } from 'next-auth/react'
-import Layout from '../../components/Layout/Layout'
+import { Layout } from '@components/Layout'
 
 const Admin: NextPage = () => {
   return (
