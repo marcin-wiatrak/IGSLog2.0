@@ -1,0 +1,1 @@
+export { useGetCustomersList } from './useGetCustomersList'

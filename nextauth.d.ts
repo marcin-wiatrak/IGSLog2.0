@@ -6,6 +6,7 @@ export enum Role {
 declare module 'next-auth' {
   interface User {
     role?: Role
+    userId?: string
   }
   interface Session extends DefaultSession {
     user?: User
@@ -15,5 +16,6 @@ declare module 'next-auth' {
 declare module 'next-auth/jwt' {
   interface JWT {
     role?: Role
+    userId?: strring
   }
 }

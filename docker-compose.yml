@@ -4,8 +4,8 @@ services:
     build: .
     ports:
       - '9001:3000'
-    volumes:
-      - .:/usr/app
+    #volumes:
+    #  - .:/usr/app
     env_file:
       - .env
     depends_on:

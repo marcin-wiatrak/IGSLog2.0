@@ -7,6 +7,8 @@ import { CacheProvider, EmotionCache } from '@emotion/react'
 import theme from '../src/theme'
 import createEmotionCache from '../src/createEmotionCache'
 import { SessionProvider } from 'next-auth/react'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache()
@@ -26,12 +28,14 @@ const MyApp = (props: MyAppProps) => {
         />
       </Head>
       <ThemeProvider theme={theme}>
-        <SessionProvider session={pageProps.session}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
-          {/*@ts-ignore*/}
-          <Component {...pageProps} />
-        </SessionProvider>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <SessionProvider session={pageProps.session}>
+            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+            <CssBaseline />
+            {/*@ts-ignore*/}
+            <Component {...pageProps} />
+          </SessionProvider>
+        </LocalizationProvider>
       </ThemeProvider>
     </CacheProvider>
   )

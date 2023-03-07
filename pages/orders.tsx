@@ -1,23 +1,31 @@
 import { NextPage } from 'next'
-import { Paper, Typography, Unstable_Grid2 as Grid } from '@mui/material'
-import { PrismaClient } from '@prisma/client'
+import { Fab, Typography, Unstable_Grid2 as Grid } from '@mui/material'
 import { Layout } from '@components/Layout'
 import { useState } from 'react'
 import { FilterButtons } from '@components/Orders/FilterButtons/FilterButtons'
 import { OrderType } from '@src/types'
 import { FiltersDrawer } from '@components/Orders/FiltersDrawer'
-import { useDrawer } from '@src/hooks'
-import { Table } from '@components/Orders'
-import { Orders as OrdersProp } from '@prisma/client'
+import { useDrawer, useGetCustomersList, useGetOrdersList } from '@src/hooks'
+import { NewOrderDrawer, Table } from '@components/Orders'
+import { Add } from '@mui/icons-material'
+import { useSession } from 'next-auth/react'
 
-type OrdersProps = {
-  orders: OrdersProp[]
+const fabStyle = {
+  position: 'absolute',
+  bottom: 16,
+  right: 16,
 }
 
-const Orders: NextPage<OrdersProps> = ({ orders }) => {
+const Orders: NextPage = () => {
+  const session = useSession()
+  console.log(session)
   const [selectedTypes, setSelectedTypes] = useState([])
 
-  const { isOpen, onOpen, onClose } = useDrawer()
+  const { isOpen: isFilterDrawerOpen, onOpen: onFilterDrawerOpen, onClose: onFilterDrawerClose } = useDrawer()
+  const { isOpen: isNewOrderDrawerOpen, onOpen: onNewOrderDrawerOpen, onClose: onNewOrderDrawerClose } = useDrawer()
+
+  const { ordersList } = useGetOrdersList()
+  const { customersList, onRefreshCustomersList } = useGetCustomersList()
 
   const handleClearFilters = () => {}
 
@@ -35,8 +43,6 @@ const Orders: NextPage<OrdersProps> = ({ orders }) => {
     orders.filter((order) => {
       return selectedTypes.length ? selectedTypes.includes(order.type) : true
     })
-
-  const ordersList = orders
 
   return (
     <>
@@ -69,7 +75,7 @@ const Orders: NextPage<OrdersProps> = ({ orders }) => {
                 <FilterButtons
                   onTypeClick={handleUpdateSelectedTypes}
                   selectedTypes={selectedTypes}
-                  onFilterDrawerOpen={onOpen}
+                  onFilterDrawerOpen={onFilterDrawerClose}
                   onClearFiltersClick={handleClearFilters}
                 />
               </Grid>
@@ -80,44 +86,35 @@ const Orders: NextPage<OrdersProps> = ({ orders }) => {
             sx={{ marginTop: 3 }}
           >
             <Grid>
-              <Table data={ordersList} />
+              <Table
+                data={ordersList}
+                customersList={customersList}
+              />
             </Grid>
-            {/*{filterOrders(orders).map((order) => (*/}
-            {/*  <Grid*/}
-            {/*    xs={3}*/}
-            {/*    key={order.id}*/}
-            {/*  >*/}
-            {/*    <Paper>*/}
-            {/*      <Typography>{order.id}</Typography>*/}
-            {/*      <Typography>{order.note}</Typography>*/}
-            {/*      <Typography>{order.signature}</Typography>*/}
-            {/*      <Typography>{order.status}</Typography>*/}
-            {/*    </Paper>*/}
-            {/*  </Grid>*/}
-            {/*))}*/}
           </Grid>
         </Grid>
       </Layout>
+      <Fab
+        variant="extended"
+        color="primary"
+        sx={fabStyle}
+        onClick={onNewOrderDrawerOpen}
+      >
+        <Add sx={{ mr: 1 }} />
+        Nowy odbiór
+      </Fab>
       <FiltersDrawer
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={isFilterDrawerOpen}
+        onClose={onFilterDrawerClose}
+      />
+      <NewOrderDrawer
+        isOpen={isNewOrderDrawerOpen}
+        onClose={onNewOrderDrawerClose}
+        customersList={customersList}
+        onRefreshCustomersList={onRefreshCustomersList}
       />
     </>
   )
 }
 
 export default Orders
-
-export const getServerSideProps = async () => {
-  const prisma = new PrismaClient()
-
-  const orders = await prisma.orders.findMany({
-    orderBy: { id: 'desc' },
-  })
-
-  return {
-    props: {
-      orders: JSON.parse(JSON.stringify(orders)),
-    },
-  }
-}

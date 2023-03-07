@@ -10,8 +10,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
-  id        Int      @id @default(autoincrement())
+model User {
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   email     String   @unique
@@ -19,7 +19,7 @@ model Users {
   password  String
   firstName String
   lastName  String
-  Orders    Orders[]
+  Orders    Order[]
 }
 
 enum Role {
@@ -27,18 +27,21 @@ enum Role {
   USER
 }
 
-model Orders {
-  id           Int      @id @default(autoincrement())
-  attachment   String[]
-  createdAt    DateTime @default(now())
-  createdBy    Users    @relation(fields: [createdById], references: [id])
-  createdById  Int
-  localization String
-  pickupDate   DateTime
-  signature    String
-  type         Types
-  notes        String
-  status       Status   @default(NEW)
+model Order {
+  id             String    @id @default(uuid())
+  customer       Customer  @relation(fields: [customerId], references: [id])
+  customerId     String
+  attachment     String[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  registeredBy   User      @relation(fields: [registeredById], references: [id])
+  registeredById String
+  localization   String?
+  pickupAt       DateTime?
+  signature      String?
+  type           String[]
+  notes          String?
+  status         Status    @default(NEW)
 }
 
 enum Status {
@@ -48,9 +51,13 @@ enum Status {
   CLOSED
 }
 
-enum Types {
-  BIOLOGY
-  TOXYCOLOGY
-  PHYSYCOCHEMISTRY
-  FATHERHOOD
+model Customer {
+  id          String   @id @default(uuid())
+  name        String
+  address     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  contactName String?
+  phoneNumber String?
+  Order       Order[]
 }

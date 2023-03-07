@@ -14,14 +14,15 @@ const main = async () => {
   //     }
   // });
 
-  await prisma.orders.createMany({
+  await prisma.order.createMany({
     data: [
       {
         attachment: ['https://google.com'],
         createdAt: '2021-10-12T22:48:43+02:00',
-        createdById: 1,
+        customerId: 'c8359877-d18f-4e40-8600-8f20f5a1f143',
+        registeredById: '9d7166e6-f090-4640-80ea-81f7fc28599e',
         localization: 'dupa',
-        pickupDate: '2023-02-27T22:48:43+02:00',
+        pickupAt: '2023-02-27T22:48:43+02:00',
         signature: 'ABCD',
         type: 'BIOLOGY',
         notes: 'TEST NOTE',
@@ -30,9 +31,10 @@ const main = async () => {
       {
         attachment: ['https://google.com'],
         createdAt: '2021-10-12T22:48:43+02:00',
-        createdById: 1,
+        customerId: 'c8359877-d18f-4e40-8600-8f20f5a1f143',
+        registeredById: '9d7166e6-f090-4640-80ea-81f7fc28599e',
         localization: 'dupa',
-        pickupDate: '2023-02-27T22:48:43+02:00',
+        pickupAt: '2023-02-27T22:48:43+02:00',
         signature: 'Biologia',
         type: 'BIOLOGY',
         notes: 'TEST notatka',
@@ -41,9 +43,10 @@ const main = async () => {
       {
         attachment: ['https://google.com'],
         createdAt: '2021-10-12T22:48:43+02:00',
-        createdById: 1,
+        customerId: 'c8359877-d18f-4e40-8600-8f20f5a1f143',
+        registeredById: '9d7166e6-f090-4640-80ea-81f7fc28599e',
         localization: 'dupa',
-        pickupDate: '2023-02-27T22:48:43+02:00',
+        pickupAt: '2023-02-27T22:48:43+02:00',
         signature: 'Fizykochemia',
         type: 'PHYSYCOCHEMISTRY',
         notes: 'TEST NOTE',
@@ -52,9 +55,10 @@ const main = async () => {
       {
         attachment: ['https://google.com'],
         createdAt: '2021-10-12T22:48:43+02:00',
-        createdById: 1,
+        customerId: 'c8359877-d18f-4e40-8600-8f20f5a1f143',
+        registeredById: '9d7166e6-f090-4640-80ea-81f7fc28599e',
         localization: 'dupa',
-        pickupDate: '2023-02-27T22:48:43+02:00',
+        pickupAt: '2023-02-27T22:48:43+02:00',
         signature: 'Toksykologia',
         type: 'TOXYCOLOGY',
         notes: 'TEST NOTE',
@@ -63,9 +67,10 @@ const main = async () => {
       {
         attachment: ['https://google.com'],
         createdAt: '2021-10-12T22:48:43+02:00',
-        createdById: 1,
+        customerId: 'c8359877-d18f-4e40-8600-8f20f5a1f143',
+        registeredById: '9d7166e6-f090-4640-80ea-81f7fc28599e',
         localization: 'dupa',
-        pickupDate: '2023-02-27T22:48:43+02:00',
+        pickupAt: '2023-02-27T22:48:43+02:00',
         signature: 'Toksykologia',
         type: 'TOXYCOLOGY',
         notes: 'Another note',

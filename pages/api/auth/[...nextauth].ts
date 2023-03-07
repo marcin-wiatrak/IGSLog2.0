@@ -20,7 +20,7 @@ const authOptions: NextAuthOptions = {
       credentials: {},
       authorize: async (credentials, req) => {
         const { email: inputEmail, password: inputPassword } = credentials as { email: string; password: string }
-        const data = await prisma.users
+        const data = await prisma.user
           .findUnique({
             where: {
               email: inputEmail,
@@ -48,11 +48,15 @@ const authOptions: NextAuthOptions = {
       if (params.user?.role) {
         params.token.role = params.user.role
       }
+      if (params.user?.id) {
+        params.token.userId = params.user.id
+      }
       return params.token
     },
     session({ session, token }) {
       if (session.user) {
         session.user.role = token.role
+        session.user.userId = token.userId
       }
       return session
     },

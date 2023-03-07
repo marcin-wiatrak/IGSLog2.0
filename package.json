@@ -1,5 +1,5 @@
 {
-  "name": "awesome-links",
+  "name": "igslog",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -18,10 +18,12 @@
     "@mui/icons-material": "^5.11.9",
     "@mui/material": "^5.11.10",
     "@mui/styled-engine-sc": "^5.11.9",
+    "@mui/x-date-pickers": "^6.0.0",
     "@next/font": "^13.2.1",
     "@prisma/client": "^4.10.1",
     "axios": "^1.3.4",
     "bcrypt": "^5.1.0",
+    "dayjs": "^1.11.7",
     "next": "^13.2.1",
     "next-auth": "^4.19.2",
     "prisma": "^4.10.1",
