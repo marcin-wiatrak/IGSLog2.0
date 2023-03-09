@@ -7,7 +7,7 @@ const handler = async (req, res) => {
   const { password } = req.body
   bcrypt.genSalt(1, (err, salt) => {
     bcrypt.hash(password, salt, (err, password) => {
-      const post = prisma.users
+      const post = prisma.user
         .create({
           data: {
             email: req.body.email,
