@@ -11,15 +11,17 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email     String   @unique
-  role      Role     @default(USER)
-  password  String
-  firstName String
-  lastName  String
-  Orders    Order[]
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  email      String   @unique
+  role       Role     @default(USER)
+  password   String
+  firstName  String
+  lastName   String
+  Orders     Order[]  @relation("handledBy")
+  assignedTo Order[]  @relation("registeredBy")
+  Order      Order[]
 }
 
 enum Role {
@@ -34,14 +36,18 @@ model Order {
   attachment     String[]
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
-  registeredBy   User      @relation(fields: [registeredById], references: [id])
+  registeredBy   User      @relation(name: "registeredBy", fields: [registeredById], references: [id])
   registeredById String
+  handleBy       User      @relation(name: "handledBy", fields: [handleById], references: [id])
+  handleById     String
   localization   String?
   pickupAt       DateTime?
   signature      String?
   type           String[]
   notes          String?
   status         Status    @default(NEW)
+  User           User?     @relation(fields: [userId], references: [id])
+  userId         String?
 }
 
 enum Status {

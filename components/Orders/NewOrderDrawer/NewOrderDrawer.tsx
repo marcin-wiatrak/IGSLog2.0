@@ -62,9 +62,9 @@ const formReducer = (state = initialFormState, action) => {
 const initialFormState: Omit<Order, 'customer'> & AutocompleteCustomer = {
   customer: null,
   signature: '',
-  pickupAt: '',
-  pickupFrom: '',
-  handleBy: '',
+  pickupAt: null,
+  localization: '',
+  handleById: '',
   registeredBy: '',
   status: 'NEW',
   notes: '',
