@@ -1,10 +1,8 @@
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { Role } from '../../../nextauth'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@server/db'
 import bcrypt from 'bcrypt'
-
-const prisma = new PrismaClient()
 
 const authOptions: NextAuthOptions = {
   session: {

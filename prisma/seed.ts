@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@server/db'
 import * as process from 'process'
-
-const prisma = new PrismaClient()
 
 const main = async () => {
   // await prisma.users.create({

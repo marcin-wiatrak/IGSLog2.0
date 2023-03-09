@@ -38,8 +38,8 @@ model Order {
   updatedAt      DateTime  @updatedAt
   registeredBy   User      @relation(name: "registeredBy", fields: [registeredById], references: [id])
   registeredById String
-  handleBy       User      @relation(name: "handledBy", fields: [handleById], references: [id])
-  handleById     String
+  handleBy       User?     @relation(name: "handledBy", fields: [handleById], references: [id])
+  handleById     String?
   localization   String?
   pickupAt       DateTime?
   signature      String?

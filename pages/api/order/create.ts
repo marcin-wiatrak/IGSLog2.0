@@ -1,9 +1,7 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@server/db'
 
 const handler = async (req, res) => {
-  const { customer, signature, pickupAt, notes, registeredById, type } = req.body
+  const { customer, signature, pickupAt, notes, registeredBy, type } = req.body
 
   const isInvalid = !customer || !signature
 
@@ -17,7 +15,7 @@ const handler = async (req, res) => {
           signature,
           pickupAt,
           notes,
-          registeredById,
+          registeredBy,
           type,
         },
       })

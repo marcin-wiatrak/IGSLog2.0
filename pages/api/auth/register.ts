@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@server/db'
 import bcrypt from 'bcrypt'
-
-const prisma = new PrismaClient()
 
 const handler = async (req, res) => {
   const { password } = req.body

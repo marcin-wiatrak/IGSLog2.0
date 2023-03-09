@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@server/db'
 
 const handler = async (req, res) => {
   const { name, address, contactName, phoneNumber } = req.body

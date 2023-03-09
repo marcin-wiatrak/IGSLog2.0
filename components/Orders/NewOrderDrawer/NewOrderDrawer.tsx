@@ -17,7 +17,7 @@ import { useSession } from 'next-auth/react'
 import { AddCircle, Check, Clear } from '@mui/icons-material'
 import { DatePicker } from '@mui/x-date-pickers'
 import dayjs from 'dayjs'
-import { Customer, Order } from '@prisma/client'
+import { Customer } from '@prisma/client'
 import { NewCustomerForm } from './NewCustomerForm'
 
 type NewOrderDrawerProps = {
