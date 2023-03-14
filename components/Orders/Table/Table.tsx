@@ -119,7 +119,7 @@ export const Table: FC<TableProps> = ({ usersList }) => {
                 <TableCell>{mappedCustomersList[order.customerId].name}</TableCell>
                 <TableCell>{order.signature}</TableCell>
                 <TableCell>{dayjs(order.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
-                <TableCell>{order.pickupAt}</TableCell>
+                <TableCell>{order.pickupAt ? dayjs(order.pickupAt).format('DD/MM/YYYY HH:mm') : '-'}</TableCell>
                 <TableCell>{order.localization}</TableCell>
                 <TableCell>
                   {order.handleById ? (

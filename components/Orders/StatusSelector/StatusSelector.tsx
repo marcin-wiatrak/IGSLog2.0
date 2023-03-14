@@ -1,10 +1,13 @@
 import { Button, ButtonGroup, Menu, MenuItem } from '@mui/material'
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { OrderStatus, OrderStatuses } from '@src/types'
 import { ArrowDropDown } from '@mui/icons-material'
 import axios from 'axios'
+import { useGetOrdersList } from '@src/hooks'
 
 export const StatusSelector = ({ status, orderId }) => {
+  const { refreshOrdersList } = useGetOrdersList()
+
   const [anchor, setAnchor] = useState(null)
 
   const statusName = useMemo(() => {
@@ -27,7 +30,9 @@ export const StatusSelector = ({ status, orderId }) => {
   const handleStatusMenuClose = () => setAnchor(null)
 
   const handleChangeStatus = async (status: OrderStatus) => {
-    await axios.post(`/api/order/${orderId}/stat`, { status: status })
+    await axios.post(`/api/order/${orderId}/status`, { status }).then((response) => {
+      refreshOrdersList()
+    })
     handleStatusMenuClose()
   }
 
@@ -56,9 +61,9 @@ export const StatusSelector = ({ status, orderId }) => {
         open={!!anchor}
         onClose={handleStatusMenuClose}
       >
-        <MenuItem onClick={handleStatusMenuClose}>Zarejestrowany</MenuItem>
-        <MenuItem onClick={handleStatusMenuClose}>Odebrany</MenuItem>
-        <MenuItem onClick={handleStatusMenuClose}>Dostarczony</MenuItem>
+        <MenuItem onClick={() => handleChangeStatus(OrderStatuses.NEW)}>Zarejestrowany</MenuItem>
+        <MenuItem onClick={() => handleChangeStatus(OrderStatuses.PICKED_UP)}>Odebrany</MenuItem>
+        <MenuItem onClick={() => handleChangeStatus(OrderStatuses.DELIVERED)}>Dostarczony</MenuItem>
         <MenuItem onClick={() => handleChangeStatus(OrderStatuses.CLOSED)}>Zakończony</MenuItem>
       </Menu>
     </>

@@ -88,7 +88,7 @@ export const Layout = ({ children }) => {
             ))}
             {isAdmin && (
               <Link
-                href="/admin/admin"
+                href="/admin"
                 style={{ textDecoration: 'none' }}
               >
                 <ListItemButton sx={{ paddingRight: 10 }}>
