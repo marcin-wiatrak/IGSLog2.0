@@ -12,7 +12,6 @@ const handler = async (req, res) => {
       },
     })
     .then((response) => {
-      console.log('response api', response)
       res.status(200).json(response)
     })
     .finally(async () => {

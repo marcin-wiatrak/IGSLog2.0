@@ -3,9 +3,9 @@ services:
   next:
     build: .
     ports:
-      - '9001:3000'
-    #volumes:
-    #  - .:/usr/app
+      - '9002:3000'
+    volumes:
+      - ../upload/:/usr/app/upload
     env_file:
       - .env
     depends_on:
@@ -13,7 +13,11 @@ services:
   postgres:
     image: postgres:14.1-alpine
     restart: always
+    volumes:
+      - ../db/:/var/lib/postgresql/data/:rw
     env_file:
       - .env.db
+    environment:
+      PGDATA: /var/lib/postgresql/data/
     ports:
-      - '5432:5432'
+      - '5433:5432'

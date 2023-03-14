@@ -1,4 +1,5 @@
 export { FiltersDrawer } from './FiltersDrawer'
 export { NewOrderDrawer } from './NewOrderDrawer'
 export { FilterButtons } from './FilterButtons'
+export { StatusSelector } from './StatusSelector'
 export { Table } from './Table'

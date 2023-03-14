@@ -1,17 +1,13 @@
 import { prisma } from '@server/db'
 
 const handler = async (req, res) => {
-  await prisma.order
+  await prisma.user
     .findMany({
-      include: {
-        registeredBy: {
-          select: {
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
       },
     })
     .then((response) => {

@@ -3,20 +3,18 @@ import { TYPE_BUTTONS_LIST } from './FilterButtons.constants'
 import { FC } from 'react'
 import { OrderType } from '@src/types'
 import { Close, DeviceHub, Face, Pix, Spa } from '@mui/icons-material'
+import { useDispatch, useSelector } from 'react-redux'
+import { ordersActions, ordersSelectors } from '@src/store'
 
 type FilterButtonsProps = {
-  onTypeClick: (type: OrderType) => void
   onClearFiltersClick: () => void
   onFilterDrawerOpen: () => void
-  selectedTypes: OrderType[]
 }
 
-export const FilterButtons: FC<FilterButtonsProps> = ({
-  onTypeClick,
-  onClearFiltersClick,
-  onFilterDrawerOpen,
-  selectedTypes,
-}) => {
+export const FilterButtons: FC<FilterButtonsProps> = ({ onClearFiltersClick, onFilterDrawerOpen }) => {
+  const dispatch = useDispatch()
+  const selectedTypes = useSelector(ordersSelectors.selectFilterByType)
+
   const icon = (name) => {
     switch (name) {
       case OrderType.FATHERHOOD:
@@ -30,13 +28,17 @@ export const FilterButtons: FC<FilterButtonsProps> = ({
     }
   }
 
+  const handleTypeClick = (type) => {
+    dispatch(ordersActions.setFilterByType({ filterByType: type }))
+  }
+
   return (
     <>
-      <Box>
+      <Box sx={{ display: 'flex', gap: '5px' }}>
         {TYPE_BUTTONS_LIST.map((el) => (
           <Button
             key={el.label}
-            onClick={() => onTypeClick(el.name)}
+            onClick={() => handleTypeClick(el.name)}
             startIcon={icon(el.name)}
             color="primary"
             variant={selectedTypes.includes(el.name) ? 'contained' : 'outlined'}
