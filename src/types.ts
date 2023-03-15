@@ -14,4 +14,9 @@ export enum OrderStatuses {
   CLOSED = 'CLOSED',
 }
 
+export enum ErrorMessages {
+  EMPTY = 'To pole nie może być pustę',
+  INVALID_EMAIL = 'Adres email jest niepoprawny',
+}
+
 export type OrderStatus = OrderStatuses.NEW | OrderStatuses.PICKED_UP | OrderStatuses.DELIVERED | OrderStatuses.CLOSED
