@@ -13,6 +13,9 @@ const handler = async (req, res) => {
           },
         },
       },
+      orderBy: {
+        createdAt: 'asc',
+      },
     })
     .then((response) => {
       res.status(200).json(response)

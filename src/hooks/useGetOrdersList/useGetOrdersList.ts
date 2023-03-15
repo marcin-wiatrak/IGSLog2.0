@@ -15,7 +15,7 @@ export const useGetOrdersList = () => {
       dispatch(ordersActions.setOrdersList({ ordersList: res.data }))
       setIsLoading(false)
     })
-  }, [dispatch])
+  }, [])
 
   useEffect(() => {
     if (!ordersList.length) getOrdersList()
