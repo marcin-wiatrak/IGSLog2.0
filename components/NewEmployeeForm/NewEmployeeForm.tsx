@@ -13,16 +13,16 @@ enum RoleEnum {
 const schema = yup
   .object({
     email: yup.string().email(ErrorMessages.INVALID_EMAIL).required(ErrorMessages.EMPTY),
-    name: yup.string().required(ErrorMessages.EMPTY),
-    surname: yup.string().required(ErrorMessages.EMPTY),
+    firstName: yup.string().required(ErrorMessages.EMPTY),
+    lastName: yup.string().required(ErrorMessages.EMPTY),
     role: yup.string().required(ErrorMessages.EMPTY),
   })
   .required()
 
 interface IFormInput extends yup.InferType<typeof schema> {
   email: string
-  name: string
-  surname: string
+  firstName: string
+  lastName: string
   role: RoleEnum
 }
 
@@ -36,8 +36,8 @@ export const NewEmployeeForm = () => {
     resolver: yupResolver(schema),
     defaultValues: {
       email: '',
-      name: '',
-      surname: '',
+      firstName: '',
+      lastName: '',
       role: '',
     },
   })
@@ -47,7 +47,7 @@ export const NewEmployeeForm = () => {
   }
 
   useEffect(() => {
-    isSubmitSuccessful && reset({ email: '', name: '', surname: '', role: '' })
+    isSubmitSuccessful && reset({ email: '', firstName: '', lastName: '', role: '' })
   }, [isSubmitted, reset, isSubmitSuccessful])
 
   return (
@@ -68,7 +68,7 @@ export const NewEmployeeForm = () => {
             )}
           />
           <Controller
-            name="name"
+            name="firstName"
             control={control}
             render={({ field, fieldState: { error } }) => (
               <TextField
@@ -81,7 +81,7 @@ export const NewEmployeeForm = () => {
             )}
           />
           <Controller
-            name="surname"
+            name="lastName"
             control={control}
             render={({ field, fieldState: { error } }) => (
               <TextField
