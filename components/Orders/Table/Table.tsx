@@ -5,7 +5,9 @@ import {
   Table as MuiTable,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TableSortLabel,
 } from '@mui/material'
@@ -22,6 +24,8 @@ import { useSession } from 'next-auth/react'
 import { useDisclose, useGetOrdersList } from '@src/hooks'
 import { AssignUserModal } from '@components/Orders/AssignUserModal'
 import * as R from 'ramda'
+import { usePagination } from '@src/hooks/usePagination'
+import { TablePaginator } from '@components/TablePaginator'
 
 type TableProps = {
   usersList: User[]
@@ -165,93 +169,104 @@ export const Table: FC<TableProps> = ({ usersList }) => {
     onAssignUserModalClose()
   }
 
+  const tableData = useMemo(() => {
+    return sortOrders(filterOrders(ordersList))
+  }, [filterOrders, ordersList, sortOrders])
+
+  const { handlePagination, ...pagination } = usePagination(tableData, 10)
+
   return (
     <>
-      <MuiTable stickyHeader>
-        <TableHead>
-          <TableRow>
-            {COLUMNS_SETUP.map(({ name, label, allowSorting }) => (
-              <TableCell key={name}>
-                {allowSorting ? (
-                  <TableSortLabel
-                    active={sortBy === name}
-                    direction={sortDirection || 'asc'}
-                    onClick={() => handleChangeSorting(name)}
-                  >
-                    {label}
-                  </TableSortLabel>
-                ) : (
-                  label
-                )}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {ordersList && !!ordersList.length && mappedCustomersList && mappedUsersList ? (
-            <>
-              {sortOrders(filterOrders(ordersList)).map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell>{mappedCustomersList[order.customerId].name}</TableCell>
-                  <TableCell>{order.signature}</TableCell>
-                  <TableCell>{dayjs(order.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
-                  <TableCell>{order.pickupAt ? dayjs(order.pickupAt).format('DD/MM/YYYY HH:mm') : '-'}</TableCell>
-                  <TableCell>{order.localization}</TableCell>
-                  <TableCell>
-                    {order.handleById ? (
-                      <Box
-                        style={{ display: 'inline', cursor: 'pointer' }}
-                        onClick={() => handleOpenAssignMenu(order.id)}
-                      >
-                        {getFullName(mappedUsersList, order.handleById)}
-                      </Box>
-                    ) : (
-                      <>
-                        <Button
-                          variant="text"
-                          size="small"
+      <TableContainer>
+        <MuiTable stickyHeader>
+          <TableHead>
+            <TableRow>
+              {COLUMNS_SETUP.map(({ name, label, allowSorting }) => (
+                <TableCell key={name}>
+                  {allowSorting ? (
+                    <TableSortLabel
+                      active={sortBy === name}
+                      direction={sortDirection || 'asc'}
+                      onClick={() => handleChangeSorting(name)}
+                    >
+                      {label}
+                    </TableSortLabel>
+                  ) : (
+                    label
+                  )}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {ordersList && !!ordersList.length && mappedCustomersList && mappedUsersList ? (
+              <>
+                {handlePagination(tableData).map((order) => (
+                  <TableRow key={order.id}>
+                    <TableCell>{mappedCustomersList[order.customerId].name}</TableCell>
+                    <TableCell>{order.signature}</TableCell>
+                    <TableCell>{dayjs(order.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
+                    <TableCell>{order.pickupAt ? dayjs(order.pickupAt).format('DD/MM/YYYY HH:mm') : '-'}</TableCell>
+                    <TableCell>{order.localization}</TableCell>
+                    <TableCell>
+                      {order.handleById ? (
+                        <Box
+                          style={{ display: 'inline', cursor: 'pointer' }}
                           onClick={() => handleOpenAssignMenu(order.id)}
                         >
-                          Przypisz
-                        </Button>
-                        <Button
-                          variant="text"
-                          size="small"
-                          color="warning"
-                          onClick={() => handleAssignUser(order.id)}
-                        >
-                          Do mnie
-                        </Button>
-                      </>
-                    )}
-                  </TableCell>
-                  <TableCell>{getFullName(mappedUsersList, order.registeredById)}</TableCell>
-                  <TableCell>
-                    <StatusSelector
-                      status={order.status}
-                      orderId={order.id}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </>
-          ) : (
-            <>
-              {dummyArray.map((el) => (
-                <TableRow key={el}>
-                  <TableCell colSpan={COLUMNS_SETUP.length}>
-                    <Skeleton
-                      variant="rounded"
-                      width="100%"
-                      height="30px"
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </>
-          )}
-        </TableBody>
-      </MuiTable>
+                          {getFullName(mappedUsersList, order.handleById)}
+                        </Box>
+                      ) : (
+                        <>
+                          <Button
+                            variant="text"
+                            size="small"
+                            onClick={() => handleOpenAssignMenu(order.id)}
+                          >
+                            Przypisz
+                          </Button>
+                          <Button
+                            variant="text"
+                            size="small"
+                            color="warning"
+                            onClick={() => handleAssignUser(order.id)}
+                          >
+                            Do mnie
+                          </Button>
+                        </>
+                      )}
+                    </TableCell>
+                    <TableCell>{getFullName(mappedUsersList, order.registeredById)}</TableCell>
+                    <TableCell>
+                      <StatusSelector
+                        status={order.status}
+                        orderId={order.id}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            ) : (
+              <>
+                {dummyArray.map((el) => (
+                  <TableRow key={el}>
+                    <TableCell colSpan={COLUMNS_SETUP.length}>
+                      <Skeleton
+                        variant="rounded"
+                        width="100%"
+                        height="30px"
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            )}
+          </TableBody>
+        </MuiTable>
+      </TableContainer>
+      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+        <TablePaginator pagination={pagination} />
+      </Box>
       {isAssignUserModalOpen && (
         <AssignUserModal
           isOpen={isAssignUserModalOpen}
