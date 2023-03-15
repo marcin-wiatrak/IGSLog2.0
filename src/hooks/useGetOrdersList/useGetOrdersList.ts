@@ -18,8 +18,8 @@ export const useGetOrdersList = () => {
   }, [dispatch])
 
   useEffect(() => {
-    getOrdersList()
-  }, [getOrdersList])
+    if (!ordersList.length) getOrdersList()
+  }, [getOrdersList, ordersList.length])
 
   return {
     isLoading,

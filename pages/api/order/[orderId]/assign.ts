@@ -2,13 +2,14 @@ import { prisma } from '@server/db'
 
 const handler = async (req, res) => {
   const { orderId } = req.query
-  await prisma.user
-    .findMany({
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
+  const { handleById } = req.body
+  await prisma.order
+    .update({
+      data: {
+        handleById,
+      },
+      where: {
+        id: orderId,
       },
     })
     .then((response) => {
