@@ -1,8 +1,7 @@
-import React from 'react'
-import { Button, Unstable_Grid2 as Grid, Typography, Paper, TextField } from '@mui/material'
-import { NextPage } from 'next'
-import { signIn } from 'next-auth/react'
 import { Layout } from '@components/Layout'
+import { NewEmployeeForm } from '@components/NewEmployeeForm'
+import { Accordion, AccordionDetails, AccordionSummary, Typography, Unstable_Grid2 as Grid } from '@mui/material'
+import { NextPage } from 'next'
 
 const Admin: NextPage = () => {
   return (
@@ -24,12 +23,15 @@ const Admin: NextPage = () => {
           md={6}
           lg={3}
         >
-          <Paper sx={{ padding: '8px' }}>
-            <Typography>Rejestracja pracownika</Typography>
-            <TextField />
-          </Paper>
+          <Accordion>
+            <AccordionSummary>
+              <Typography variant="h6">Zarejestruj pracownika</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <NewEmployeeForm />
+            </AccordionDetails>
+          </Accordion>
         </Grid>
-        <Button onClick={() => signIn()}> Zaloguj</Button>
       </Grid>
     </Layout>
   )
