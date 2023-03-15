@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { Role } from '../../../nextauth'
 import { prisma } from '@server/db'
 import bcrypt from 'bcrypt'
+import * as process from 'process'
 
 const authOptions: NextAuthOptions = {
   session: {
@@ -41,6 +42,7 @@ const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/auth/signin',
   },
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     jwt(params) {
       if (params.user?.role) {

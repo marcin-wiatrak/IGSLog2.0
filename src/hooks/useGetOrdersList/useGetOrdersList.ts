@@ -15,11 +15,11 @@ export const useGetOrdersList = () => {
       dispatch(ordersActions.setOrdersList({ ordersList: res.data }))
       setIsLoading(false)
     })
-  }, [dispatch])
+  }, [])
 
   useEffect(() => {
-    getOrdersList()
-  }, [getOrdersList])
+    if (!ordersList.length) getOrdersList()
+  }, [getOrdersList, ordersList.length])
 
   return {
     isLoading,
