@@ -181,20 +181,22 @@ export const NewOrderDrawer: FC<NewOrderDrawerProps> = ({ isOpen, onClose, custo
                 gap: 1,
               }}
             >
-              <Autocomplete
-                value={form.customer}
-                fullWidth
-                blurOnSelect
-                options={customersListOption}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                onChange={(e, newValue) => handleFormChange('customer', newValue)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Zleceniodawca"
-                  />
-                )}
-              />
+              {customersListOption && !!customersListOption.length && (
+                <Autocomplete
+                  value={form.customer}
+                  fullWidth
+                  blurOnSelect
+                  options={customersListOption}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  onChange={(e, newValue) => handleFormChange('customer', newValue)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Zleceniodawca"
+                    />
+                  )}
+                />
+              )}
               <IconButton
                 size="large"
                 color="primary"

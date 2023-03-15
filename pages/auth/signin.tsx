@@ -18,7 +18,6 @@ const SignIn: NextPage = () => {
       password,
       redirect: false,
     })
-    console.log(res)
   }
 
   return (

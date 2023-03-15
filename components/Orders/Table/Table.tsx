@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Skeleton,
   Table as MuiTable,
@@ -9,13 +10,17 @@ import {
   TableSortLabel,
 } from '@mui/material'
 import { FC, useCallback, useMemo, useState } from 'react'
-import { User } from '@prisma/client'
+import { Order, User } from '@prisma/client'
 import { TableOrderDirection } from '@src/types'
 import { getFullName } from '@src/utils'
 import { StatusSelector } from '@components/Orders'
 import dayjs from 'dayjs'
-import { useSelector } from 'react-redux'
-import { customersSelectors, ordersSelectors } from '@src/store'
+import { useDispatch, useSelector } from 'react-redux'
+import { customersSelectors, ordersActions, ordersSelectors } from '@src/store'
+import axios from 'axios'
+import { useSession } from 'next-auth/react'
+import { useDisclose, useGetOrdersList } from '@src/hooks'
+import { AssignUserModal } from '@components/Orders/AssignUserModal'
 import * as R from 'ramda'
 
 type TableProps = {
@@ -74,12 +79,22 @@ const COLUMNS_SETUP = [
 ]
 
 export const Table: FC<TableProps> = ({ usersList }) => {
+  const { data } = useSession()
+  const dispatch = useDispatch()
   const customersList = useSelector(customersSelectors.selectCustomersList)
   const ordersList = useSelector(ordersSelectors.selectOrdersList)
   const filterByType = useSelector(ordersSelectors.selectFilterByType)
 
   const [sortBy, setSortBy] = useState('createdAt')
   const [sortDirection, setSortDirection] = useState<TableOrderDirection>('desc')
+
+  const { refreshOrdersList } = useGetOrdersList()
+
+  const {
+    isOpen: isAssignUserModalOpen,
+    onClose: onAssignUserModalClose,
+    onOpen: handleAssignUserModalOpen,
+  } = useDisclose()
 
   const mappedCustomersList = useMemo(() => {
     if (customersList.length) {
@@ -97,13 +112,13 @@ export const Table: FC<TableProps> = ({ usersList }) => {
     }
   }, [usersList])
 
-  const handleChangeSorting = (column) => {
+  const handleChangeSorting = (column: string) => {
     setSortBy(column)
     setSortDirection((prevState) => (prevState === 'desc' ? 'asc' : 'desc'))
   }
 
   const filterOrders = useCallback(
-    (orders) =>
+    (orders: Order[]) =>
       orders.filter((order) => {
         return filterByType.length ? filterByType.some((el) => order.type.includes(el)) : true
       }),
@@ -125,84 +140,126 @@ export const Table: FC<TableProps> = ({ usersList }) => {
     return index + 1
   })
 
+  const handleAssignUser = async (orderId: string, userId?: string) => {
+    const id = userId || data.user.userId
+    await axios.post(`/api/order/${orderId}/assign`, { handleById: id }).then(() => {
+      refreshOrdersList()
+      handleAssignUserModalClose()
+    })
+  }
+
+  const handleUnassignUser = async (orderId: string) => {
+    await axios.post(`/api/order/${orderId}/unassign`).then(() => {
+      refreshOrdersList()
+      handleAssignUserModalClose()
+    })
+  }
+
+  const handleOpenAssignMenu = (orderId) => {
+    dispatch(ordersActions.setCurrentOrderId({ currentOrderId: orderId }))
+    handleAssignUserModalOpen()
+  }
+
+  const handleAssignUserModalClose = () => {
+    dispatch(ordersActions.setCurrentOrderId({ currentOrderId: undefined }))
+    onAssignUserModalClose()
+  }
+
   return (
-    <MuiTable stickyHeader>
-      <TableHead>
-        <TableRow>
-          {COLUMNS_SETUP.map(({ name, label, allowSorting }) => (
-            <TableCell key={name}>
-              {allowSorting ? (
-                <TableSortLabel
-                  active={sortBy === name}
-                  direction={sortDirection || 'asc'}
-                  onClick={() => handleChangeSorting(name)}
-                >
-                  {label}
-                </TableSortLabel>
-              ) : (
-                label
-              )}
-            </TableCell>
-          ))}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {ordersList && !!ordersList.length && mappedCustomersList && mappedUsersList ? (
-          <>
-            {sortOrders(filterOrders(ordersList)).map((order) => (
-              <TableRow key={order.id}>
-                <TableCell>{mappedCustomersList[order.customerId].name}</TableCell>
-                <TableCell>{order.signature}</TableCell>
-                <TableCell>{dayjs(order.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
-                <TableCell>{order.pickupAt ? dayjs(order.pickupAt).format('DD/MM/YYYY HH:mm') : '-'}</TableCell>
-                <TableCell>{order.localization}</TableCell>
-                <TableCell>
-                  {order.handleById ? (
-                    getFullName(mappedUsersList, order.handleById)
-                  ) : (
-                    <>
-                      <Button
-                        variant="text"
-                        size="small"
-                      >
-                        Przypisz
-                      </Button>
-                      <Button
-                        variant="text"
-                        size="small"
-                        color="warning"
-                      >
-                        Do mnie
-                      </Button>
-                    </>
-                  )}
-                </TableCell>
-                <TableCell>{getFullName(mappedUsersList, order.registeredById)}</TableCell>
-                <TableCell>
-                  <StatusSelector
-                    status={order.status}
-                    orderId={order.id}
-                  />
-                </TableCell>
-              </TableRow>
+    <>
+      <MuiTable stickyHeader>
+        <TableHead>
+          <TableRow>
+            {COLUMNS_SETUP.map(({ name, label, allowSorting }) => (
+              <TableCell key={name}>
+                {allowSorting ? (
+                  <TableSortLabel
+                    active={sortBy === name}
+                    direction={sortDirection || 'asc'}
+                    onClick={() => handleChangeSorting(name)}
+                  >
+                    {label}
+                  </TableSortLabel>
+                ) : (
+                  label
+                )}
+              </TableCell>
             ))}
-          </>
-        ) : (
-          <>
-            {dummyArray.map((el) => (
-              <TableRow key={el}>
-                <TableCell colSpan={COLUMNS_SETUP.length}>
-                  <Skeleton
-                    variant="rounded"
-                    width="100%"
-                    height="30px"
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </>
-        )}
-      </TableBody>
-    </MuiTable>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {ordersList && !!ordersList.length && mappedCustomersList && mappedUsersList ? (
+            <>
+              {sortOrders(filterOrders(ordersList)).map((order) => (
+                <TableRow key={order.id}>
+                  <TableCell>{mappedCustomersList[order.customerId].name}</TableCell>
+                  <TableCell>{order.signature}</TableCell>
+                  <TableCell>{dayjs(order.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
+                  <TableCell>{order.pickupAt ? dayjs(order.pickupAt).format('DD/MM/YYYY HH:mm') : '-'}</TableCell>
+                  <TableCell>{order.localization}</TableCell>
+                  <TableCell>
+                    {order.handleById ? (
+                      <Box
+                        style={{ display: 'inline', cursor: 'pointer' }}
+                        onClick={() => handleOpenAssignMenu(order.id)}
+                      >
+                        {getFullName(mappedUsersList, order.handleById)}
+                      </Box>
+                    ) : (
+                      <>
+                        <Button
+                          variant="text"
+                          size="small"
+                          onClick={() => handleOpenAssignMenu(order.id)}
+                        >
+                          Przypisz
+                        </Button>
+                        <Button
+                          variant="text"
+                          size="small"
+                          color="warning"
+                          onClick={() => handleAssignUser(order.id)}
+                        >
+                          Do mnie
+                        </Button>
+                      </>
+                    )}
+                  </TableCell>
+                  <TableCell>{getFullName(mappedUsersList, order.registeredById)}</TableCell>
+                  <TableCell>
+                    <StatusSelector
+                      status={order.status}
+                      orderId={order.id}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </>
+          ) : (
+            <>
+              {dummyArray.map((el) => (
+                <TableRow key={el}>
+                  <TableCell colSpan={COLUMNS_SETUP.length}>
+                    <Skeleton
+                      variant="rounded"
+                      width="100%"
+                      height="30px"
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </>
+          )}
+        </TableBody>
+      </MuiTable>
+      {isAssignUserModalOpen && (
+        <AssignUserModal
+          isOpen={isAssignUserModalOpen}
+          onClose={handleAssignUserModalClose}
+          onAssignUser={handleAssignUser}
+          onUnassignUser={handleUnassignUser}
+        />
+      )}
+    </>
   )
 }

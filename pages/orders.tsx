@@ -3,7 +3,7 @@ import { Box, CircularProgress, Fab, Typography, Unstable_Grid2 as Grid } from '
 import { Layout } from '@components/Layout'
 import { FilterButtons } from '@components/Orders/FilterButtons/FilterButtons'
 import { FiltersDrawer } from '@components/Orders/FiltersDrawer'
-import { useDrawer, useGetCustomersList, useGetOrdersList, useGetUsersList } from '@src/hooks'
+import { useDisclose, useGetCustomersList, useGetOrdersList, useGetUsersList } from '@src/hooks'
 import { NewOrderDrawer, Table } from '@components/Orders'
 import { Add } from '@mui/icons-material'
 
@@ -14,8 +14,8 @@ const fabStyle = {
 }
 
 const Orders: NextPage = () => {
-  const { isOpen: isFilterDrawerOpen, onOpen: onFilterDrawerOpen, onClose: onFilterDrawerClose } = useDrawer()
-  const { isOpen: isNewOrderDrawerOpen, onOpen: onNewOrderDrawerOpen, onClose: onNewOrderDrawerClose } = useDrawer()
+  const { isOpen: isFilterDrawerOpen, onOpen: onFilterDrawerOpen, onClose: onFilterDrawerClose } = useDisclose()
+  const { isOpen: isNewOrderDrawerOpen, onOpen: onNewOrderDrawerOpen, onClose: onNewOrderDrawerClose } = useDisclose()
 
   const { ordersList } = useGetOrdersList()
   const { usersList } = useGetUsersList()
