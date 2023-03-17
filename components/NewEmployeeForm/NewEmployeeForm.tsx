@@ -1,14 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material'
+import { useGetUsersList } from '@src/hooks'
 import { ErrorMessages } from '@src/types'
+import axios from 'axios'
 import { useEffect } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
-
-enum RoleEnum {
-  USER = 'user',
-  ADMIN = 'admin',
-}
+import { Role } from '@src/types'
 
 const schema = yup
   .object({
@@ -23,7 +21,7 @@ interface IFormInput extends yup.InferType<typeof schema> {
   email: string
   firstName: string
   lastName: string
-  role: RoleEnum
+  role: Role
 }
 
 export const NewEmployeeForm = () => {
@@ -41,9 +39,19 @@ export const NewEmployeeForm = () => {
       role: '',
     },
   })
+  const { refreshUsersList } = useGetUsersList()
 
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
-    console.log(data)
+  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+    await axios
+      .post('/api/auth/register', {
+        ...data,
+        password: '1234',
+      })
+      .then((res) => {
+        console.log(res)
+        refreshUsersList()
+      })
+      .catch((error) => console.log(error))
   }
 
   useEffect(() => {
@@ -108,8 +116,8 @@ export const NewEmployeeForm = () => {
                   id="role"
                   label="Rola"
                 >
-                  <MenuItem value={RoleEnum.USER}>Użytkownik</MenuItem>
-                  <MenuItem value={RoleEnum.ADMIN}>Admin</MenuItem>
+                  <MenuItem value={Role.USER}>Użytkownik</MenuItem>
+                  <MenuItem value={Role.ADMIN}>Admin</MenuItem>
                 </Select>
               </FormControl>
             )}
