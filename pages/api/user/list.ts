@@ -8,6 +8,10 @@ const handler = async (req, res) => {
         email: true,
         firstName: true,
         lastName: true,
+        role: true,
+      },
+      orderBy: {
+        lastName: 'asc',
       },
     })
     .then((response) => {
