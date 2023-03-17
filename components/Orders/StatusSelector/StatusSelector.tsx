@@ -32,6 +32,8 @@ export const StatusSelector = ({ status, orderId }) => {
   const handleChangeStatus = async (status: OrderStatus) => {
     await axios.post(`/api/order/${orderId}/status`, { status }).then((response) => {
       refreshOrdersList()
+    }).catch((err) => {
+      console.log(err)
     })
     handleStatusMenuClose()
   }
