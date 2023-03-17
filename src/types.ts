@@ -19,4 +19,9 @@ export enum ErrorMessages {
   INVALID_EMAIL = 'Adres email jest niepoprawny',
 }
 
+export enum Role {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+}
+
 export type OrderStatus = OrderStatuses.NEW | OrderStatuses.PICKED_UP | OrderStatuses.DELIVERED | OrderStatuses.CLOSED
