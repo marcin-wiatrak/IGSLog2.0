@@ -88,6 +88,7 @@ export const Table: FC<TableProps> = ({ usersList }) => {
   const customersList = useSelector(customersSelectors.selectCustomersList)
   const ordersList = useSelector(ordersSelectors.selectOrdersList)
   const filterByType = useSelector(ordersSelectors.selectFilterByType)
+  const filters = useSelector(ordersSelectors.selectFilterRegisteredBy)
 
   const [sortBy, setSortBy] = useState('createdAt')
   const [sortDirection, setSortDirection] = useState<TableOrderDirection>('desc')
@@ -123,10 +124,27 @@ export const Table: FC<TableProps> = ({ usersList }) => {
 
   const filterOrders = useCallback(
     (orders: Order[]) =>
-      orders.filter((order) => {
-        return filterByType.length ? filterByType.some((el) => order.type.includes(el)) : true
-      }),
-    [filterByType]
+      orders.filter(
+        (order) =>
+          (filterByType.length ? filterByType.some((el) => order.type.includes(el)) : true) &&
+          (filters.registeredBy.length ? filters.registeredBy.some((el) => el.id === order.registeredById) : true) &&
+          (filters.handleBy.length ? filters.handleBy.some((el) => el.id === order.handleById) : true) &&
+          (filters.localization && (!!order.localization || !order.localization)
+            ? order.localization === null
+              ? false
+              : order.localization.includes(filters.localization)
+            : true) &&
+          (filters.createdAtStart ? dayjs(order.createdAt).isAfter(filters.createdAtStart) : true) &&
+          (filters.createdAtEnd ? dayjs(order.createdAt).isBefore(filters.createdAtEnd) : true)
+      ),
+    [
+      filterByType,
+      filters.createdAtEnd,
+      filters.createdAtStart,
+      filters.handleBy,
+      filters.localization,
+      filters.registeredBy,
+    ]
   )
 
   const sortOrders = useCallback(
