@@ -20,3 +20,8 @@ export enum ErrorMessages {
 }
 
 export type OrderStatus = OrderStatuses.NEW | OrderStatuses.PICKED_UP | OrderStatuses.DELIVERED | OrderStatuses.CLOSED
+
+export type AutocompleteOptionType = {
+  id: string
+  label: string
+}

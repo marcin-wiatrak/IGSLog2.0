@@ -6,6 +6,8 @@ import { FiltersDrawer } from '@components/Orders/FiltersDrawer'
 import { useDisclose, useGetCustomersList, useGetOrdersList, useGetUsersList } from '@src/hooks'
 import { NewOrderDrawer, Table } from '@components/Orders'
 import { Add } from '@mui/icons-material'
+import { ordersActions } from '@src/store'
+import { useDispatch } from 'react-redux'
 
 const fabStyle = {
   position: 'absolute',
@@ -14,6 +16,7 @@ const fabStyle = {
 }
 
 const Orders: NextPage = () => {
+  const dispatch = useDispatch()
   const { isOpen: isFilterDrawerOpen, onOpen: onFilterDrawerOpen, onClose: onFilterDrawerClose } = useDisclose()
   const { isOpen: isNewOrderDrawerOpen, onOpen: onNewOrderDrawerOpen, onClose: onNewOrderDrawerClose } = useDisclose()
 
@@ -21,7 +24,7 @@ const Orders: NextPage = () => {
   const { usersList } = useGetUsersList()
   const { customersList, onRefreshCustomersList } = useGetCustomersList()
 
-  const handleClearFilters = () => {}
+  const handleClearFilters = () => dispatch(ordersActions.resetFilters())
 
   return (
     <>
@@ -32,12 +35,7 @@ const Orders: NextPage = () => {
           sx={{ width: '100%' }}
         >
           <Grid xs={12}>
-            <Typography
-              variant="h1"
-              fontWeight="bolder"
-            >
-              Odbiory
-            </Typography>
+            <Typography variant="h1">Odbiory</Typography>
             <Grid
               container
               xs={12}
@@ -52,7 +50,7 @@ const Orders: NextPage = () => {
                 }}
               >
                 <FilterButtons
-                  onFilterDrawerOpen={onFilterDrawerClose}
+                  onFilterDrawerOpen={onFilterDrawerOpen}
                   onClearFiltersClick={handleClearFilters}
                 />
               </Grid>
