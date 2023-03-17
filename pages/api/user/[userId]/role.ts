@@ -1,21 +1,19 @@
 import { prisma } from '@server/db'
 
 const handler = async (req, res) => {
+  const { userId } = req.query
+  const { role } = req.body
   await prisma.user
-    .findMany({
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        role: true,
+    .update({
+      data: {
+        role,
       },
-      orderBy: {
-        lastName: 'asc',
+      where: {
+        id: userId,
       },
     })
     .then((response) => {
-      res.status(200).json(response)
+      res.status(200).json({ ...response, status: 'ok' })
     })
     .finally(async () => {
       await prisma.$disconnect()

@@ -1,7 +1,9 @@
+import { EmployeList } from '@components/EmployeeList'
 import { Layout } from '@components/Layout'
 import { NewEmployeeForm } from '@components/NewEmployeeForm'
 import { Accordion, AccordionDetails, AccordionSummary, Typography, Unstable_Grid2 as Grid } from '@mui/material'
 import { NextPage } from 'next'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 const Admin: NextPage = () => {
   return (
@@ -9,6 +11,7 @@ const Admin: NextPage = () => {
       <Grid
         container
         padding={2}
+        spacing={2}
       >
         <Grid xs={12}>
           <Typography
@@ -21,14 +24,22 @@ const Admin: NextPage = () => {
         <Grid
           xs={12}
           md={6}
-          lg={3}
+          lg={4}
         >
           <Accordion>
-            <AccordionSummary>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="h6">Zarejestruj pracownika</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <NewEmployeeForm />
+            </AccordionDetails>
+          </Accordion>
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">Lista pracowników</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <EmployeList />
             </AccordionDetails>
           </Accordion>
         </Grid>
