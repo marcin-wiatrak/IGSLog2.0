@@ -11,7 +11,7 @@ type ConfirmationModalType = {
   confirmText?: string
 }
 
-const ConfirmationModal: FC<ConfirmationModalType> = ({
+export const ConfirmationModal: FC<ConfirmationModalType> = ({
   title,
   open,
   onCancel,
@@ -46,5 +46,3 @@ const ConfirmationModal: FC<ConfirmationModalType> = ({
     </Dialog>
   )
 }
-
-export default ConfirmationModal

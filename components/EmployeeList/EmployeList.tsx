@@ -1,4 +1,4 @@
-import ConfirmationModal from '@components/ConfirmationModal/ConfirmationModal'
+import { ConfirmationModal } from '@components/UI'
 import {
   Button,
   FormControl,
@@ -13,7 +13,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import { useGetUsersList } from '@src/hooks'
+import { useDisclose, useGetUsersList } from '@src/hooks'
 import { usersSelectors } from '@src/store'
 import { Role } from '@src/types'
 import axios from 'axios'
@@ -24,10 +24,13 @@ type UserDataType = {
   firstName: string
   lastName: string
   id: string
+  currentRole?: Role
+  newRole?: Role
 }
 
 export const EmployeList = () => {
-  const [modalOpen, setModalOpen] = useState<boolean>(false)
+  const passwordResetConfirmationModal = useDisclose()
+  const roleChangeConfirmationModal = useDisclose()
   const [userData, setUserData] = useState<UserDataType | null>(null)
   const { refreshUsersList } = useGetUsersList()
   const users = useSelector(usersSelectors.selectUsersList)
@@ -42,18 +45,34 @@ export const EmployeList = () => {
       .catch((err) => {
         console.log(err)
       })
+    roleChangeConfirmationModal.onClose()
   }
 
-  const handleOpenModal = (firstName: string, lastName: string, id: string) => {
+  const handlePasswordResetConfirmationModalOpen = (firstName: string, lastName: string, id: string) => {
     setUserData({
       firstName,
       lastName,
       id,
     })
-    setModalOpen(true)
+    passwordResetConfirmationModal.onOpen()
   }
 
-  const handleCloseModal = () => setModalOpen(false)
+  const handleRoleChangeConfirmationModalOpen = (
+    firstName: string,
+    lastName: string,
+    id: string,
+    currentRole: Role,
+    roleAfterTheChange: Role
+  ) => {
+    setUserData({
+      firstName,
+      lastName,
+      id,
+      currentRole,
+      newRole: roleAfterTheChange,
+    })
+    roleChangeConfirmationModal.onOpen()
+  }
 
   const handleChangeUserPassword = async (id: string, password: string) => {
     console.log(id, password)
@@ -61,7 +80,7 @@ export const EmployeList = () => {
       .post(`/api/user/${id}/change-password`, { password })
       .then((res) => {
         console.log(res)
-        handleCloseModal()
+        passwordResetConfirmationModal.onClose()
       })
       .catch((err) => {
         console.log(err)
@@ -99,7 +118,15 @@ export const EmployeList = () => {
                       id={user.id}
                       displayEmpty
                       sx={{ fontSize: '12px' }}
-                      onChange={({ target }) => handleChangeUserRole(user.id, target.value as Role)}
+                      onChange={({ target }) =>
+                        handleRoleChangeConfirmationModalOpen(
+                          user.firstName,
+                          user.lastName,
+                          user.id,
+                          user.role as Role,
+                          target.value as Role
+                        )
+                      }
                     >
                       <MenuItem value={Role.USER}>{Role.USER}</MenuItem>
                       <MenuItem value={Role.ADMIN}>{Role.ADMIN}</MenuItem>
@@ -111,7 +138,7 @@ export const EmployeList = () => {
                     variant="contained"
                     size="small"
                     onClick={() => {
-                      handleOpenModal(user.firstName, user.lastName, user.id)
+                      handlePasswordResetConfirmationModalOpen(user.firstName, user.lastName, user.id)
                     }}
                   >
                     Zresetuj hasło
@@ -122,11 +149,11 @@ export const EmployeList = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      {modalOpen && userData !== null && (
+      {passwordResetConfirmationModal.isOpen && userData !== null && (
         <ConfirmationModal
           title={`Czy zresetować hasło użytownika ${userData.firstName} ${userData.lastName}?`}
-          open={modalOpen}
-          onCancel={handleCloseModal}
+          open={passwordResetConfirmationModal.isOpen}
+          onCancel={passwordResetConfirmationModal.onClose}
           onConfirm={() => handleChangeUserPassword(userData.id, '1234567')}
         >
           Potwierdzając zresetujesz hasło użytkownika{' '}
@@ -143,6 +170,40 @@ export const EmployeList = () => {
             sx={{ fontWeight: '700' }}
           >
             1234567
+          </Typography>
+        </ConfirmationModal>
+      )}
+      {roleChangeConfirmationModal.isOpen && userData !== null && (
+        <ConfirmationModal
+          title={`Czy chcesz zmienić role użytkownika ${userData.firstName} ${userData.lastName}?`}
+          open={roleChangeConfirmationModal.isOpen}
+          onCancel={roleChangeConfirmationModal.onClose}
+          onConfirm={() => handleChangeUserRole(userData.id, userData.newRole)}
+        >
+          Potwierdzając zmienisz role użytkownika{' '}
+          <Typography
+            component="span"
+            sx={{ fontWeight: '700' }}
+          >
+            {userData.firstName} {userData.lastName}.
+          </Typography>
+          <br />
+          Obecna rola:
+          <Typography
+            component="span"
+            sx={{ fontWeight: '700' }}
+          >
+            {' '}
+            {userData.currentRole}
+          </Typography>
+          <br />
+          Rola po zmianie:
+          <Typography
+            component="span"
+            sx={{ fontWeight: '700' }}
+          >
+            {' '}
+            {userData.newRole}
           </Typography>
         </ConfirmationModal>
       )}
