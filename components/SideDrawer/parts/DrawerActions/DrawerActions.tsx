@@ -18,10 +18,11 @@ export const DrawerActions = ({ actionsList }: DrawerActionsProps) => {
         alignItems: 'center',
       }}
     >
-      {actionsList.map(({ label, ...props }) => (
+      {actionsList.map(({ label, ...props }, index, array) => (
         <Button
-          {...props}
           key={label}
+          sx={{ mr: index + 1 < array.length ? 3 : 0 }}
+          {...props}
         >
           {label}
         </Button>

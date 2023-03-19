@@ -5,7 +5,7 @@ services:
     ports:
       - '9002:3000'
     volumes:
-      - ../upload/:/usr/app/upload
+      - /home/wicherixen/Dev/upload:/usr/app/public/upload:rw
     env_file:
       - .env
     depends_on:
