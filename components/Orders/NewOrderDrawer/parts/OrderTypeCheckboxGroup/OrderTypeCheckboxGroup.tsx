@@ -6,8 +6,8 @@ type OrderTypeCheckboxGroupProps = {
 }
 
 export const OrderTypeCheckboxGroup = ({ form }: OrderTypeCheckboxGroupProps) => {
-  const handleSelectOrderType = (e) => {
-    formDispatch({ type: 'checkbox', payload: { field: 'type', value: e.target.name } })
+  const handleSelectOrderType = () => {
+    console.log('test')
   }
   const isTypeCheckboxChecked = (name) => {
     return form.type.includes(name)
