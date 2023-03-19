@@ -8,27 +8,42 @@ type SideDrawerProps = {
   children: ReactNode
   actionsList?: DrawerActionButton[]
   onClose: () => void
+  width?: number
 } & DrawerProps
 
-export const SideDrawer = ({ title, children, actionsList, onClose, ...props }: SideDrawerProps) => {
+export const SideDrawer = ({ title, children, actionsList, onClose, width = 350, ...props }: SideDrawerProps) => {
   return (
     <Drawer
       onClose={onClose}
       {...props}
     >
       <Box
-        display="flex"
-        flexDirection="column"
-        sx={{ padding: 3, height: '100%', width: '350px' }}
+        sx={{
+          display: 'flex',
+          flex: 1,
+          flexDirection: 'column',
+          alignItems: 'space-between',
+          justifyContent: 'space-between',
+          padding: 3,
+          width: `${width}px`,
+        }}
       >
         <DrawerHeader
           title={title}
           onClose={onClose}
         />
-        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+            overflowY: 'hidden',
+            pb: 10,
+          }}
+        >
           {children}
-          {actionsList && <DrawerActions actionsList={actionsList} />}
         </Box>
+        {actionsList && <DrawerActions actionsList={actionsList} />}
       </Box>
     </Drawer>
   )

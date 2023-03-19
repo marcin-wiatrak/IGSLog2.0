@@ -59,8 +59,8 @@ export const NewCustomerForm = ({ isOpen, onClose, onCustomerSet, onRefreshCusto
     <>
       <Paper
         sx={{
-          display: isOpen ? 'block' : 'none',
           padding: 3,
+          width: '100%',
         }}
         elevation={3}
       >
