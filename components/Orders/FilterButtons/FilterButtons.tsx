@@ -23,7 +23,7 @@ export const FilterButtons: FC<FilterButtonsProps> = ({ onClearFiltersClick, onF
         return <Spa />
       case OrderType.TOXYCOLOGY:
         return <DeviceHub />
-      case OrderType.PHYSYCOCHEMISTRY:
+      case OrderType.PHYSICOCHEMISTRY:
         return <Pix />
     }
   }
