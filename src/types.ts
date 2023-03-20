@@ -15,8 +15,8 @@ export enum OrderStatuses {
 }
 
 export enum ErrorMessages {
-  EMPTY = 'To pole nie może być pustę',
-  INVALID_EMAIL = 'Adres email jest niepoprawny',
+  EMPTY = 'To pole jest wymagane',
+  INVALID_EMAIL = 'Adres email jest nieprawidłowy',
 }
 
 export enum Role {

@@ -3,6 +3,7 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { Order } from '@prisma/client'
 import { RootState } from '@src/store'
 import { AutocompleteOptionType, OrderType } from '@src/types'
+import { toggleValueInArray } from '@src/utils'
 
 export type OrdersStateProps = {
   ordersList: Order[]
@@ -14,7 +15,10 @@ export type OrdersStateProps = {
   filterLocalization: string
   filterCreatedAtStart: string
   filterCreatedAtEnd: string
+  createOrder: CreateOrder
 }
+
+type CreateOrder = Omit<Order, 'id' | 'createdAt' | 'updatedAt' | 'status'>
 
 type SetOrdersListPayload = {
   ordersList: Order[]
@@ -52,6 +56,18 @@ type SetFilterCreatedAtEndPayload = {
   filterCreatedAtEnd: string
 }
 
+type SetCreateOrderPayload = {
+  type?: OrderType[]
+  customerId?: string
+  registeredById?: string
+  handleById?: string
+  attachment?: string[]
+  localization?: string
+  pickupAt?: Date
+  notes?: string
+  signature?: string
+}
+
 const initialState: OrdersStateProps = {
   ordersList: [],
   sorOrdersBy: 'createdAt',
@@ -62,6 +78,17 @@ const initialState: OrdersStateProps = {
   filterLocalization: '',
   filterCreatedAtStart: null,
   filterCreatedAtEnd: null,
+  createOrder: {
+    type: [],
+    customerId: '',
+    registeredById: '',
+    handleById: '',
+    attachment: [],
+    localization: '',
+    pickupAt: null,
+    notes: '',
+    signature: '',
+  },
 }
 
 export const ordersState = createSlice({
@@ -75,6 +102,9 @@ export const ordersState = createSlice({
       state.filterCreatedAtStart = initialState.filterCreatedAtStart
       state.filterCreatedAtEnd = initialState.filterCreatedAtEnd
     },
+    resetOrderForm: (state) => {
+      state.createOrder = initialState.createOrder
+    },
     setOrdersList: (state, { payload }: PayloadAction<SetOrdersListPayload>) => {
       state.ordersList = payload.ordersList
     },
@@ -85,10 +115,7 @@ export const ordersState = createSlice({
       state.sorOrdersBy = payload.sortOrdersBy
     },
     setFilterByType: (state, { payload }: PayloadAction<SetFilterByTypePayload>) => {
-      const filtersArray = [...state.filterByType]
-      state.filterByType = filtersArray.includes(payload.filterByType)
-        ? filtersArray.filter((el) => el !== payload.filterByType)
-        : [...filtersArray, payload.filterByType]
+      state.filterByType = toggleValueInArray(state.filterByType, payload.filterByType)
     },
     setFilterRegisteredBy: (state, { payload }: PayloadAction<SetFilterRegisteredByPayload>) => {
       state.filterRegisteredBy = payload.filterRegisteredBy
@@ -104,6 +131,9 @@ export const ordersState = createSlice({
     },
     setFilterCreatedAtEnd: (state, { payload }: PayloadAction<SetFilterCreatedAtEndPayload>) => {
       state.filterCreatedAtEnd = payload.filterCreatedAtEnd
+    },
+    setCreateOrder: (state, { payload }: PayloadAction<SetCreateOrderPayload>) => {
+      state.createOrder = { ...state.createOrder, ...payload }
     },
   },
 })
@@ -121,6 +151,17 @@ export const ordersSelectors = {
     localization: order.filterLocalization,
     createdAtStart: order.filterCreatedAtStart,
     createdAtEnd: order.filterCreatedAtEnd,
+  })),
+  selectOrderForm: createSelector(getOrder, (order) => ({
+    type: order.createOrder.type,
+    customerId: order.createOrder.customerId,
+    registeredById: order.createOrder.registeredById,
+    handleById: order.createOrder.handleById,
+    attachment: order.createOrder.attachment,
+    localization: order.createOrder.localization,
+    pickupAt: order.createOrder.pickupAt,
+    notes: order.createOrder.notes,
+    signature: order.createOrder.signature,
   })),
 }
 

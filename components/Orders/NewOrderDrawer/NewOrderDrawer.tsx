@@ -1,12 +1,14 @@
-import { Box, Button, CircularProgress, Collapse, IconButton, Paper, Stack, Typography } from '@mui/material'
-import { FC, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { Box, Button, CircularProgress, IconButton, Paper, Stack, Typography } from '@mui/material'
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { Add, AddCircle, Check, Clear, Close, UploadFile } from '@mui/icons-material'
 import { Customer } from '@prisma/client'
-import { NewCustomerForm, NewOrderForm } from './parts'
+import { NewOrderForm, OrderTypeCheckboxGroup } from './parts'
 import axios from 'axios'
 import { SideDrawer } from '@components/SideDrawer'
 import { DrawerActionButton } from '@components/SideDrawer/parts/DrawerActions/DrawerActions'
+import { useDispatch, useSelector } from 'react-redux'
+import { ordersActions, ordersSelectors } from '@src/store'
 
 type NewOrderDrawerProps = {
   isOpen: boolean
@@ -15,53 +17,20 @@ type NewOrderDrawerProps = {
   onRefreshCustomersList: () => void
 }
 
-type AutocompleteCustomer = {
-  customer: {
-    id: string
-    label: string
-  }
-}
-
-const formReducer = (state = initialFormState, action) => {
-  const { value, field } = action.payload
-
-  if (action.type === 'form') {
-    return { ...state, [field]: value }
-  }
-  if (action.type === 'checkbox') {
-    const typesArray = [...state.type]
-    const newTypesArray = typesArray.includes(value)
-      ? typesArray.filter((type) => type !== value)
-      : [...typesArray, value]
-    return { ...state, [field]: newTypesArray }
-  }
-  if (action.type === 'clearForm') {
-    return initialFormState
-  }
-}
-
-const initialFormState = {
-  customer: null,
-  signature: '',
-  pickupAt: null,
-  localization: '',
-  handleById: '',
-  registeredById: '',
-  status: 'NEW',
-  notes: '',
-  type: [],
-}
-
-export const NewOrderDrawer: FC<NewOrderDrawerProps> = ({ isOpen, onClose, customersList, onRefreshCustomersList }) => {
-  const ref = useRef(null)
-  const [form, formDispatch] = useReducer(formReducer, initialFormState)
-  const [isCustomerFormOpen, setIsCustomerFormOpen] = useState<boolean>(false)
+export const NewOrderDrawer: FC<NewOrderDrawerProps> = ({ isOpen, onClose }) => {
   const session = useSession()
+  const dispatch = useDispatch()
+  const orderForm = useSelector(ordersSelectors.selectOrderForm)
+  const ref = useRef(null)
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [uploadedFiles, setUploadedFiles] = useState<string[]>(null)
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>(null)
   const fileUploadInputRef = useRef(null)
+
+  useEffect(() => {
+    console.log(orderForm)
+  }, [orderForm])
 
   const handleOpenFileUpload = () => {
     fileUploadInputRef.current.click()
@@ -112,25 +81,17 @@ export const NewOrderDrawer: FC<NewOrderDrawerProps> = ({ isOpen, onClose, custo
     }
   }
 
-  const handleFormClear = () => formDispatch({ type: 'clearForm' })
-  const handleFormChange = (field, value, method = 'form') => formDispatch({ type: method, payload: { field, value } })
-
-  const handleNewCustomerFormToggle = () => setIsCustomerFormOpen((prevState) => !prevState)
-  const handleNewCustomerFormClose = () => setIsCustomerFormOpen(false)
-
-  const handleSelectCreatedCustomer = (payload) => {
-    formDispatch({ type: 'form', payload: { field: 'customer', value: payload } })
-  }
+  const handleFormClear = () => dispatch(ordersActions.resetOrderForm)
 
   const handleCreateOrder = () => {
     ref.current.submit()
   }
 
   useEffect(() => {
-    if (!form.registeredById && session.data) {
-      handleFormChange('registeredBy', session.data.user.userId)
+    if (!orderForm.registeredById && session.data) {
+      dispatch(ordersActions.setCreateOrder({ registeredById: session.data.user.userId }))
     }
-  }, [form.registeredById, session.data])
+  }, [dispatch, orderForm.registeredById, session.data])
 
   const confirmButton: DrawerActionButton = useMemo(() => {
     return isEveryFileUploaded
@@ -182,25 +143,8 @@ export const NewOrderDrawer: FC<NewOrderDrawerProps> = ({ isOpen, onClose, custo
         }}
       >
         <Stack spacing={3}>
-          {/*<OrderTypeCheckboxGroup />*/}
-          <NewOrderForm
-            ref={ref}
-            handleNewCustomerFormToggle={handleNewCustomerFormToggle}
-            isCustomerFormOpen={isCustomerFormOpen}
-          />
-          <Collapse
-            orientation="vertical"
-            in={isCustomerFormOpen}
-            unmountOnExit
-            mountOnEnter
-          >
-            <NewCustomerForm
-              isOpen={isCustomerFormOpen}
-              onClose={handleNewCustomerFormClose}
-              onCustomerSet={handleSelectCreatedCustomer}
-              onRefreshCustomersList={onRefreshCustomersList}
-            />
-          </Collapse>
+          <OrderTypeCheckboxGroup />
+          <NewOrderForm ref={ref} />
           <input
             ref={fileUploadInputRef}
             type="file"
