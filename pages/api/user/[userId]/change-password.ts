@@ -7,7 +7,6 @@ const handler = async (req, res) => {
 
   await bcrypt.genSalt(1, (err, salt) => {
     bcrypt.hash(password, salt, async (err, password) => {
-      console.log('password handler')
       await prisma.user
         .update({
           data: {

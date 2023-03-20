@@ -39,7 +39,6 @@ export const EmployeList = () => {
     axios
       .post(`/api/user/${id}/role`, { role })
       .then((res) => {
-        console.log(res)
         refreshUsersList()
       })
       .catch((err) => {
@@ -79,7 +78,6 @@ export const EmployeList = () => {
     axios
       .post(`/api/user/${id}/change-password`, { password })
       .then((res) => {
-        console.log(res)
         passwordResetConfirmationModal.onClose()
       })
       .catch((err) => {
