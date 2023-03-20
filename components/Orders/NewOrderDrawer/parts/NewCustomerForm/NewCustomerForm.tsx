@@ -1,8 +1,13 @@
-import { Alert, Button, Paper, Snackbar, Stack, TextField, Typography } from '@mui/material'
+import { Snackbar } from '@components/UI'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { PersonAdd } from '@mui/icons-material'
-import { useReducer, useState } from 'react'
+import { Button, Paper, Stack, TextField, Typography } from '@mui/material'
+import { useSnackbar } from '@src/hooks'
+import { ErrorMessages } from '@src/types'
 import axios from 'axios'
-import { Customer } from '@prisma/client'
+import { useEffect } from 'react'
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import * as yup from 'yup'
 
 type NewCustomerFormProps = {
   isOpen: boolean
@@ -11,49 +16,62 @@ type NewCustomerFormProps = {
   onRefreshCustomersList: () => void
 }
 
-const customerReducer = (state = initialCustomerState, action) => {
-  if (action.type === 'form') {
-    return { ...state, [action.payload.field]: action.payload.value }
-  }
-  if (action.type === 'clearForm') {
-    return initialCustomerState
-  }
-}
+const schema = yup
+  .object({
+    name: yup.string().required(ErrorMessages.EMPTY),
+    address: yup.string().required(ErrorMessages.EMPTY),
+    phoneNumber: yup.string(),
+    contactName: yup.string(),
+  })
+  .required()
 
-const initialCustomerState: Omit<Customer, 'id' | 'createdAt' | 'updatedAt'> = {
-  name: '',
-  address: '',
-  phoneNumber: '',
-  contactName: '',
+interface IFormInput extends yup.InferType<typeof schema> {
+  name: string
+  address: string
+  phoneNumber?: string
+  contactName?: string
 }
 
 export const NewCustomerForm = ({ isOpen, onClose, onCustomerSet, onRefreshCustomersList }: NewCustomerFormProps) => {
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState<boolean>(false)
-  const [customer, customerDispatch] = useReducer(customerReducer, initialCustomerState)
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isSubmitted, isSubmitSuccessful },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      name: '',
+      address: '',
+      phoneNumber: '',
+      contactName: '',
+    },
+  })
+  const { showSnackbar, snackbarProps } = useSnackbar()
 
-  const onSnackbarClose = () => setIsSnackbarOpen(false)
-  const onSnackbarOpen = () => setIsSnackbarOpen(true)
-
-  const handleFormChange = (field, value, method = 'form') =>
-    customerDispatch({ type: method, payload: { field, value } })
-  const handleCreateCustomer = async () => {
+  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     await axios
       .post('/api/customer/create', {
-        name: customer.name,
-        address: customer.address,
-        phoneNumber: customer.phoneNumber,
-        contactName: customer.contactName,
+        name: data.name,
+        address: data.address,
+        phoneNumber: data.phoneNumber,
+        contactName: data.contactName,
       })
       .then(async (response) => {
         const { id, name } = response.data
         await onRefreshCustomersList()
         onCustomerSet({ id, label: name })
+        showSnackbar({ message: 'Dodano', severity: 'success', autoHideDuration: 3500 })
         onClose()
       })
       .catch((err) => {
-        onSnackbarOpen()
+        showSnackbar({ message: 'Error', severity: 'error', autoHideDuration: 3500 })
       })
   }
+
+  useEffect(() => {
+    isSubmitSuccessful && reset({ name: '', address: '', phoneNumber: '', contactName: '' })
+  }, [isSubmitted, reset, isSubmitSuccessful])
 
   return (
     <>
@@ -63,54 +81,72 @@ export const NewCustomerForm = ({ isOpen, onClose, onCustomerSet, onRefreshCusto
           width: '100%',
         }}
         elevation={3}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
       >
         <Stack spacing={2}>
           <Typography variant="h5">Nowy zleceniodawca</Typography>
-          <TextField
-            label="Nazwa zleceniodawcy"
-            value={customer.name}
-            onChange={({ target }) => handleFormChange('name', target.value)}
-            required
+          <Controller
+            name="name"
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <TextField
+                {...field}
+                label="Nazwa zleceniodawcy"
+                required
+                error={!!error}
+                helperText={error?.message}
+              />
+            )}
           />
-          <TextField
-            label="Adres zleceniodawcy"
-            value={customer.address}
-            onChange={({ target }) => handleFormChange('address', target.value)}
+          <Controller
+            name="address"
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <TextField
+                {...field}
+                label="Adres zleceniodawcy"
+                required
+                error={!!error}
+                helperText={error?.message}
+              />
+            )}
           />
-          <TextField
-            label="Osoba do kontaktu"
-            value={customer.contactName}
-            onChange={({ target }) => handleFormChange('contactName', target.value)}
+          <Controller
+            name="contactName"
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <TextField
+                {...field}
+                label="Osoba do kontaktu"
+                error={!!error}
+                helperText={error?.message}
+              />
+            )}
           />
-          <TextField
-            label="Numer telefonu"
-            value={customer.phoneNumber}
-            onChange={({ target }) => handleFormChange('phoneNumber', target.value)}
+          <Controller
+            name="phoneNumber"
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <TextField
+                {...field}
+                label="Numer telefonu"
+                error={!!error}
+                helperText={error?.message}
+              />
+            )}
           />
           <Button
             variant="contained"
             color="success"
-            onClick={handleCreateCustomer}
+            type="submit"
           >
             <PersonAdd sx={{ mr: 1 }} />
             Dodaj zleceniodawcę
           </Button>
         </Stack>
       </Paper>
-      <Snackbar
-        open={isSnackbarOpen}
-        autoHideDuration={5000}
-        onClose={onSnackbarClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <Alert
-          variant="filled"
-          onClose={onSnackbarClose}
-          severity="error"
-        >
-          Alert
-        </Alert>
-      </Snackbar>
+      <Snackbar {...snackbarProps} />
     </>
   )
 }

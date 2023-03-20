@@ -16,12 +16,12 @@ export const useSnackbar = () => {
     severity: AlertProps['severity']
     autoHideDuration?: SnackbarProps['autoHideDuration']
   }) => {
-    setSnackbarProps({ message, severity, open: isOpen, onClose, autoHideDuration })
     onOpen()
+    setSnackbarProps({ message, severity, onClose, autoHideDuration })
   }
 
   return {
     showSnackbar,
-    snackbarProps,
+    snackbarProps: { ...snackbarProps, open: isOpen },
   }
 }
