@@ -1,16 +1,20 @@
 import { Checkbox, FormControl, FormControlLabel, FormGroup } from '@mui/material'
 import { OrderType } from '@src/types'
+import { useDispatch, useSelector } from 'react-redux'
+import { ordersActions, ordersSelectors } from '@src/store'
+import { toggleValueInArray } from '@src/utils'
 
-type OrderTypeCheckboxGroupProps = {
-  form
-}
+export const OrderTypeCheckboxGroup = () => {
+  const dispatch = useDispatch()
+  const { type } = useSelector(ordersSelectors.selectOrderForm)
 
-export const OrderTypeCheckboxGroup = ({ form }: OrderTypeCheckboxGroupProps) => {
-  const handleSelectOrderType = () => {
-    console.log('test')
+  console.log(type)
+
+  const handleSelectOrderType = ({ target }) => {
+    dispatch(ordersActions.setCreateOrder({ type: toggleValueInArray(type, target.name) }))
   }
   const isTypeCheckboxChecked = (name) => {
-    return form.type.includes(name)
+    return type.includes(name)
   }
 
   return (
