@@ -1,3 +1,3 @@
 export { ConfirmationModal } from './ConfirmationModal'
-export { Snackbar } from './Snackbar'
-export type { SnackbarType } from './Snackbar'
+export { withSnackbar } from '../HOC/WithSnackbar'
+export type { SnackbarType } from '../HOC/WithSnackbar'

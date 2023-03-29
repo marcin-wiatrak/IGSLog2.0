@@ -1,6 +1,9 @@
 import {
   Box,
   Button,
+  IconButton,
+  Badge,
+  Link,
   Skeleton,
   Table as MuiTable,
   TableBody,
@@ -9,22 +12,27 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
+  Menu,
+  MenuItem,
+  Divider,
+  ListItemIcon,
+  ListItemText,
 } from '@mui/material'
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useRef, useState } from 'react'
 import { Order, User } from '@prisma/client'
 import { TableOrderDirection } from '@src/types'
-import { getFullName } from '@src/utils'
-import { StatusSelector } from '@components/Orders'
+import { getFullName, renameDownloadFile } from '@src/utils'
+import { AssignUserModal, LocalizationModal, StatusSelector, UploadFileModal } from '@components/Orders'
 import dayjs from 'dayjs'
 import { useDispatch, useSelector } from 'react-redux'
 import { customersSelectors, ordersActions, ordersSelectors } from '@src/store'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import { useDisclose, useGetOrdersList } from '@src/hooks'
-import { AssignUserModal } from '@components/Orders/AssignUserModal'
 import * as R from 'ramda'
 import { usePagination } from '@src/hooks/usePagination'
 import { TablePaginator } from '@components/TablePaginator'
+import { AddAlarm, AddCircle, AttachFile, Attachment, Download } from '@mui/icons-material'
 
 type TableProps = {
   usersList: User[]
@@ -84,10 +92,13 @@ const COLUMNS_SETUP = [
 export const Table: FC<TableProps> = ({ usersList }) => {
   const { data } = useSession()
   const dispatch = useDispatch()
+  const [attachmentsMenuAnchor, setAttachmentsMenuAnchor] = useState(null)
   const customersList = useSelector(customersSelectors.selectCustomersList)
   const ordersList = useSelector(ordersSelectors.selectOrdersList)
+  const orderDetails = useSelector(ordersSelectors.selectOrderDetails)
   const filterByType = useSelector(ordersSelectors.selectFilterByType)
   const filters = useSelector(ordersSelectors.selectFilterRegisteredBy)
+  const [attachmentHover, setAttachmentHover] = useState('')
 
   const [sortBy, setSortBy] = useState('createdAt')
   const [sortDirection, setSortDirection] = useState<TableOrderDirection>('desc')
@@ -97,8 +108,26 @@ export const Table: FC<TableProps> = ({ usersList }) => {
   const {
     isOpen: isAssignUserModalOpen,
     onClose: onAssignUserModalClose,
-    onOpen: handleAssignUserModalOpen,
+    onOpen: onAssignUserModalOpen,
   } = useDisclose()
+
+  const {
+    isOpen: isLocalizationModalOpen,
+    onClose: onLocalizationModalClose,
+    onOpen: onLocalizationModalOpen,
+  } = useDisclose()
+
+  const {
+    isOpen: isUploadFileModalOpen,
+    onOpen: onUploadFileModalOpen,
+    onClose: onUploadFileModalClose,
+  } = useDisclose()
+
+  const handleUploadFileModalOpen = (orderId?) => {
+    if (orderId) dispatch(ordersActions.setOrderDetails({ id: orderId }))
+    onUploadFileModalOpen()
+    setAttachmentsMenuAnchor(null)
+  }
 
   const mappedCustomersList = useMemo(() => {
     if (customersList.length) {
@@ -161,29 +190,64 @@ export const Table: FC<TableProps> = ({ usersList }) => {
     return index + 1
   })
 
-  const handleAssignUser = async (orderId: string, userId?: string) => {
-    const id = userId || data.user.userId
-    await axios.post(`/api/order/${orderId}/assign`, { handleById: id }).then(() => {
-      refreshOrdersList()
-      handleAssignUserModalClose()
-    })
+  const handleAssignUserModalOpen = (orderId: string, handleById?: string) => {
+    dispatch(ordersActions.setOrderDetails({ id: orderId, handleById }))
+    onAssignUserModalOpen()
   }
-
-  const handleUnassignUser = async (orderId: string) => {
-    await axios.post(`/api/order/${orderId}/unassign`).then(() => {
-      refreshOrdersList()
-      handleAssignUserModalClose()
-    })
-  }
-
-  const handleOpenAssignMenu = (orderId) => {
-    dispatch(ordersActions.setCurrentOrderId({ currentOrderId: orderId }))
-    handleAssignUserModalOpen()
-  }
-
   const handleAssignUserModalClose = () => {
-    dispatch(ordersActions.setCurrentOrderId({ currentOrderId: undefined }))
+    dispatch(ordersActions.clearOrderDetails())
     onAssignUserModalClose()
+  }
+  const handleUpdateOrderHandleBy = async (
+    {
+      selectedUser,
+      selfAssign,
+    }: {
+      selectedUser?: string
+      selfAssign?: boolean
+    },
+    orderId?: string
+  ) => {
+    let id = null
+    if (selfAssign) {
+      id = data.user.userId
+    }
+    if (selectedUser) {
+      id = orderDetails.handleById
+    }
+    await axios.post(`/api/order/${orderId || orderDetails.id}/update`, { handleById: id }).then(() => {
+      refreshOrdersList()
+      handleAssignUserModalClose()
+    })
+  }
+
+  const handleEditLocalizationModalOpen = (orderId: string, localization?: string) => {
+    dispatch(ordersActions.setOrderDetails({ id: orderId, localization }))
+    onLocalizationModalOpen()
+  }
+
+  const handleEditLocalizationModalClose = () => {
+    dispatch(ordersActions.clearOrderDetails())
+    onLocalizationModalClose()
+  }
+
+  const handleUpdateOrderLocalization = async () => {
+    await axios
+      .post(`/api/order/${orderDetails.id}/localization`, { localization: orderDetails.localization })
+      .then(() => {
+        refreshOrdersList()
+        handleEditLocalizationModalClose()
+      })
+  }
+
+  const handleAttachmentsMenuClose = () => {
+    dispatch(ordersActions.clearOrderDetails())
+    setAttachmentsMenuAnchor(null)
+  }
+
+  const handleAttachmentsMenuOpen = (e, attachments?: string[], orderId?: string) => {
+    dispatch(ordersActions.setOrderDetails({ attachment: attachments, id: orderId }))
+    setAttachmentsMenuAnchor(e.currentTarget)
   }
 
   const tableData = useMemo(() => {
@@ -194,10 +258,14 @@ export const Table: FC<TableProps> = ({ usersList }) => {
 
   return (
     <>
+      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+        <TablePaginator pagination={pagination} />
+      </Box>
       <TableContainer>
         <MuiTable stickyHeader>
           <TableHead>
             <TableRow>
+              <TableCell />
               {COLUMNS_SETUP.map(({ name, label, allowSorting }) => (
                 <TableCell key={name}>
                   {allowSorting ? (
@@ -220,16 +288,57 @@ export const Table: FC<TableProps> = ({ usersList }) => {
               <>
                 {handlePagination(tableData).map((order) => (
                   <TableRow key={order.id}>
+                    <TableCell>
+                      <IconButton
+                        onMouseEnter={() => setAttachmentHover(order.id)}
+                        onMouseLeave={() => setAttachmentHover('')}
+                        onClick={(e) =>
+                          !!order.attachment.length
+                            ? handleAttachmentsMenuOpen(e, order.attachment, order.id)
+                            : handleUploadFileModalOpen(order.id)
+                        }
+                      >
+                        <Badge
+                          badgeContent={order.attachment.length > 1 ? order.attachment.length : undefined}
+                          color="primary"
+                        >
+                          {attachmentHover === order.id && !order.attachment.length ? (
+                            <AddCircle />
+                          ) : (
+                            <AttachFile color={order.attachment.length ? 'error' : undefined} />
+                          )}
+                        </Badge>
+                      </IconButton>
+                    </TableCell>
                     <TableCell>{mappedCustomersList[order.customerId].name}</TableCell>
                     <TableCell>{order.signature}</TableCell>
                     <TableCell>{dayjs(order.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
                     <TableCell>{order.pickupAt ? dayjs(order.pickupAt).format('DD/MM/YYYY HH:mm') : '-'}</TableCell>
-                    <TableCell>{order.localization}</TableCell>
+                    <TableCell>
+                      {order.localization ? (
+                        <Box
+                          onClick={() => handleEditLocalizationModalOpen(order.id, order.localization)}
+                          sx={{
+                            display: 'inline',
+                            cursor: 'pointer',
+                            '&:hover': { color: 'text.secondary', cursor: 'pointer' },
+                          }}
+                        >
+                          {order.localization}
+                        </Box>
+                      ) : (
+                        <Link onClick={() => handleEditLocalizationModalOpen(order.id)}>Edytuj</Link>
+                      )}
+                    </TableCell>
                     <TableCell>
                       {order.handleById ? (
                         <Box
-                          style={{ display: 'inline', cursor: 'pointer' }}
-                          onClick={() => handleOpenAssignMenu(order.id)}
+                          onClick={() => handleAssignUserModalOpen(order.id, order.handleById)}
+                          sx={{
+                            display: 'inline',
+                            cursor: 'pointer',
+                            '&:hover': { color: 'text.secondary' },
+                          }}
                         >
                           {getFullName(mappedUsersList, order.handleById)}
                         </Box>
@@ -238,7 +347,7 @@ export const Table: FC<TableProps> = ({ usersList }) => {
                           <Button
                             variant="text"
                             size="small"
-                            onClick={() => handleOpenAssignMenu(order.id)}
+                            onClick={() => handleAssignUserModalOpen(order.id)}
                           >
                             Przypisz
                           </Button>
@@ -246,7 +355,7 @@ export const Table: FC<TableProps> = ({ usersList }) => {
                             variant="text"
                             size="small"
                             color="warning"
-                            onClick={() => handleAssignUser(order.id)}
+                            onClick={() => handleUpdateOrderHandleBy({ selfAssign: true }, order.id)}
                           >
                             Do mnie
                           </Button>
@@ -284,12 +393,56 @@ export const Table: FC<TableProps> = ({ usersList }) => {
       <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
         <TablePaginator pagination={pagination} />
       </Box>
+      <Menu
+        anchorEl={attachmentsMenuAnchor}
+        open={!!attachmentsMenuAnchor}
+        onClose={handleAttachmentsMenuClose}
+      >
+        {orderDetails.attachment?.map((att) => (
+          <MenuItem key={att}>
+            <ListItemIcon>
+              <Download />
+            </ListItemIcon>
+            <ListItemText>
+              <Link
+                href={`/upload/${att}`}
+                target="_blank"
+                sx={{ textDecoration: 'none', color: 'text.primary' }}
+                download={renameDownloadFile(att)}
+              >
+                {renameDownloadFile(att)}
+              </Link>
+            </ListItemText>
+          </MenuItem>
+        ))}
+        <Divider />
+        <MenuItem onClick={() => handleUploadFileModalOpen()}>
+          <ListItemIcon>
+            <AddCircle />
+          </ListItemIcon>
+          <ListItemText>Dodaj lub usuń załączniki</ListItemText>
+        </MenuItem>
+      </Menu>
       {isAssignUserModalOpen && (
         <AssignUserModal
           isOpen={isAssignUserModalOpen}
           onClose={handleAssignUserModalClose}
-          onAssignUser={handleAssignUser}
-          onUnassignUser={handleUnassignUser}
+          onAssignUser={handleUpdateOrderHandleBy}
+          onUnassignUser={handleUpdateOrderHandleBy}
+        />
+      )}
+      {isLocalizationModalOpen && (
+        <LocalizationModal
+          isOpen={isLocalizationModalOpen}
+          onClose={handleEditLocalizationModalClose}
+          onConfirm={handleUpdateOrderLocalization}
+        />
+      )}
+      {isUploadFileModalOpen && (
+        <UploadFileModal
+          isOpen={isUploadFileModalOpen}
+          onClose={onUploadFileModalClose}
+          method="updateOrder"
         />
       )}
     </>

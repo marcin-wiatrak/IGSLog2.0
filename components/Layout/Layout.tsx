@@ -14,6 +14,7 @@ import Link from 'next/link'
 import { KeyboardDoubleArrowLeft, KeyboardDoubleArrowRight, Logout, Menu, Person } from '@mui/icons-material'
 import { useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
+import { withSnackbar } from '@components/HOC/WithSnackbar'
 
 const MENU_LIST_ITEMS = [
   {
@@ -28,7 +29,7 @@ const MENU_LIST_ITEMS = [
   },
 ]
 
-export const Layout = ({ children }) => {
+const LayoutComponent = ({ children }) => {
   const { data } = useSession()
   const isAdmin = data?.user.role === 'ADMIN'
 
@@ -116,3 +117,5 @@ export const Layout = ({ children }) => {
     </Box>
   )
 }
+
+export const Layout = withSnackbar(LayoutComponent)

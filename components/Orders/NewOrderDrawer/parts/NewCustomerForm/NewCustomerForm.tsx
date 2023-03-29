@@ -1,8 +1,8 @@
-import { Snackbar } from '@components/UI'
+import { withSnackbar } from '@components/UI'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { PersonAdd } from '@mui/icons-material'
+import { Close, PersonAdd } from '@mui/icons-material'
 import { Button, Paper, Stack, TextField, Typography } from '@mui/material'
-import { useSnackbar } from '@src/hooks'
+import { useGetCustomersList, useSnackbar } from '@src/hooks'
 import { ErrorMessages } from '@src/types'
 import axios from 'axios'
 import { useEffect } from 'react'
@@ -10,10 +10,8 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
 type NewCustomerFormProps = {
-  isOpen: boolean
-  onClose: () => void
+  onDialogClose: () => void
   onCustomerSet: (payload: { id: string; label: string }) => void
-  onRefreshCustomersList: () => void
 }
 
 const schema = yup
@@ -32,7 +30,17 @@ interface IFormInput extends yup.InferType<typeof schema> {
   contactName?: string
 }
 
-export const NewCustomerForm = ({ isOpen, onClose, onCustomerSet, onRefreshCustomersList }: NewCustomerFormProps) => {
+const defaultValues = {
+  name: '',
+  address: '',
+  phoneNumber: '',
+  contactName: '',
+}
+
+export const NewCustomerForm = ({
+  onCustomerSet,
+  onDialogClose,
+}: NewCustomerFormProps) => {
   const {
     control,
     handleSubmit,
@@ -40,14 +48,10 @@ export const NewCustomerForm = ({ isOpen, onClose, onCustomerSet, onRefreshCusto
     formState: { isSubmitted, isSubmitSuccessful },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: {
-      name: '',
-      address: '',
-      phoneNumber: '',
-      contactName: '',
-    },
+    defaultValues,
   })
   const { showSnackbar, snackbarProps } = useSnackbar()
+  const { onRefreshCustomersList } = useGetCustomersList()
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     await axios
@@ -61,31 +65,35 @@ export const NewCustomerForm = ({ isOpen, onClose, onCustomerSet, onRefreshCusto
         const { id, name } = response.data
         await onRefreshCustomersList()
         onCustomerSet({ id, label: name })
-        showSnackbar({ message: 'Dodano', severity: 'success', autoHideDuration: 3500 })
-        onClose()
+        showSnackbar({
+          message: 'Dodano',
+          severity: 'success',
+          autoHideDuration: 3500,
+        })
+        onDialogClose()
       })
       .catch((err) => {
-        showSnackbar({ message: 'Error', severity: 'error', autoHideDuration: 3500 })
+        showSnackbar({
+          message: 'Error',
+          severity: 'error',
+          autoHideDuration: 3500,
+        })
       })
   }
 
   useEffect(() => {
-    isSubmitSuccessful && reset({ name: '', address: '', phoneNumber: '', contactName: '' })
+    isSubmitSuccessful &&
+      reset({ name: '', address: '', phoneNumber: '', contactName: '' })
   }, [isSubmitted, reset, isSubmitSuccessful])
 
   return (
     <>
-      <Paper
-        sx={{
-          padding: 3,
-          width: '100%',
-        }}
-        elevation={3}
-        component="form"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <Stack spacing={2}>
-          <Typography variant="h5">Nowy zleceniodawca</Typography>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Stack
+          spacing={2}
+          pt={3}
+          pb={1}
+        >
           <Controller
             name="name"
             control={control}
@@ -144,9 +152,17 @@ export const NewCustomerForm = ({ isOpen, onClose, onCustomerSet, onRefreshCusto
             <PersonAdd sx={{ mr: 1 }} />
             Dodaj zleceniodawcę
           </Button>
+          <Button
+            variant="text"
+            color="error"
+            onClick={() => reset(defaultValues)}
+          >
+            <Close sx={{ mr: 1 }} />
+            Wyczyść
+          </Button>
         </Stack>
-      </Paper>
-      <Snackbar {...snackbarProps} />
+      </form>
+      <withSnackbar {...snackbarProps} />
     </>
   )
 }

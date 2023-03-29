@@ -16,6 +16,9 @@ export type OrdersStateProps = {
   filterCreatedAtStart: string
   filterCreatedAtEnd: string
   createOrder: CreateOrder
+  uploadedFiles: string[]
+  localization: string
+  orderDetails: Partial<Order>
 }
 
 type CreateOrder = Omit<Order, 'id' | 'createdAt' | 'updatedAt' | 'status'>
@@ -56,6 +59,16 @@ type SetFilterCreatedAtEndPayload = {
   filterCreatedAtEnd: string
 }
 
+type SetUploadedFilesPayload = {
+  uploadedFiles: string[]
+}
+
+type SetAttachmentsPayload = {
+  attachments: string[]
+}
+
+type SetOrderDetailsPayload = Partial<Order>
+
 type SetCreateOrderPayload = {
   type?: OrderType[]
   customerId?: string
@@ -78,6 +91,16 @@ const initialState: OrdersStateProps = {
   filterLocalization: '',
   filterCreatedAtStart: null,
   filterCreatedAtEnd: null,
+  uploadedFiles: null,
+  localization: '',
+  orderDetails: {
+    id: '',
+    customerId: '',
+    localization: '',
+    pickupAt: null,
+    notes: '',
+    attachment: [],
+  },
   createOrder: {
     type: [],
     customerId: '',
@@ -135,6 +158,18 @@ export const ordersState = createSlice({
     setCreateOrder: (state, { payload }: PayloadAction<SetCreateOrderPayload>) => {
       state.createOrder = { ...state.createOrder, ...payload }
     },
+    setUploadedFiles: (state, { payload }: PayloadAction<SetUploadedFilesPayload>) => {
+      state.uploadedFiles = payload.uploadedFiles
+    },
+    clearUploadedFiles: (state) => {
+      state.uploadedFiles = initialState.uploadedFiles
+    },
+    setOrderDetails: (state, { payload }: PayloadAction<SetOrderDetailsPayload>) => {
+      state.orderDetails = { ...state.orderDetails, ...payload }
+    },
+    clearOrderDetails: (state) => {
+      state.orderDetails = initialState.orderDetails
+    },
   },
 })
 
@@ -163,6 +198,9 @@ export const ordersSelectors = {
     notes: order.createOrder.notes,
     signature: order.createOrder.signature,
   })),
+  selectUploadedFiles: createSelector(getOrder, (order) => order.uploadedFiles),
+  selectOrderLocalization: createSelector(getOrder, (order) => order.localization),
+  selectOrderDetails: createSelector(getOrder, (order) => order.orderDetails),
 }
 
 export const ordersActions = ordersState.actions
