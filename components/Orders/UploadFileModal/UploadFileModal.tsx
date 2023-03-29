@@ -18,12 +18,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import { AddCircle, Check, Close } from '@mui/icons-material'
 import { useGetOrdersList } from '@src/hooks'
-import { withSnackbar } from '@components/HOC/WithSnackbar'
+import { SnackbarFunctionProps, withSnackbar } from '@components/HOC/WithSnackbar'
 
 type UploadFileModalProps = {
   isOpen: boolean
   onClose: () => void
   method: 'createOrder' | 'updateOrder'
+  showSnackbar: (props: SnackbarFunctionProps) => void
 }
 
 const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Partial<UploadFileModalProps>) => {
@@ -112,7 +113,7 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Par
         setSelectedFiles(null)
         setPreventCloseInfo(false)
         setIsUploading(false)
-        showSnackbar('Pliki przesłane pomyślnie', 'success')
+        showSnackbar({ message: 'Pliki przesłane pomyślnie', severity: 'success' })
       })
     } catch (e) {
       console.log(e)

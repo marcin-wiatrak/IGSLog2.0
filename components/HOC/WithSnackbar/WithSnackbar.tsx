@@ -1,5 +1,11 @@
-import { Alert, AlertColor, Snackbar as MuiSnackbar } from '@mui/material'
+import { Alert, AlertColor, AlertProps, Snackbar as MuiSnackbar, SnackbarProps } from '@mui/material'
 import { useState } from 'react'
+
+export type SnackbarFunctionProps = {
+  message: string
+  severity: AlertProps['severity']
+  duration?: SnackbarProps['autoHideDuration']
+}
 
 export const withSnackbar = (WrappedComponent) => (props) => {
   const [open, setOpen] = useState(false)
