@@ -17,6 +17,8 @@ export enum OrderStatuses {
 export enum ErrorMessages {
   EMPTY = 'To pole jest wymagane',
   INVALID_EMAIL = 'Adres email jest nieprawidłowy',
+  TYPE_REQUIRED = 'Typ zlecenia jest wymagany',
+  TYPE_MIN_LENGTH = 'Wybierz minimum jeden typ',
 }
 
 export enum Role {
@@ -24,7 +26,11 @@ export enum Role {
   ADMIN = 'ADMIN',
 }
 
-export type OrderStatus = OrderStatuses.NEW | OrderStatuses.PICKED_UP | OrderStatuses.DELIVERED | OrderStatuses.CLOSED
+export type OrderStatus =
+  | OrderStatuses.NEW
+  | OrderStatuses.PICKED_UP
+  | OrderStatuses.DELIVERED
+  | OrderStatuses.CLOSED
 
 export type AutocompleteOptionType = {
   id: string

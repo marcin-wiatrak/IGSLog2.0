@@ -2,11 +2,13 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { ordersState } from '@src/store/orders.slice'
 import customersState from '@src/store/customers.slice'
 import usersState from '@src/store/users.slice'
+import commonState from '@src/store/common.slice'
 
 export const rootReducer = combineReducers({
   orders: ordersState.reducer,
   customers: customersState.reducer,
   users: usersState.reducer,
+  common: commonState.reducer,
 })
 
 export const store = configureStore({

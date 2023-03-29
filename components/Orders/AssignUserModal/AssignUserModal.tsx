@@ -1,35 +1,35 @@
-import {
-  Autocomplete,
-  AutocompleteProps,
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Typography,
-} from '@mui/material'
-import { FC, useMemo, useState } from 'react'
-import { DialogBody } from 'next/dist/client/components/react-dev-overlay/internal/components/Dialog'
-import { useSelector } from 'react-redux'
-import { ordersSelectors, usersSelectors } from '@src/store'
+import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
+import { FC, useEffect, useMemo, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { ordersActions, ordersSelectors, usersSelectors } from '@src/store'
 
 type AssignUserModalProps = {
   isOpen: boolean
   onClose: () => void
-  onAssignUser: (orderId: string, userId: string) => void
-  onUnassignUser: (orderId: string) => void
+  onAssignUser: ({ selectedUser, selfAssign }?: { selectedUser?: string; selfAssign?: boolean }) => void
+  onUnassignUser: ({ selectedUser, selfAssign }?: { selectedUser?: string; selfAssign?: boolean }) => void
 }
 
 export const AssignUserModal: FC<AssignUserModalProps> = ({ isOpen, onClose, onAssignUser, onUnassignUser }) => {
-  const orderId = useSelector(ordersSelectors.selectCurrentOrderId)
+  const dispatch = useDispatch()
   const usersLisRaw = useSelector(usersSelectors.selectUsersList)
-  const [selectedUser, setSelectedUser] = useState<{ id: string; label: string }>(null)
-
   const usersList = useMemo(() => {
     return usersLisRaw.map((user) => ({ id: user.id, label: `${user.firstName} ${user.lastName}` }))
   }, [usersLisRaw])
+  const selectedHandleById = useSelector(ordersSelectors.selectOrderDetails)
+  const [selectedUser, setSelectedUser] = useState<{ id: string; label: string }>(null)
+  console.log(selectedUser)
+
+  useEffect(() => {
+    if (selectedUser?.id) {
+      dispatch(ordersActions.setOrderDetails({ handleById: selectedUser.id }))
+    }
+  }, [selectedUser])
+
+  useEffect(() => {
+    const foundUser = usersList.find((el) => el.id === selectedHandleById.handleById)
+    setSelectedUser(foundUser ? foundUser : null)
+  }, [selectedHandleById])
 
   return (
     <Dialog
@@ -68,13 +68,13 @@ export const AssignUserModal: FC<AssignUserModalProps> = ({ isOpen, onClose, onA
               sx={{ marginRight: 1 }}
               variant="contained"
               color="warning"
-              onClick={() => onUnassignUser(orderId)}
+              onClick={() => onUnassignUser()}
             >
               Usuń przypisanie
             </Button>
             <Button
               variant="contained"
-              onClick={() => onAssignUser(orderId, selectedUser.id)}
+              onClick={() => onAssignUser({ selectedUser: selectedUser.id })}
             >
               Przypisz
             </Button>

@@ -1,10 +1,16 @@
 import { prisma } from '@server/db'
 
 const handler = async (req, res) => {
-  const data = req.body
+  const { orderId } = req.query
+  const { localization } = req.body
   await prisma.order
-    .create({
-      data,
+    .update({
+      data: {
+        localization,
+      },
+      where: {
+        id: orderId,
+      },
     })
     .then((response) => {
       res.status(200).json(response)
