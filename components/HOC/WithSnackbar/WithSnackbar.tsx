@@ -1,10 +1,4 @@
-import {
-  Alert,
-  AlertColor,
-  AlertProps,
-  Snackbar as MuiSnackbar,
-  SnackbarProps,
-} from '@mui/material'
+import { Alert, AlertColor, Snackbar as MuiSnackbar } from '@mui/material'
 import { useState } from 'react'
 
 export const withSnackbar = (WrappedComponent) => (props) => {

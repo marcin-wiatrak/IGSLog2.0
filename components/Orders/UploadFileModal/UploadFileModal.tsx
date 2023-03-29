@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import { AddCircle, Check, Close } from '@mui/icons-material'
 import { useGetOrdersList } from '@src/hooks'
+import { withSnackbar } from '@components/HOC/WithSnackbar'
 
 type UploadFileModalProps = {
   isOpen: boolean
@@ -25,7 +26,7 @@ type UploadFileModalProps = {
   method: 'createOrder' | 'updateOrder'
 }
 
-export const UploadFileModal = ({ isOpen, onClose, method }: UploadFileModalProps) => {
+const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Partial<UploadFileModalProps>) => {
   const dispatch = useDispatch()
   const fileUploadInputRef = useRef(null)
   const [selectedFiles, setSelectedFiles] = useState<File[]>(null)
@@ -111,6 +112,7 @@ export const UploadFileModal = ({ isOpen, onClose, method }: UploadFileModalProp
         setSelectedFiles(null)
         setPreventCloseInfo(false)
         setIsUploading(false)
+        showSnackbar('Pliki przesłane pomyślnie', 'success')
       })
     } catch (e) {
       console.log(e)
@@ -118,7 +120,6 @@ export const UploadFileModal = ({ isOpen, onClose, method }: UploadFileModalProp
   }
 
   const handleSaveAttachments = async () => {
-    console.log(orderDetails.id, method)
     if (method === 'createOrder') {
       dispatch(ordersActions.setCreateOrder({ attachment: uploadedFiles }))
     } else {
@@ -283,3 +284,5 @@ export const UploadFileModal = ({ isOpen, onClose, method }: UploadFileModalProp
     </Dialog>
   )
 }
+
+export const UploadFileModal = withSnackbar(UploadFileModalComponent)

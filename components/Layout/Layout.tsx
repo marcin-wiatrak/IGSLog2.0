@@ -11,13 +11,7 @@ import {
   Toolbar,
 } from '@mui/material'
 import Link from 'next/link'
-import {
-  KeyboardDoubleArrowLeft,
-  KeyboardDoubleArrowRight,
-  Logout,
-  Menu,
-  Person,
-} from '@mui/icons-material'
+import { KeyboardDoubleArrowLeft, KeyboardDoubleArrowRight, Logout, Menu, Person } from '@mui/icons-material'
 import { useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
 import { withSnackbar } from '@components/HOC/WithSnackbar'
@@ -35,7 +29,7 @@ const MENU_LIST_ITEMS = [
   },
 ]
 
-const LayoutComponent = ({ children, showSnackbar }) => {
+const LayoutComponent = ({ children }) => {
   const { data } = useSession()
   const isAdmin = data?.user.role === 'ADMIN'
 
@@ -65,13 +59,6 @@ const LayoutComponent = ({ children, showSnackbar }) => {
           >
             Wyloguj
           </Button>
-          <Button
-            sx={{ display: { xs: 'none', sm: 'block' } }}
-            color="inherit"
-            onClick={() => showSnackbar('testowy', 'success')}
-          >
-            snack
-          </Button>
         </Toolbar>
       </AppBar>
       <Box paddingX={2}>{children}</Box>
@@ -96,11 +83,7 @@ const LayoutComponent = ({ children, showSnackbar }) => {
               >
                 <ListItemButton sx={{ paddingRight: 10 }}>
                   <ListItemIcon>{listElement.icon}</ListItemIcon>
-                  <ListItemText
-                    primaryTypographyProps={{ color: 'textPrimary' }}
-                  >
-                    {listElement.name}
-                  </ListItemText>
+                  <ListItemText primaryTypographyProps={{ color: 'textPrimary' }}>{listElement.name}</ListItemText>
                 </ListItemButton>
               </Link>
             ))}
@@ -113,11 +96,7 @@ const LayoutComponent = ({ children, showSnackbar }) => {
                   <ListItemIcon>
                     <Person />
                   </ListItemIcon>
-                  <ListItemText
-                    primaryTypographyProps={{ color: 'textPrimary' }}
-                  >
-                    Admin
-                  </ListItemText>
+                  <ListItemText primaryTypographyProps={{ color: 'textPrimary' }}>Admin</ListItemText>
                 </ListItemButton>
               </Link>
             )}
@@ -130,9 +109,7 @@ const LayoutComponent = ({ children, showSnackbar }) => {
               <ListItemIcon>
                 <Logout />
               </ListItemIcon>
-              <ListItemText primaryTypographyProps={{ color: 'textPrimary' }}>
-                Wyloguj
-              </ListItemText>
+              <ListItemText primaryTypographyProps={{ color: 'textPrimary' }}>Wyloguj</ListItemText>
             </ListItemButton>
           </List>
         </Box>
