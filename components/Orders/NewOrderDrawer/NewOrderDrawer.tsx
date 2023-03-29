@@ -37,7 +37,6 @@ export const NewOrderDrawer: FC<NewOrderDrawerProps> = ({ isOpen, onClose }) => 
 
   useEffect(() => {
     return () => {
-      console.log('clear files')
       dispatch(ordersActions.clearUploadedFiles())
     }
   }, [])

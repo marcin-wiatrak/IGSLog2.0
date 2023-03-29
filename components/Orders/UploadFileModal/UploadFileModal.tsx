@@ -27,7 +27,7 @@ type UploadFileModalProps = {
   showSnackbar: (props: SnackbarFunctionProps) => void
 }
 
-const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Partial<UploadFileModalProps>) => {
+const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: UploadFileModalProps) => {
   const dispatch = useDispatch()
   const fileUploadInputRef = useRef(null)
   const [selectedFiles, setSelectedFiles] = useState<File[]>(null)
@@ -42,8 +42,6 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Par
       dispatch(ordersActions.setUploadedFiles({ uploadedFiles: orderDetails.attachment }))
     }
   }, [])
-
-  console.log(uploadedFiles)
 
   const handleOpenFileUpload = () => {
     fileUploadInputRef.current.click()
