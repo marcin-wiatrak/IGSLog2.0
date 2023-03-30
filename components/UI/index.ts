@@ -1,3 +1,3 @@
+export { UserMenu } from './UserMenu'
 export { ConfirmationModal } from './ConfirmationModal'
-export { withSnackbar } from '../HOC/WithSnackbar'
-export type { SnackbarType } from '../HOC/WithSnackbar'
+export { ChangePasswordModal } from './ChangePasswordModal'

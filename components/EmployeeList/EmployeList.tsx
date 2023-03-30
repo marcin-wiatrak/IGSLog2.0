@@ -74,7 +74,6 @@ export const EmployeList = () => {
   }
 
   const handleChangeUserPassword = async (id: string, password: string) => {
-    console.log(id, password)
     axios
       .post(`/api/user/${id}/change-password`, { password })
       .then((res) => {
