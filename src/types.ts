@@ -19,6 +19,7 @@ export enum ErrorMessages {
   INVALID_EMAIL = 'Adres email jest nieprawidłowy',
   TYPE_REQUIRED = 'Typ zlecenia jest wymagany',
   TYPE_MIN_LENGTH = 'Wybierz minimum jeden typ',
+  INVALID_CONFIRM_PASSWORD = 'Podane hasła nie są takie same',
 }
 
 export enum Role {
@@ -26,11 +27,7 @@ export enum Role {
   ADMIN = 'ADMIN',
 }
 
-export type OrderStatus =
-  | OrderStatuses.NEW
-  | OrderStatuses.PICKED_UP
-  | OrderStatuses.DELIVERED
-  | OrderStatuses.CLOSED
+export type OrderStatus = OrderStatuses.NEW | OrderStatuses.PICKED_UP | OrderStatuses.DELIVERED | OrderStatuses.CLOSED
 
 export type AutocompleteOptionType = {
   id: string

@@ -18,7 +18,6 @@ export const AssignUserModal: FC<AssignUserModalProps> = ({ isOpen, onClose, onA
   }, [usersLisRaw])
   const selectedHandleById = useSelector(ordersSelectors.selectOrderDetails)
   const [selectedUser, setSelectedUser] = useState<{ id: string; label: string }>(null)
-  console.log(selectedUser)
 
   useEffect(() => {
     if (selectedUser?.id) {
