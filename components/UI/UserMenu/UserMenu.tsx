@@ -3,11 +3,15 @@ import { Avatar, IconButton, Menu, MenuItem, Stack, Tooltip, Typography } from '
 import { useDisclose } from '@src/hooks'
 import { signOut, useSession } from 'next-auth/react'
 import { MouseEvent, useState } from 'react'
-import { ChangePasswordModal } from '../ChangePasswordModal'
+import { ChangePasswordModal } from '@components/UI'
 
 export const UserMenu = () => {
-  const session = useSession()
-  const userInitials = session?.data?.user?.firstName.charAt(0) + session?.data?.user?.lastName.charAt(0)
+  const {
+    data: {
+      user: { firstName, lastName },
+    },
+  } = useSession()
+  const userInitials = `${firstName.charAt(0)}${lastName.charAt(0)}`
   const [anchor, setAnchor] = useState<null | HTMLElement>(null)
   const {
     isOpen: isChangePasswordModalOpen,
@@ -80,7 +84,7 @@ export const UserMenu = () => {
             sx={{ padding: '0 20px' }}
             color="primary.main"
           >
-            {session?.data?.user?.firstName} {session?.data?.user?.lastName}
+            {`${firstName} ${lastName}`}
           </Typography>
         </Stack>
 
