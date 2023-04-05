@@ -1,15 +1,13 @@
 import { NextPage } from 'next'
 import { Fab, Typography, Unstable_Grid2 as Grid } from '@mui/material'
 import { Layout } from '@components/Layout'
-import { FilterButtons } from '@components/Orders/FilterButtons/FilterButtons'
 import { FiltersDrawer } from '@components/Orders/FiltersDrawer'
 import { useDisclose, useGetCustomersList, useGetUsersList, usePath } from '@src/hooks'
-import { Table } from '@components/Returns'
+import { NewReturnDrawer, Table } from '@components/Returns'
 import { Add } from '@mui/icons-material'
 import { ordersActions } from '@src/store'
 import { useDispatch } from 'react-redux'
 import { withSnackbar } from '@components/HOC/WithSnackbar'
-import { NewReturnDrawer } from '@components/Returns'
 import { Paths } from '@src/types'
 
 const fabStyle = {
@@ -70,7 +68,7 @@ const Returns: NextPage = () => {
             xs={12}
           >
             <Grid xs={12}>
-              <Table usersList={usersList} />
+              <Table />
             </Grid>
           </Grid>
         </Grid>

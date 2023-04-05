@@ -25,14 +25,16 @@ import { AddCircle } from '@mui/icons-material'
 import { useDispatch, useSelector } from 'react-redux'
 import { customersSelectors, ordersActions, ordersSelectors, usersSelectors } from '@src/store'
 import { NewCustomerForm } from '@components/Orders/NewOrderDrawer/parts'
-import { useDisclose, useGetOrdersList, useSnackbar } from '@src/hooks'
+import { useDisclose, useGetOrdersList } from '@src/hooks'
 import { translatedType } from '@src/utils/textFormatter'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import { useLoading } from '@src/hooks/useLoading/useLoading'
+import { SnackbarFunctionProps, withSnackbar } from '@components/HOC'
 
 type NewOrderFormProps = {
   onDrawerClose: () => void
+  showSnackbar: (props: SnackbarFunctionProps) => void
 }
 
 export interface IFormInput extends yup.InferType<typeof schema> {
@@ -68,12 +70,11 @@ const schema = yup.object({
   handleBy: yup.object().nullable(),
 })
 
-export const NewOrderForm = forwardRef<any, NewOrderFormProps>((props, ref) => {
+const NewOrderFormComponent = forwardRef<any, NewOrderFormProps>((props, ref) => {
   const { setLoading } = useLoading()
   const session = useSession()
   const dispatch = useDispatch()
   const newCustomerForm = useDisclose()
-  const { showSnackbar } = useSnackbar()
   const { refreshOrdersList } = useGetOrdersList()
   const buttonSubmitRef = useRef(null)
   const customersList = useSelector(customersSelectors.selectCustomersList)
@@ -113,14 +114,14 @@ export const NewOrderForm = forwardRef<any, NewOrderFormProps>((props, ref) => {
         refreshOrdersList()
         dispatch(ordersActions.clearUploadedFiles())
         reset(defaultValues)
-        showSnackbar({
+        props.showSnackbar({
           message: 'Pomyślnie utworzono zlecenie',
           severity: 'success',
         })
       })
       .catch((err) => {
         console.log(err)
-        showSnackbar({
+        props.showSnackbar({
           message: 'Nie udało się utworzyć zlecenia. Spróbuj ponownie',
           severity: 'error',
         })
@@ -328,3 +329,5 @@ export const NewOrderForm = forwardRef<any, NewOrderFormProps>((props, ref) => {
     </>
   )
 })
+
+export const NewOrderForm = withSnackbar(NewOrderFormComponent)

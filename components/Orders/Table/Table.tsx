@@ -1,9 +1,14 @@
 import {
+  Badge,
   Box,
   Button,
+  Divider,
   IconButton,
-  Badge,
   Link,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
   Skeleton,
   Table as MuiTable,
   TableBody,
@@ -12,17 +17,12 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
-  Menu,
-  MenuItem,
-  Divider,
-  ListItemIcon,
-  ListItemText,
 } from '@mui/material'
-import { FC, useCallback, useMemo, useRef, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import { Order, User } from '@prisma/client'
 import { TableOrderDirection } from '@src/types'
 import { getFullName, renameDownloadFile } from '@src/utils'
-import { AssignUserModal, LocalizationModal, StatusSelector, UploadFileModal } from '@components/Orders'
+import { AssignUserModal, StatusSelector, UploadFileModal } from '@components/Orders'
 import dayjs from 'dayjs'
 import { useDispatch, useSelector } from 'react-redux'
 import { customersSelectors, ordersActions, ordersSelectors } from '@src/store'
@@ -32,7 +32,8 @@ import { useDisclose, useGetOrdersList } from '@src/hooks'
 import * as R from 'ramda'
 import { usePagination } from '@src/hooks/usePagination'
 import { TablePaginator } from '@components/TablePaginator'
-import { AddAlarm, AddCircle, AttachFile, Attachment, Download } from '@mui/icons-material'
+import { AddCircle, AttachFile, Download } from '@mui/icons-material'
+import { LocalizationModal } from '@components/LocalizationModal'
 
 type TableProps = {
   usersList: User[]
