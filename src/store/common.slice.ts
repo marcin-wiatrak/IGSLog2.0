@@ -1,6 +1,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { createSelector, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '@src/store'
+import { CurrentPath } from '@src/types'
 
 type IsLoadingType = {
   [name: string]: boolean
@@ -8,6 +9,7 @@ type IsLoadingType = {
 
 export type CommonStateProps = {
   isLoading: IsLoadingType
+  currentPath: CurrentPath
 }
 
 export type SetIsLoadingPayload = {
@@ -15,8 +17,13 @@ export type SetIsLoadingPayload = {
   isLoading: boolean
 }
 
+export type SetCurrentPathPayload = {
+  currentPath: CurrentPath
+}
+
 const initialState: CommonStateProps = {
   isLoading: {},
+  currentPath: null,
 }
 
 export const commonState = createSlice({
@@ -29,15 +36,17 @@ export const commonState = createSlice({
         [payload.name]: payload.isLoading,
       }
     },
+    setCurrentPath: (state, { payload }: PayloadAction<SetCurrentPathPayload>) => {
+      state.currentPath = payload.currentPath
+    },
   },
 })
 
-const getOrder = (state: RootState) => state.common
+const getCommon = (state: RootState) => state.common
 
 export const commonSelectors = {
-  selectIsLoading: createSelector(getOrder, (common) => {
-    return common.isLoading
-  }),
+  selectIsLoading: createSelector(getCommon, (common) => common.isLoading),
+  selectCurrentPath: createSelector(getCommon, (common) => common.currentPath),
 }
 
 export const commonActions = commonState.actions

@@ -1,7 +1,8 @@
 import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { ordersActions, ordersSelectors, usersSelectors } from '@src/store'
+import { commonSelectors, ordersActions, ordersSelectors, returnsActions, usersSelectors } from '@src/store'
+import { Paths } from '@src/types'
 
 type AssignUserModalProps = {
   isOpen: boolean
@@ -12,6 +13,7 @@ type AssignUserModalProps = {
 
 export const AssignUserModal: FC<AssignUserModalProps> = ({ isOpen, onClose, onAssignUser, onUnassignUser }) => {
   const dispatch = useDispatch()
+  const currentPath = useSelector(commonSelectors.selectCurrentPath)
   const usersLisRaw = useSelector(usersSelectors.selectUsersList)
   const usersList = useMemo(() => {
     return usersLisRaw.map((user) => ({ id: user.id, label: `${user.firstName} ${user.lastName}` }))
@@ -21,7 +23,9 @@ export const AssignUserModal: FC<AssignUserModalProps> = ({ isOpen, onClose, onA
 
   useEffect(() => {
     if (selectedUser?.id) {
-      dispatch(ordersActions.setOrderDetails({ handleById: selectedUser.id }))
+      currentPath === Paths.ORDERS
+        ? dispatch(ordersActions.setOrderDetails({ handleById: selectedUser.id }))
+        : dispatch(returnsActions.setReturnDetails({ handleById: selectedUser.id }))
     }
   }, [selectedUser])
 
@@ -67,7 +71,7 @@ export const AssignUserModal: FC<AssignUserModalProps> = ({ isOpen, onClose, onA
               sx={{ marginRight: 1 }}
               variant="contained"
               color="warning"
-              onClick={() => onUnassignUser()}
+              onClick={() => onUnassignUser({ selectedUser: '' })}
             >
               Usuń przypisanie
             </Button>

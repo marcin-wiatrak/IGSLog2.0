@@ -1,27 +1,18 @@
 import { Button, ButtonGroup, Menu, MenuItem } from '@mui/material'
-import { useMemo, useState } from 'react'
-import { OrderStatus, OrderStatuses } from '@src/types'
+import { useState } from 'react'
+import { OrderStatus, OrderStatuses, Paths, ReturnStatus, ReturnStatuses } from '@src/types'
 import { ArrowDropDown } from '@mui/icons-material'
 import axios from 'axios'
 import { useGetOrdersList } from '@src/hooks'
+import { useSelector } from 'react-redux'
+import { commonSelectors } from '@src/store'
+import { orderStatusName, returnStatusName } from './StatusSelector.consts'
 
 export const StatusSelector = ({ status, orderId }) => {
+  const currentPath = useSelector(commonSelectors.selectCurrentPath)
   const { refreshOrdersList } = useGetOrdersList()
 
   const [anchor, setAnchor] = useState(null)
-
-  const statusName = useMemo(() => {
-    switch (status) {
-      case OrderStatuses.NEW:
-        return 'Zarejestrowane'
-      case OrderStatuses.PICKED_UP:
-        return 'Odebrane'
-      case OrderStatuses.DELIVERED:
-        return 'Dostarczone'
-      case OrderStatuses.CLOSED:
-        return 'Zakończone'
-    }
-  }, [status])
 
   const handleStatusMenuOpen = (event) => {
     setAnchor(event.currentTarget)
@@ -29,14 +20,34 @@ export const StatusSelector = ({ status, orderId }) => {
 
   const handleStatusMenuClose = () => setAnchor(null)
 
-  const handleChangeStatus = async (status: OrderStatus) => {
-    await axios.post(`/api/order/${orderId}/status`, { status }).then((response) => {
-      refreshOrdersList()
-    }).catch((err) => {
-      console.log(err)
-    })
+  const endpointPath = currentPath === Paths.ORDERS ? 'order' : 'return'
+
+  const handleChangeStatus = async (status: OrderStatus | ReturnStatus) => {
+    await axios
+      .post(`/api/${endpointPath}/${orderId}/update`, { status })
+      .then((response) => {
+        refreshOrdersList()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
     handleStatusMenuClose()
   }
+
+  const ordersMenuOptions = [
+    [OrderStatuses.NEW, 'Zarejestrowany'],
+    [OrderStatuses.PICKED_UP, 'Odebrany'],
+    [OrderStatuses.DELIVERED, 'Dostarczony'],
+    [OrderStatuses.CLOSED, 'Zakończony'],
+  ]
+
+  const returnsMenuOptions = [
+    [ReturnStatuses.NEW, 'Zarejestrowany'],
+    [ReturnStatuses.SET, 'Zwrot ustalony'],
+    [ReturnStatuses.CLOSED, 'Zakończony'],
+  ]
+
+  const options = currentPath === Paths.ORDERS ? ordersMenuOptions : returnsMenuOptions
 
   return (
     <>
@@ -48,7 +59,7 @@ export const StatusSelector = ({ status, orderId }) => {
           size="small"
           fullWidth
         >
-          {statusName}
+          {currentPath === Paths.ORDERS ? orderStatusName(status) : returnStatusName(status)}
         </Button>
         <Button
           size="small"
@@ -63,10 +74,14 @@ export const StatusSelector = ({ status, orderId }) => {
         open={!!anchor}
         onClose={handleStatusMenuClose}
       >
-        <MenuItem onClick={() => handleChangeStatus(OrderStatuses.NEW)}>Zarejestrowany</MenuItem>
-        <MenuItem onClick={() => handleChangeStatus(OrderStatuses.PICKED_UP)}>Odebrany</MenuItem>
-        <MenuItem onClick={() => handleChangeStatus(OrderStatuses.DELIVERED)}>Dostarczony</MenuItem>
-        <MenuItem onClick={() => handleChangeStatus(OrderStatuses.CLOSED)}>Zakończony</MenuItem>
+        {options.map(([name, label]) => (
+          <MenuItem
+            onClick={() => handleChangeStatus(name as ReturnStatus | OrderStatus)}
+            key={label}
+          >
+            {label}
+          </MenuItem>
+        ))}
       </Menu>
     </>
   )

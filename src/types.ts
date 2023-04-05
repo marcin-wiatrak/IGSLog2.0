@@ -14,6 +14,12 @@ export enum OrderStatuses {
   CLOSED = 'CLOSED',
 }
 
+export enum ReturnStatuses {
+  NEW = 'NEW',
+  SET = 'SET',
+  CLOSED = 'CLOSED',
+}
+
 export enum ErrorMessages {
   EMPTY = 'To pole jest wymagane',
   INVALID_EMAIL = 'Adres email jest nieprawidłowy',
@@ -29,7 +35,24 @@ export enum Role {
 
 export type OrderStatus = OrderStatuses.NEW | OrderStatuses.PICKED_UP | OrderStatuses.DELIVERED | OrderStatuses.CLOSED
 
+export type ReturnStatus = ReturnStatuses.NEW | ReturnStatuses.SET | ReturnStatuses.CLOSED
+
 export type AutocompleteOptionType = {
   id: string
   label: string
 }
+
+export enum Paths {
+  ORDERS = 'ORDERS',
+  RETURNS = 'RETURNS',
+}
+
+export type CurrentPath = Paths.ORDERS | Paths.RETURNS
+
+export enum ReturnContent {
+  DOC = 'DOC',
+  MAT = 'MAT',
+  MATDOC = 'MAT+DOC',
+}
+
+// export type ReturnContent

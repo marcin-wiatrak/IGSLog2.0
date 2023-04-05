@@ -12,7 +12,7 @@ export const withSnackbar = (WrappedComponent) => (props) => {
   const [message, setMessage] = useState('')
   const [duration, setDuration] = useState(3500)
   const [severity, setSeverity] = useState('success')
-  const showSnackbar = (message, severity, duration = 3500) => {
+  const showSnackbar = ({ message, severity, duration = 3500 }: SnackbarFunctionProps) => {
     setMessage(message)
     setSeverity(severity)
     setDuration(duration)

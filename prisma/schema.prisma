@@ -11,16 +11,19 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  email      String   @unique
-  role       Role     @default(USER)
-  password   String
-  firstName  String
-  lastName   String
-  assignedTo Order[]  @relation("handledBy")
-  createdBy  Order[]  @relation("registeredBy")
+  id                String    @id @default(uuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  email             String    @unique
+  role              Role      @default(USER)
+  password          String
+  firstName         String
+  lastName          String
+  assignedTo        Order[]   @relation("handledBy")
+  createdBy         Order[]   @relation("registeredBy")
+  returnAssignedTo  Return[]  @relation("handledBy")
+  returnCreatedBy   Return[]  @relation("registeredBy")
+  meetingAssignedTo Meeting[] @relation("handleBy")
 
   @@unique([id, firstName, lastName])
 }
@@ -65,4 +68,43 @@ model Customer {
   contactName String?
   phoneNumber String?
   Order       Order[]
+  Return      Return[]
+}
+
+model Return {
+  id             String       @id @default(uuid())
+  customer       Customer     @relation(fields: [customerId], references: [id])
+  customerId     String
+  attachment     String[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  registeredBy   User         @relation(name: "registeredBy", fields: [registeredById], references: [id])
+  registeredById String
+  handledBy      User?        @relation(name: "handledBy", fields: [handleById], references: [id])
+  handleById     String?
+  localization   String?
+  returnAt       DateTime?
+  content        String?
+  signature      String?
+  type           String[]
+  notes          String?
+  status         ReturnStatus @default(NEW)
+}
+
+enum ReturnStatus {
+  NEW
+  SET
+  CLOSED
+}
+
+model Meeting {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  unit       String
+  contact    String
+  date       DateTime
+  handleBy   User?    @relation(name: "handleBy", fields: [handleById], references: [id])
+  handleById String?
+  details    String?
 }

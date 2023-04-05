@@ -17,29 +17,40 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
+  Tooltip,
 } from '@mui/material'
 import { FC, useCallback, useMemo, useState } from 'react'
-import { Order, User } from '@prisma/client'
-import { TableOrderDirection } from '@src/types'
+import { Return, User } from '@prisma/client'
+import { ReturnContent, TableOrderDirection } from '@src/types'
 import { getFullName, renameDownloadFile } from '@src/utils'
 import { AssignUserModal, StatusSelector, UploadFileModal } from '@components/Orders'
+import { LocalizationModal } from '@components/LocalizationModal'
 import dayjs from 'dayjs'
 import { useDispatch, useSelector } from 'react-redux'
-import { customersSelectors, ordersActions, ordersSelectors } from '@src/store'
+import {
+  customersSelectors,
+  ordersActions,
+  ordersSelectors,
+  returnsActions,
+  returnsSelectors,
+  usersSelectors,
+} from '@src/store'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
-import { useDisclose, useGetOrdersList } from '@src/hooks'
+import { useDisclose, useGetReturnsList } from '@src/hooks'
 import * as R from 'ramda'
 import { usePagination } from '@src/hooks/usePagination'
 import { TablePaginator } from '@components/TablePaginator'
-import { AddCircle, AttachFile, Download } from '@mui/icons-material'
-import { LocalizationModal } from '@components/LocalizationModal'
-
-type TableProps = {
-  usersList: User[]
-}
+import { AddCircle, AttachFile, Description, Download, Inventory } from '@mui/icons-material'
+import { TypeElement } from '@components/TypeElement'
 
 const COLUMNS_SETUP = [
+  {
+    name: 'type',
+    label: 'Dział',
+    displayMobile: true,
+    allowSorting: false,
+  },
   {
     name: 'customerId',
     label: 'Zleceniodawca',
@@ -48,7 +59,7 @@ const COLUMNS_SETUP = [
   },
   {
     name: 'signature',
-    label: 'Sygnatura',
+    label: 'IGS',
     displayMobile: true,
     allowSorting: false,
   },
@@ -59,19 +70,25 @@ const COLUMNS_SETUP = [
     allowSorting: true,
   },
   {
-    name: 'pickupAt',
-    label: 'Data odbioru',
+    name: 'returnAt',
+    label: 'Data zwrotu',
     displayMobile: true,
     allowSorting: true,
   },
   {
     name: 'localization',
-    label: 'Miejsce odbioru',
+    label: 'Miejsce zwrotu',
     displayMobile: true,
     allowSorting: true,
   },
   {
-    name: 'handledBy',
+    name: 'contained',
+    label: 'Zawartość',
+    displayMobile: true,
+    allowSorting: false,
+  },
+  {
+    name: 'handleBy',
     label: 'Osoba odpowiedzialna',
     displayMobile: true,
     allowSorting: false,
@@ -88,15 +105,22 @@ const COLUMNS_SETUP = [
     displayMobile: true,
     allowSorting: false,
   },
+  {
+    name: 'attachment',
+    label: 'Załączniki',
+    displayMobile: true,
+    allowSorting: false,
+  },
 ]
 
-export const Table: FC<TableProps> = ({ usersList }) => {
+export const Table = () => {
   const { data } = useSession()
   const dispatch = useDispatch()
   const [attachmentsMenuAnchor, setAttachmentsMenuAnchor] = useState(null)
   const customersList = useSelector(customersSelectors.selectCustomersList)
-  const ordersList = useSelector(ordersSelectors.selectOrdersList)
-  const orderDetails = useSelector(ordersSelectors.selectOrderDetails)
+  const usersList = useSelector(usersSelectors.selectUsersList)
+  const returnsList = useSelector(returnsSelectors.selectReturnsList)
+  const returnDetails = useSelector(returnsSelectors.selectReturnDetails)
   const filterByType = useSelector(ordersSelectors.selectFilterByType)
   const filters = useSelector(ordersSelectors.selectFilterRegisteredBy)
   const [attachmentHover, setAttachmentHover] = useState('')
@@ -104,7 +128,7 @@ export const Table: FC<TableProps> = ({ usersList }) => {
   const [sortBy, setSortBy] = useState('createdAt')
   const [sortDirection, setSortDirection] = useState<TableOrderDirection>('desc')
 
-  const { refreshOrdersList } = useGetOrdersList()
+  const { refreshReturnsList } = useGetReturnsList()
 
   const {
     isOpen: isAssignUserModalOpen,
@@ -125,7 +149,7 @@ export const Table: FC<TableProps> = ({ usersList }) => {
   } = useDisclose()
 
   const handleUploadFileModalOpen = (orderId?) => {
-    if (orderId) dispatch(ordersActions.setOrderDetails({ id: orderId }))
+    if (orderId) dispatch(returnsActions.setReturnDetails({ id: orderId }))
     onUploadFileModalOpen()
     setAttachmentsMenuAnchor(null)
   }
@@ -152,19 +176,19 @@ export const Table: FC<TableProps> = ({ usersList }) => {
   }
 
   const filterOrders = useCallback(
-    (orders: Order[]) =>
-      orders.filter(
-        (order) =>
-          (filterByType.length ? filterByType.some((el) => order.type.includes(el)) : true) &&
-          (filters.registeredBy.length ? filters.registeredBy.some((el) => el.id === order.registeredById) : true) &&
-          (filters.handleBy.length ? filters.handleBy.some((el) => el.id === order.handleById) : true) &&
-          (filters.localization && (!!order.localization || !order.localization)
-            ? order.localization === null
+    (returns: Return[]) =>
+      returns.filter(
+        (ret) =>
+          (filterByType.length ? filterByType.some((el) => ret.type.includes(el)) : true) &&
+          (filters.registeredBy.length ? filters.registeredBy.some((el) => el.id === ret.registeredById) : true) &&
+          (filters.handleBy.length ? filters.handleBy.some((el) => el.id === ret.handleById) : true) &&
+          (filters.localization && (!!ret.localization || !ret.localization)
+            ? ret.localization === null
               ? false
-              : order.localization.includes(filters.localization)
+              : ret.localization.includes(filters.localization)
             : true) &&
-          (filters.createdAtStart ? dayjs(order.createdAt).isAfter(filters.createdAtStart) : true) &&
-          (filters.createdAtEnd ? dayjs(order.createdAt).isBefore(filters.createdAtEnd) : true)
+          (filters.createdAtStart ? dayjs(ret.createdAt).isAfter(filters.createdAtStart) : true) &&
+          (filters.createdAtEnd ? dayjs(ret.createdAt).isBefore(filters.createdAtEnd) : true)
       ),
     [
       filterByType,
@@ -177,12 +201,12 @@ export const Table: FC<TableProps> = ({ usersList }) => {
   )
 
   const sortOrders = useCallback(
-    (orders) => {
+    (returns) => {
       const sort =
         sortDirection === 'asc'
           ? R.sortWith([R.ascend(R.prop(sortBy) || '')])
           : R.sortWith([R.descend(R.prop(sortBy) || '')])
-      return sort(orders)
+      return sort(returns)
     },
     [sortBy, sortDirection]
   )
@@ -192,13 +216,15 @@ export const Table: FC<TableProps> = ({ usersList }) => {
   })
 
   const handleAssignUserModalOpen = (orderId: string, handleById?: string) => {
-    dispatch(ordersActions.setOrderDetails({ id: orderId, handleById }))
+    dispatch(returnsActions.setReturnDetails({ id: orderId, handleById }))
     onAssignUserModalOpen()
   }
+
   const handleAssignUserModalClose = () => {
-    dispatch(ordersActions.clearOrderDetails())
+    dispatch(returnsActions.clearReturnDetails())
     onAssignUserModalClose()
   }
+
   const handleUpdateOrderHandleBy = async (
     {
       selectedUser,
@@ -214,48 +240,78 @@ export const Table: FC<TableProps> = ({ usersList }) => {
       id = data.user.userId
     }
     if (selectedUser) {
-      id = orderDetails.handleById
+      id = returnDetails.handleById
     }
-    await axios.post(`/api/order/${orderId || orderDetails.id}/update`, { handleById: id }).then(() => {
-      refreshOrdersList()
+    await axios.post(`/api/return/${orderId || returnDetails.id}/update`, { handleById: id }).then(() => {
+      refreshReturnsList()
       handleAssignUserModalClose()
     })
   }
 
   const handleEditLocalizationModalOpen = (orderId: string, localization?: string) => {
-    dispatch(ordersActions.setOrderDetails({ id: orderId, localization }))
+    dispatch(returnsActions.setReturnDetails({ id: orderId, localization }))
     onLocalizationModalOpen()
   }
 
   const handleEditLocalizationModalClose = () => {
-    dispatch(ordersActions.clearOrderDetails())
+    dispatch(returnsActions.clearReturnDetails())
     onLocalizationModalClose()
   }
 
   const handleUpdateOrderLocalization = async () => {
     await axios
-      .post(`/api/order/${orderDetails.id}/localization`, { localization: orderDetails.localization })
+      .post(`/api/return/${returnDetails.id}/update`, { localization: returnDetails.localization })
       .then(() => {
-        refreshOrdersList()
+        refreshReturnsList()
         handleEditLocalizationModalClose()
       })
   }
 
   const handleAttachmentsMenuClose = () => {
-    dispatch(ordersActions.clearOrderDetails())
+    dispatch(returnsActions.clearReturnDetails())
     setAttachmentsMenuAnchor(null)
   }
 
   const handleAttachmentsMenuOpen = (e, attachments?: string[], orderId?: string) => {
-    dispatch(ordersActions.setOrderDetails({ attachment: attachments, id: orderId }))
+    dispatch(returnsActions.setReturnDetails({ attachment: attachments, id: orderId }))
     setAttachmentsMenuAnchor(e.currentTarget)
   }
 
   const tableData = useMemo(() => {
-    return sortOrders(filterOrders(ordersList))
-  }, [filterOrders, ordersList, sortOrders])
+    return sortOrders(filterOrders(returnsList))
+  }, [filterOrders, returnsList, sortOrders])
 
   const { handlePagination, ...pagination } = usePagination(tableData, 10)
+
+  const formatContentToIcon = (content) => {
+    switch (content) {
+      case ReturnContent.DOC:
+        return (
+          <Tooltip title="Dokumentacja">
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <Description color="success" />
+            </Box>
+          </Tooltip>
+        )
+      case ReturnContent.MAT:
+        return (
+          <Tooltip title="Materiał">
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <Inventory color="warning" />
+            </Box>
+          </Tooltip>
+        )
+      case ReturnContent.MATDOC:
+        return (
+          <Tooltip title="Materiał + Dokumentacja">
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <Inventory color="warning" />
+              <Description color="success" />
+            </Box>
+          </Tooltip>
+        )
+    }
+  }
 
   return (
     <>
@@ -266,7 +322,6 @@ export const Table: FC<TableProps> = ({ usersList }) => {
         <MuiTable stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell />
               {COLUMNS_SETUP.map(({ name, label, allowSorting }) => (
                 <TableCell key={name}>
                   {allowSorting ? (
@@ -285,36 +340,17 @@ export const Table: FC<TableProps> = ({ usersList }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {ordersList && !!ordersList.length && mappedCustomersList && mappedUsersList ? (
+            {returnsList && !!returnsList.length && mappedCustomersList && mappedUsersList ? (
               <>
                 {handlePagination(tableData).map((order) => (
                   <TableRow key={order.id}>
                     <TableCell>
-                      <IconButton
-                        onMouseEnter={() => setAttachmentHover(order.id)}
-                        onMouseLeave={() => setAttachmentHover('')}
-                        onClick={(e) =>
-                          !!order.attachment.length
-                            ? handleAttachmentsMenuOpen(e, order.attachment, order.id)
-                            : handleUploadFileModalOpen(order.id)
-                        }
-                      >
-                        <Badge
-                          badgeContent={order.attachment.length > 1 ? order.attachment.length : undefined}
-                          color="primary"
-                        >
-                          {attachmentHover === order.id && !order.attachment.length ? (
-                            <AddCircle />
-                          ) : (
-                            <AttachFile color={order.attachment.length ? 'error' : undefined} />
-                          )}
-                        </Badge>
-                      </IconButton>
+                      <TypeElement />
                     </TableCell>
                     <TableCell>{mappedCustomersList[order.customerId].name}</TableCell>
                     <TableCell>{order.signature}</TableCell>
                     <TableCell>{dayjs(order.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
-                    <TableCell>{order.pickupAt ? dayjs(order.pickupAt).format('DD/MM/YYYY HH:mm') : '-'}</TableCell>
+                    <TableCell>{order.returnAt ? dayjs(order.returnAt).format('DD/MM/YYYY HH:mm') : '-'}</TableCell>
                     <TableCell>
                       {order.localization ? (
                         <Box
@@ -331,6 +367,7 @@ export const Table: FC<TableProps> = ({ usersList }) => {
                         <Link onClick={() => handleEditLocalizationModalOpen(order.id)}>Edytuj</Link>
                       )}
                     </TableCell>
+                    <TableCell>{formatContentToIcon(order.content)}</TableCell>
                     <TableCell>
                       {order.handleById ? (
                         <Box
@@ -370,6 +407,28 @@ export const Table: FC<TableProps> = ({ usersList }) => {
                         orderId={order.id}
                       />
                     </TableCell>
+                    <TableCell>
+                      <IconButton
+                        onMouseEnter={() => setAttachmentHover(order.id)}
+                        onMouseLeave={() => setAttachmentHover('')}
+                        onClick={(e) =>
+                          !!order.attachment.length
+                            ? handleAttachmentsMenuOpen(e, order.attachment, order.id)
+                            : handleUploadFileModalOpen(order.id)
+                        }
+                      >
+                        <Badge
+                          badgeContent={order.attachment.length > 1 ? order.attachment.length : undefined}
+                          color="primary"
+                        >
+                          {attachmentHover === order.id && !order.attachment.length ? (
+                            <AddCircle />
+                          ) : (
+                            <AttachFile color={order.attachment.length ? 'error' : undefined} />
+                          )}
+                        </Badge>
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
                 ))}
               </>
@@ -399,7 +458,7 @@ export const Table: FC<TableProps> = ({ usersList }) => {
         open={!!attachmentsMenuAnchor}
         onClose={handleAttachmentsMenuClose}
       >
-        {orderDetails.attachment?.map((att) => (
+        {returnDetails.attachment?.map((att) => (
           <MenuItem key={att}>
             <ListItemIcon>
               <Download />
@@ -437,6 +496,7 @@ export const Table: FC<TableProps> = ({ usersList }) => {
           isOpen={isLocalizationModalOpen}
           onClose={handleEditLocalizationModalClose}
           onConfirm={handleUpdateOrderLocalization}
+          source="return"
         />
       )}
       {isUploadFileModalOpen && (

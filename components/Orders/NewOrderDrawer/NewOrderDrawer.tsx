@@ -29,7 +29,9 @@ export const NewOrderDrawer: FC<NewOrderDrawerProps> = ({ isOpen, onClose }) => 
   const { isLoading } = useLoading()
   const ref = useRef(null)
 
-  const handleFormClear = () => dispatch(ordersActions.resetOrderForm())
+  const handleFormClear = () => {
+    ref.current.clearForm()
+  }
 
   const handleCreateOrder = () => {
     ref.current.submit()

@@ -1,17 +1,18 @@
-import { withSnackbar } from '@components/UI'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Close, PersonAdd } from '@mui/icons-material'
-import { Button, Paper, Stack, TextField, Typography } from '@mui/material'
-import { useGetCustomersList, useSnackbar } from '@src/hooks'
+import { Button, Stack, TextField } from '@mui/material'
+import { useGetCustomersList } from '@src/hooks'
 import { ErrorMessages } from '@src/types'
 import axios from 'axios'
 import { useEffect } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
+import { SnackbarFunctionProps, withSnackbar } from '@components/HOC'
 
 type NewCustomerFormProps = {
   onDialogClose: () => void
   onCustomerSet: (payload: { id: string; label: string }) => void
+  showSnackbar: (props: SnackbarFunctionProps) => void
 }
 
 const schema = yup
@@ -37,10 +38,7 @@ const defaultValues = {
   contactName: '',
 }
 
-export const NewCustomerForm = ({
-  onCustomerSet,
-  onDialogClose,
-}: NewCustomerFormProps) => {
+const NewCustomerFormComponent = ({ onCustomerSet, onDialogClose, showSnackbar }: NewCustomerFormProps) => {
   const {
     control,
     handleSubmit,
@@ -50,7 +48,6 @@ export const NewCustomerForm = ({
     resolver: yupResolver(schema),
     defaultValues,
   })
-  const { showSnackbar, snackbarProps } = useSnackbar()
   const { onRefreshCustomersList } = useGetCustomersList()
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
@@ -68,7 +65,6 @@ export const NewCustomerForm = ({
         showSnackbar({
           message: 'Dodano',
           severity: 'success',
-          autoHideDuration: 3500,
         })
         onDialogClose()
       })
@@ -76,14 +72,12 @@ export const NewCustomerForm = ({
         showSnackbar({
           message: 'Error',
           severity: 'error',
-          autoHideDuration: 3500,
         })
       })
   }
 
   useEffect(() => {
-    isSubmitSuccessful &&
-      reset({ name: '', address: '', phoneNumber: '', contactName: '' })
+    isSubmitSuccessful && reset({ name: '', address: '', phoneNumber: '', contactName: '' })
   }, [isSubmitted, reset, isSubmitSuccessful])
 
   return (
@@ -162,7 +156,8 @@ export const NewCustomerForm = ({
           </Button>
         </Stack>
       </form>
-      <withSnackbar {...snackbarProps} />
     </>
   )
 }
+
+export const NewCustomerForm = withSnackbar(NewCustomerFormComponent)

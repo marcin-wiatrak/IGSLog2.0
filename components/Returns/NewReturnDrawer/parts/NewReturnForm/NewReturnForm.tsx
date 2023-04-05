@@ -10,6 +10,9 @@ import {
   FormHelperText,
   FormLabel,
   IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
   TextField,
 } from '@mui/material'
@@ -25,16 +28,14 @@ import { AddCircle } from '@mui/icons-material'
 import { useDispatch, useSelector } from 'react-redux'
 import { customersSelectors, ordersActions, ordersSelectors, usersSelectors } from '@src/store'
 import { NewCustomerForm } from '@components/Orders/NewOrderDrawer/parts'
-import { useDisclose, useGetOrdersList } from '@src/hooks'
+import { useDisclose, useGetReturnsList } from '@src/hooks'
 import { translatedType } from '@src/utils/textFormatter'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import { useLoading } from '@src/hooks/useLoading/useLoading'
-import { SnackbarFunctionProps, withSnackbar } from '@components/HOC'
 
 type NewOrderFormProps = {
   onDrawerClose: () => void
-  showSnackbar: (props: SnackbarFunctionProps) => void
 }
 
 export interface IFormInput extends yup.InferType<typeof schema> {
@@ -45,6 +46,7 @@ export interface IFormInput extends yup.InferType<typeof schema> {
   localization: string
   type: OrderType[]
   handleBy: AutocompleteOptionType
+  content: string
 }
 
 const defaultValues = {
@@ -55,6 +57,7 @@ const defaultValues = {
   localization: '',
   type: [],
   handleBy: null,
+  content: '',
 }
 
 const schema = yup.object({
@@ -68,14 +71,15 @@ const schema = yup.object({
     .of(yup.string())
     .test('Min test', ErrorMessages.TYPE_MIN_LENGTH, (arr) => arr.length >= 1),
   handleBy: yup.object().nullable(),
+  content: yup.string().required(ErrorMessages.EMPTY),
 })
 
-const NewOrderFormComponent = forwardRef<any, NewOrderFormProps>((props, ref) => {
+export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => {
   const { setLoading } = useLoading()
   const session = useSession()
   const dispatch = useDispatch()
   const newCustomerForm = useDisclose()
-  const { refreshOrdersList } = useGetOrdersList()
+  const { refreshReturnsList } = useGetReturnsList()
   const buttonSubmitRef = useRef(null)
   const customersList = useSelector(customersSelectors.selectCustomersList)
   const usersList = useSelector(usersSelectors.selectUsersList)
@@ -109,22 +113,14 @@ const NewOrderFormComponent = forwardRef<any, NewOrderFormProps>((props, ref) =>
     delete payload.handleBy
 
     await axios
-      .post('/api/order/create', payload)
+      .post('/api/return/create', payload)
       .then(() => {
-        refreshOrdersList()
-        dispatch(ordersActions.clearUploadedFiles())
+        refreshReturnsList()
+        // dispatch(ordersActions.clearUploadedFiles())
         reset(defaultValues)
-        props.showSnackbar({
-          message: 'Pomyślnie utworzono zlecenie',
-          severity: 'success',
-        })
       })
       .catch((err) => {
         console.log(err)
-        props.showSnackbar({
-          message: 'Nie udało się utworzyć zlecenia. Spróbuj ponownie',
-          severity: 'error',
-        })
       })
       .finally(() => {
         setLoading('newOrder', false)
@@ -165,7 +161,7 @@ const NewOrderFormComponent = forwardRef<any, NewOrderFormProps>((props, ref) =>
         <Stack spacing={2}>
           <FormControl error={!!errors?.type}>
             <FormLabel component="legend">Typ odbioru</FormLabel>
-            {[OrderType.BIOLOGY, OrderType.PHYSICOCHEMISTRY, OrderType.TOXYCOLOGY, OrderType.FATHERHOOD].map((el) => (
+            {[OrderType.BIOLOGY, OrderType.PHYSICOCHEMISTRY, OrderType.TOXYCOLOGY].map((el) => (
               <FormControlLabel
                 key={el}
                 label={translatedType[el]}
@@ -191,7 +187,7 @@ const NewOrderFormComponent = forwardRef<any, NewOrderFormProps>((props, ref) =>
             render={({ field, fieldState: { error } }) => (
               <TextField
                 {...field}
-                label="Sygnatura sprawy"
+                label="IGS"
                 error={!!error}
                 helperText={error?.message}
               />
@@ -250,7 +246,7 @@ const NewOrderFormComponent = forwardRef<any, NewOrderFormProps>((props, ref) =>
                 {...rest}
                 value={dayjs(value)}
                 onChange={(date) => onChange(dayjs(date).format())}
-                label="Data odbioru"
+                label="Data zwrotu"
                 format={DateTemplate.DDMMYYYY}
               />
             )}
@@ -261,10 +257,29 @@ const NewOrderFormComponent = forwardRef<any, NewOrderFormProps>((props, ref) =>
             render={({ field, fieldState: { error } }) => (
               <TextField
                 {...field}
-                label="Miejsce odbioru"
+                label="Miejsce zwrotu"
                 error={!!error}
                 helperText={error?.message}
               />
+            )}
+          />
+          <Controller
+            name="content"
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <FormControl>
+                <InputLabel component="legend">Zawartość</InputLabel>
+                <Select
+                  {...field}
+                  label="Zawartość"
+                  error={!!error}
+                >
+                  <MenuItem value="MAT">Materiał</MenuItem>
+                  <MenuItem value="DOC">Dokumentacja</MenuItem>
+                  <MenuItem value="MAT+DOC">Materiał + Dokumentacja</MenuItem>
+                </Select>
+                {!!error && <FormHelperText error>{error.message || 'Zawartość jest wymagana'}</FormHelperText>}
+              </FormControl>
             )}
           />
           <Controller
@@ -329,5 +344,3 @@ const NewOrderFormComponent = forwardRef<any, NewOrderFormProps>((props, ref) =>
     </>
   )
 })
-
-export const NewOrderForm = withSnackbar(NewOrderFormComponent)
