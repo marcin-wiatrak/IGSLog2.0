@@ -3,13 +3,14 @@ import { Fab, Typography, Unstable_Grid2 as Grid } from '@mui/material'
 import { Layout } from '@components/Layout'
 import { FilterButtons } from '@components/Orders/FilterButtons/FilterButtons'
 import { FiltersDrawer } from '@components/Orders/FiltersDrawer'
-import { useDisclose, useGetCustomersList, useGetUsersList, usePath } from '@src/hooks'
+import { useDisclose, useGetCustomersList, useGetOrdersList, useGetUsersList, usePath } from '@src/hooks'
 import { NewOrderDrawer, Table } from '@components/Orders'
 import { Add } from '@mui/icons-material'
 import { ordersActions } from '@src/store'
 import { useDispatch } from 'react-redux'
 import { withSnackbar } from '@components/HOC/WithSnackbar'
 import { Paths } from '@src/types'
+import { useEffect } from 'react'
 
 const fabStyle = {
   position: 'absolute',
@@ -22,12 +23,18 @@ const Orders: NextPage = () => {
   const { isOpen: isFilterDrawerOpen, onOpen: onFilterDrawerOpen, onClose: onFilterDrawerClose } = useDisclose()
   const { isOpen: isNewOrderDrawerOpen, onOpen: onNewOrderDrawerOpen, onClose: onNewOrderDrawerClose } = useDisclose()
 
+  const { refreshOrdersList } = useGetOrdersList()
+
   const { usersList } = useGetUsersList()
   const { customersList, onRefreshCustomersList } = useGetCustomersList()
 
   const handleClearFilters = () => dispatch(ordersActions.resetFilters())
 
   usePath(Paths.ORDERS)
+
+  useEffect(() => {
+    refreshOrdersList()
+  }, [])
 
   return (
     <>

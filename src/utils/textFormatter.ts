@@ -1,5 +1,5 @@
-import { OrderType, ReturnContent } from '@src/types'
-import { Description } from '@mui/icons-material'
+import { OrderType } from '@src/types'
+import { Session } from 'next-auth'
 
 export const getFullName = (list, id) => {
   if (id) {
@@ -16,3 +16,12 @@ export const translatedType = {
 }
 
 export const renameDownloadFile = (filename) => filename.split('_').slice(1).join('_')
+
+export const getCurrentUserNameFromSession = ({ session, initials }: { session: Session; initials?: boolean }) => {
+  const data = session?.user
+  if (!data) return ''
+  const { firstName, lastName } = data
+  if (firstName && lastName) {
+    return initials ? `${firstName.charAt(0)}${lastName.charAt(0)}` : `${firstName} ${lastName}`
+  }
+}

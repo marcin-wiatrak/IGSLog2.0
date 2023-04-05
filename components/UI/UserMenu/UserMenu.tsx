@@ -4,14 +4,11 @@ import { useDisclose } from '@src/hooks'
 import { signOut, useSession } from 'next-auth/react'
 import { MouseEvent, useState } from 'react'
 import { ChangePasswordModal } from '@components/UI'
+import { getCurrentUserNameFromSession } from '@src/utils/textFormatter'
 
 export const UserMenu = () => {
-  const {
-    data: {
-      user: { firstName, lastName },
-    },
-  } = useSession()
-  const userInitials = `${firstName.charAt(0)}${lastName.charAt(0)}`
+  const { data: sessionData } = useSession()
+  const userInitials = getCurrentUserNameFromSession({ session: sessionData, initials: true })
   const [anchor, setAnchor] = useState<null | HTMLElement>(null)
   const {
     isOpen: isChangePasswordModalOpen,
@@ -84,7 +81,7 @@ export const UserMenu = () => {
             sx={{ padding: '0 20px' }}
             color="primary.main"
           >
-            {`${firstName} ${lastName}`}
+            {getCurrentUserNameFromSession({ session: sessionData })}
           </Typography>
         </Stack>
 
