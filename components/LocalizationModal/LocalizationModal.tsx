@@ -1,24 +1,33 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
-import { ordersActions, ordersSelectors } from '@src/store'
+import { ordersActions, ordersSelectors, returnsActions } from '@src/store'
 import { useEffect, useState } from 'react'
 
 type LocalizationModalProps = {
   isOpen: boolean
   onClose: () => void
   onConfirm: () => void
+  source?: 'order' | 'return'
 }
 
-export const LocalizationModal = ({ isOpen, onClose, onConfirm }: LocalizationModalProps) => {
+export const LocalizationModal = ({ isOpen, onClose, onConfirm, source }: LocalizationModalProps) => {
   const dispatch = useDispatch()
-  const { localization } = useSelector(ordersSelectors.selectOrderDetails)
+  const { localization: orderLocalization } = useSelector(ordersSelectors.selectOrderDetails)
+  const { localization: returnLocalization } = useSelector(ordersSelectors.selectOrderDetails)
   const [isEdit, setIsEdit] = useState<boolean>(false)
+
+  const isOrder = source === 'order'
+  const localization = isOrder ? orderLocalization : returnLocalization
 
   useEffect(() => {
     setIsEdit(!!localization)
   }, [])
 
-  const handleLocalizationChange = (localization) => dispatch(ordersActions.setOrderDetails({ localization }))
+  const handleLocalizationChange = (localization) => {
+    isOrder
+      ? dispatch(ordersActions.setOrderDetails({ localization }))
+      : dispatch(returnsActions.setReturnDetails({ localization }))
+  }
 
   return (
     <Dialog
@@ -27,18 +36,20 @@ export const LocalizationModal = ({ isOpen, onClose, onConfirm }: LocalizationMo
       maxWidth="sm"
       fullWidth
     >
-      <DialogTitle>{isEdit ? 'Edytuj' : 'Ustal'} miejsce odbioru</DialogTitle>
+      <DialogTitle>
+        {isEdit ? 'Edytuj' : 'Ustal'} miejsce {isOrder ? 'odbioru' : 'zwrotu'}
+      </DialogTitle>
       <DialogContent>
         <TextField
-          label="Miejsce odbioru"
+          label={`Miejsce ${isOrder ? 'odbioru' : 'zwrotu'}`}
           value={localization}
           onChange={({ target }) => handleLocalizationChange(target.value)}
           fullWidth
           sx={{ mt: 2 }}
           helperText={
             isEdit && !localization
-              ? 'Miejsce odbioru zostanie usunięte'
-              : '(Pozostaw puste, aby usunąć miejsce odbioru)'
+              ? `Miejsce ${isOrder ? 'odbioru' : 'zwrotu'} zostanie usunięte`
+              : `(Pozostaw puste, aby usunąć miejsce ${isOrder ? 'odbioru' : 'zwrotu'})`
           }
         />
       </DialogContent>

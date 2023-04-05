@@ -4,11 +4,12 @@ import { Layout } from '@components/Layout'
 import { FilterButtons } from '@components/Orders/FilterButtons/FilterButtons'
 import { FiltersDrawer } from '@components/Orders/FiltersDrawer'
 import { useDisclose, useGetCustomersList, useGetUsersList, usePath } from '@src/hooks'
-import { NewOrderDrawer, Table } from '@components/Orders'
+import { Table } from '@components/Returns'
 import { Add } from '@mui/icons-material'
 import { ordersActions } from '@src/store'
 import { useDispatch } from 'react-redux'
 import { withSnackbar } from '@components/HOC/WithSnackbar'
+import { NewReturnDrawer } from '@components/Returns'
 import { Paths } from '@src/types'
 
 const fabStyle = {
@@ -17,17 +18,21 @@ const fabStyle = {
   right: 16,
 }
 
-const Orders: NextPage = () => {
+const Returns: NextPage = () => {
   const dispatch = useDispatch()
   const { isOpen: isFilterDrawerOpen, onOpen: onFilterDrawerOpen, onClose: onFilterDrawerClose } = useDisclose()
-  const { isOpen: isNewOrderDrawerOpen, onOpen: onNewOrderDrawerOpen, onClose: onNewOrderDrawerClose } = useDisclose()
+  const {
+    isOpen: isNewReturnDrawerOpen,
+    onOpen: onNewReturnDrawerOpen,
+    onClose: onNewReturnDrawerClose,
+  } = useDisclose()
 
   const { usersList } = useGetUsersList()
   const { customersList, onRefreshCustomersList } = useGetCustomersList()
 
   const handleClearFilters = () => dispatch(ordersActions.resetFilters())
 
-  usePath(Paths.ORDERS)
+  usePath(Paths.RETURNS)
 
   return (
     <>
@@ -38,7 +43,7 @@ const Orders: NextPage = () => {
           sx={{ width: '100%' }}
         >
           <Grid xs={12}>
-            <Typography variant="h1">Odbiory</Typography>
+            <Typography variant="h1">Zwroty</Typography>
             <Grid
               container
               xs={12}
@@ -52,10 +57,10 @@ const Orders: NextPage = () => {
                   alignItems: { sm: 'center' },
                 }}
               >
-                <FilterButtons
-                  onFilterDrawerOpen={onFilterDrawerOpen}
-                  onClearFiltersClick={handleClearFilters}
-                />
+                {/*<FilterButtons*/}
+                {/*  onFilterDrawerOpen={onFilterDrawerOpen}*/}
+                {/*  onClearFiltersClick={handleClearFilters}*/}
+                {/*/>*/}
               </Grid>
             </Grid>
           </Grid>
@@ -74,23 +79,21 @@ const Orders: NextPage = () => {
         variant="extended"
         color="primary"
         sx={fabStyle}
-        onClick={onNewOrderDrawerOpen}
+        onClick={onNewReturnDrawerOpen}
       >
         <Add sx={{ mr: 1 }} />
-        Nowy odbiór
+        Nowy zwrot
       </Fab>
       <FiltersDrawer
         isOpen={isFilterDrawerOpen}
         onClose={onFilterDrawerClose}
       />
-      <NewOrderDrawer
-        isOpen={isNewOrderDrawerOpen}
-        onClose={onNewOrderDrawerClose}
-        customersList={customersList}
-        onRefreshCustomersList={onRefreshCustomersList}
+      <NewReturnDrawer
+        isOpen={isNewReturnDrawerOpen}
+        onClose={onNewReturnDrawerClose}
       />
     </>
   )
 }
 
-export default withSnackbar(Orders)
+export default withSnackbar(Returns)

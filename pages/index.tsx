@@ -19,7 +19,31 @@ const Home: NextPage = () => {
         component="a"
         href="/orders"
       >
-        Orders
+        Odbiory
+      </Button>
+      <Button
+        component="a"
+        href="/returns"
+      >
+        Zwroty
+      </Button>
+      <Button
+        component="a"
+        href="/meetings"
+      >
+        Spotkania
+      </Button>
+      <Button
+        component="a"
+        href="/meetings"
+      >
+        Kalendarz
+      </Button>
+      <Button
+        component="a"
+        href="/customers"
+      >
+        Zleceniodawcy
       </Button>
     </Grid>
   )
