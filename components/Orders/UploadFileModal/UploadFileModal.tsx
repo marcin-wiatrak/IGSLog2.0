@@ -58,7 +58,6 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
 
   const handleRemoveUploadedFile = (fileName) => {
     const newAttachments = uploadedFiles.filter((el) => el !== fileName)
-    console.log(fileName, newAttachments)
     dispatch(ordersActions.setUploadedFiles({ uploadedFiles: newAttachments }))
   }
 

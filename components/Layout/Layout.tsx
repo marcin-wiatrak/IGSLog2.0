@@ -1,7 +1,8 @@
+import { UserMenu } from '@components/UI'
+import { KeyboardDoubleArrowLeft, KeyboardDoubleArrowRight, Logout, Menu, Person } from '@mui/icons-material'
 import {
   AppBar,
   Box,
-  Button,
   Drawer,
   IconButton,
   List,
@@ -10,11 +11,10 @@ import {
   ListItemText,
   Toolbar,
 } from '@mui/material'
-import Link from 'next/link'
-import { KeyboardDoubleArrowLeft, KeyboardDoubleArrowRight, Logout, Menu, Person } from '@mui/icons-material'
-import { useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
 import { withSnackbar } from '@components/HOC/WithSnackbar'
+import Link from 'next/link'
+import { useState } from 'react'
 
 const MENU_LIST_ITEMS = [
   {
@@ -52,13 +52,7 @@ const LayoutComponent = ({ children }) => {
           >
             <Menu />
           </IconButton>
-          <Button
-            sx={{ display: { xs: 'none', sm: 'block' } }}
-            color="inherit"
-            onClick={() => signOut()}
-          >
-            Wyloguj
-          </Button>
+          <UserMenu />
         </Toolbar>
       </AppBar>
       <Box paddingX={2}>{children}</Box>

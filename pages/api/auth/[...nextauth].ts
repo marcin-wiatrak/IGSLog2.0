@@ -30,7 +30,14 @@ const authOptions: NextAuthOptions = {
           })
         const login = bcrypt.compare(inputPassword, data.password).then((result) => {
           if (result) {
-            return { id: data.id, email: data.email, password: data.password, role: data.role as Role }
+            return {
+              id: data.id,
+              email: data.email,
+              firstName: data.firstName,
+              lastName: data.lastName,
+              password: data.password,
+              role: data.role as Role,
+            }
           } else {
             throw new Error('Invalid credentials')
           }
@@ -45,18 +52,21 @@ const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     jwt(params) {
-      if (params.user?.role) {
+      if (params.user) {
         params.token.role = params.user.role
-      }
-      if (params.user?.id) {
         params.token.userId = params.user.id
+        params.token.firstName = params.user.firstName
+        params.token.lastName = params.user.lastName
       }
+
       return params.token
     },
     session({ session, token }) {
       if (session.user) {
         session.user.role = token.role
         session.user.userId = token.userId
+        session.user.firstName = token.firstName
+        session.user.lastName = token.lastName
       }
       return session
     },

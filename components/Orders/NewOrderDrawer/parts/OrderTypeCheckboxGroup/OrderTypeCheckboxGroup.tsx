@@ -8,8 +8,6 @@ export const OrderTypeCheckboxGroup = () => {
   const dispatch = useDispatch()
   const { type } = useSelector(ordersSelectors.selectOrderForm)
 
-  console.log(type)
-
   const handleSelectOrderType = ({ target }) => {
     dispatch(ordersActions.setCreateOrder({ type: toggleValueInArray(type, target.name) }))
   }
