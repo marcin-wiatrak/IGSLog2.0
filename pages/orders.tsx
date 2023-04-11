@@ -26,7 +26,7 @@ const Orders: NextPage = () => {
   const { refreshOrdersList } = useGetOrdersList()
 
   const { usersList } = useGetUsersList()
-  const { customersList, onRefreshCustomersList } = useGetCustomersList()
+  const { customersList, refreshCustomersList } = useGetCustomersList()
 
   const handleClearFilters = () => dispatch(ordersActions.resetFilters())
 
@@ -94,7 +94,7 @@ const Orders: NextPage = () => {
         isOpen={isNewOrderDrawerOpen}
         onClose={onNewOrderDrawerClose}
         customersList={customersList}
-        onRefreshCustomersList={onRefreshCustomersList}
+        onRefreshCustomersList={refreshCustomersList}
       />
     </>
   )

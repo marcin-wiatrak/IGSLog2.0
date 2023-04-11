@@ -131,7 +131,7 @@ export const Table: FC<TableProps> = ({ usersList }) => {
   }
 
   const mappedCustomersList = useMemo(() => {
-    if (customersList.length) {
+    if (customersList?.length) {
       return customersList.reduce((acc, customer) => {
         return { ...acc, [customer.id]: customer }
       }, {})

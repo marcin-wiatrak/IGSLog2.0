@@ -12,7 +12,7 @@ type SetCustomersListPayload = {
 }
 
 const initialState: CustomersStateProps = {
-  customersList: [],
+  customersList: null,
 }
 
 export const customersState = createSlice({
@@ -28,12 +28,10 @@ export const customersState = createSlice({
   },
 })
 
-const getOrder = (state: RootState) => state.customers
+const getCustomer = (state: RootState) => state.customers
 
 export const customersSelectors = {
-  selectCustomersList: createSelector(getOrder, (order) => {
-    return order.customersList
-  }),
+  selectCustomersList: createSelector(getCustomer, (order) => order.customersList),
 }
 
 export const customersActions = customersState.actions

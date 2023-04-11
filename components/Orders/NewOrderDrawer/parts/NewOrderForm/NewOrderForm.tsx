@@ -70,7 +70,7 @@ const schema = yup.object({
   handleBy: yup.object().nullable(),
 })
 
-const NewOrderFormComponent = forwardRef<any, NewOrderFormProps>((props, ref) => {
+export const NewOrderForm = forwardRef<any, NewOrderFormProps>((props, ref) => {
   const { setLoading } = useLoading()
   const session = useSession()
   const dispatch = useDispatch()
@@ -114,17 +114,17 @@ const NewOrderFormComponent = forwardRef<any, NewOrderFormProps>((props, ref) =>
         refreshOrdersList()
         dispatch(ordersActions.clearUploadedFiles())
         reset(defaultValues)
-        props.showSnackbar({
-          message: 'Pomyślnie utworzono zlecenie',
-          severity: 'success',
-        })
+        // props.showSnackbar({
+        //   message: 'Pomyślnie utworzono zlecenie',
+        //   severity: 'success',
+        // })
       })
       .catch((err) => {
         console.log(err)
-        props.showSnackbar({
-          message: 'Nie udało się utworzyć zlecenia. Spróbuj ponownie',
-          severity: 'error',
-        })
+        // props.showSnackbar({
+        //   message: 'Nie udało się utworzyć zlecenia. Spróbuj ponownie',
+        //   severity: 'error',
+        // })
       })
       .finally(() => {
         setLoading('newOrder', false)
@@ -330,4 +330,4 @@ const NewOrderFormComponent = forwardRef<any, NewOrderFormProps>((props, ref) =>
   )
 })
 
-export const NewOrderForm = withSnackbar(NewOrderFormComponent)
+// export const NewOrderForm = withSnackbar(NewOrderFormComponent)

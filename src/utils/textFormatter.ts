@@ -1,4 +1,4 @@
-import { OrderType } from '@src/types'
+import { OrderStatuses, OrderType, ReturnStatuses } from '@src/types'
 import { Session } from 'next-auth'
 
 export const getFullName = (list, id) => {
@@ -13,6 +13,16 @@ export const translatedType = {
   [OrderType.BIOLOGY]: 'Biologia',
   [OrderType.PHYSICOCHEMISTRY]: 'Fizykochemia',
   [OrderType.FATHERHOOD]: 'Ustalanie ojcostwa',
+}
+
+export const translatedStatus = {
+  [OrderStatuses.NEW]: 'Zarejestrowany',
+  [OrderStatuses.PICKED_UP]: 'Odebrany',
+  [OrderStatuses.DELIVERED]: 'Dostarczony',
+  [OrderStatuses.CLOSED]: 'Zakończony',
+  [ReturnStatuses.NEW]: 'Zarejestrowany',
+  [ReturnStatuses.SET]: 'Zwrot ustalony',
+  [ReturnStatuses.CLOSED]: 'Zakończony',
 }
 
 export const renameDownloadFile = (filename) => filename.split('_').slice(1).join('_')

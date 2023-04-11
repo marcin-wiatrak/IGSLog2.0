@@ -1,5 +1,12 @@
 import { UserMenu } from '@components/UI'
-import { KeyboardDoubleArrowLeft, KeyboardDoubleArrowRight, Logout, Menu, Person } from '@mui/icons-material'
+import {
+  CalendarMonth,
+  KeyboardDoubleArrowLeft,
+  KeyboardDoubleArrowRight,
+  Logout,
+  Menu,
+  Person,
+} from '@mui/icons-material'
 import {
   AppBar,
   Box,
@@ -14,7 +21,8 @@ import {
 import { signOut, useSession } from 'next-auth/react'
 import { withSnackbar } from '@components/HOC/WithSnackbar'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useGetCustomersList } from '@src/hooks'
 
 const MENU_LIST_ITEMS = [
   {
@@ -27,16 +35,26 @@ const MENU_LIST_ITEMS = [
     href: '/returns',
     icon: <KeyboardDoubleArrowLeft />,
   },
+  {
+    name: 'Kalendarz',
+    href: '/calendar',
+    icon: <CalendarMonth />,
+  },
 ]
 
 const LayoutComponent = ({ children }) => {
   const { data } = useSession()
   const isAdmin = data?.user.role === 'ADMIN'
+  const { getCustomersList } = useGetCustomersList()
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
 
   const handleMenuOpen = () => setIsMenuOpen(true)
   const handleMenuClose = () => setIsMenuOpen(false)
+
+  useEffect(() => {
+    getCustomersList()
+  }, [])
 
   return (
     <Box>
