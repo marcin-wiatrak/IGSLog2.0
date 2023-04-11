@@ -2,7 +2,7 @@ import { NextPage } from 'next'
 import { Fab, Typography, Unstable_Grid2 as Grid } from '@mui/material'
 import { Layout } from '@components/Layout'
 import { FiltersDrawer } from '@components/Orders/FiltersDrawer'
-import { useDisclose, useGetCustomersList, useGetReturnsList, useGetUsersList, usePath } from '@src/hooks'
+import { useDisclose, useGetReturnsList, usePath } from '@src/hooks'
 import { NewReturnDrawer, Table } from '@components/Returns'
 import { Add } from '@mui/icons-material'
 import { ordersActions } from '@src/store'
@@ -27,9 +27,6 @@ const Returns: NextPage = () => {
   } = useDisclose()
 
   const { refreshReturnsList } = useGetReturnsList()
-
-  const { usersList } = useGetUsersList()
-  const { customersList, onRefreshCustomersList } = useGetCustomersList()
 
   const handleClearFilters = () => dispatch(ordersActions.resetFilters())
 

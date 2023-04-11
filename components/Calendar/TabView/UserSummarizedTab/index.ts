@@ -1,0 +1,1 @@
+export { UserSummarizedTab } from './UserSummarizedTab'

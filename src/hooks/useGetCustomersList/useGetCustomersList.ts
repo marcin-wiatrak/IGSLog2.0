@@ -18,12 +18,13 @@ export const useGetCustomersList = () => {
   }, [dispatch])
 
   useEffect(() => {
-    getCustomersList()
-  }, [getCustomersList])
+    !customersList && getCustomersList()
+  }, [customersList, getCustomersList])
 
   return {
     isLoading,
     customersList,
-    onRefreshCustomersList: getCustomersList,
+    refreshCustomersList: getCustomersList,
+    getCustomersList,
   }
 }

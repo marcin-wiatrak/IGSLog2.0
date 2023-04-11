@@ -48,7 +48,7 @@ const NewCustomerFormComponent = ({ onCustomerSet, onDialogClose, showSnackbar }
     resolver: yupResolver(schema),
     defaultValues,
   })
-  const { onRefreshCustomersList } = useGetCustomersList()
+  const { refreshCustomersList } = useGetCustomersList()
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     await axios
@@ -60,7 +60,7 @@ const NewCustomerFormComponent = ({ onCustomerSet, onDialogClose, showSnackbar }
       })
       .then(async (response) => {
         const { id, name } = response.data
-        await onRefreshCustomersList()
+        await refreshCustomersList()
         onCustomerSet({ id, label: name })
         showSnackbar({
           message: 'Dodano',
