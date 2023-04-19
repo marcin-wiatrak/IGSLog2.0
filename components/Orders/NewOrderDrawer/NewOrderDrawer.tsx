@@ -1,24 +1,15 @@
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Checkbox,
-  Drawer,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material'
-import { FC, useEffect, useMemo, useReducer, useState } from 'react'
-import { useSession } from 'next-auth/react'
-import { AddCircle, Check, Clear } from '@mui/icons-material'
-import { DatePicker } from '@mui/x-date-pickers'
-import dayjs from 'dayjs'
+import { Badge, Box, Button, CircularProgress, Stack } from '@mui/material'
+import { FC, useEffect, useMemo, useRef } from 'react'
+import { Add, AddCircle, Clear } from '@mui/icons-material'
 import { Customer } from '@prisma/client'
-import { NewCustomerForm } from './NewCustomerForm'
+import { NewOrderForm } from './parts'
+import { SideDrawer } from '@components/SideDrawer'
+import { DrawerActionButton } from '@components/SideDrawer/parts/DrawerActions/DrawerActions'
+import { useDispatch, useSelector } from 'react-redux'
+import { ordersActions, ordersSelectors } from '@src/store'
+import { useLoading } from '@src/hooks/useLoading/useLoading'
+import { useDisclose } from '@src/hooks'
+import { UploadFileModal } from '@components/Orders'
 
 type NewOrderDrawerProps = {
   isOpen: boolean
@@ -27,234 +18,117 @@ type NewOrderDrawerProps = {
   onRefreshCustomersList: () => void
 }
 
-type AutocompleteCustomer = {
-  customer: {
-    id: string
-    label: string
-  }
-}
+export const NewOrderDrawer: FC<NewOrderDrawerProps> = ({ isOpen, onClose }) => {
+  const { attachment: attachments } = useSelector(ordersSelectors.selectOrderForm)
+  const dispatch = useDispatch()
+  const {
+    isOpen: isUploadFileModalOpen,
+    onOpen: onUploadFileModalOpen,
+    onClose: onUploadFileModalClose,
+  } = useDisclose()
+  const { isLoading } = useLoading()
+  const ref = useRef(null)
 
-enum Types {
-  BIOLOGY = 'BIOLOGY',
-  TOXYCOLOGY = 'TOXYCOLOGY',
-  PHYSICOCHEMISTRY = 'PHYSICOCHEMISTRY',
-  FATHERHOOD = 'FATHERHOOD',
-}
-
-const formReducer = (state = initialFormState, action) => {
-  const { value, field } = action.payload
-
-  if (action.type === 'form') {
-    return { ...state, [field]: value }
-  }
-  if (action.type === 'checkbox') {
-    const typesArray = [...state.type]
-    const newTypesArray = typesArray.includes(value)
-      ? typesArray.filter((type) => type !== value)
-      : [...typesArray, value]
-    return { ...state, [field]: newTypesArray }
-  }
-  if (action.type === 'clearForm') {
-    return initialFormState
-  }
-}
-
-const initialFormState = {
-  customer: null,
-  signature: '',
-  pickupAt: null,
-  localization: '',
-  handleById: '',
-  registeredById: '',
-  status: 'NEW',
-  notes: '',
-  type: [],
-}
-
-export const NewOrderDrawer: FC<NewOrderDrawerProps> = ({ isOpen, onClose, customersList, onRefreshCustomersList }) => {
-  const [form, formDispatch] = useReducer(formReducer, initialFormState)
-  const [isCustomerFormOpen, setIsCustomerFormOpen] = useState<boolean>(false)
-  const session = useSession()
-
-  const customersListOption = useMemo(() => {
-    if (customersList && customersList.length) {
-      return customersList.map((customer) => ({
-        id: customer.id,
-        label: customer.name,
-      }))
-    }
-  }, [customersList])
-
-  const handleFormClear = () => formDispatch({ type: 'clearForm' })
-  const handleFormChange = (field, value, method = 'form') => formDispatch({ type: method, payload: { field, value } })
-
-  const handleNewCustomerFormToggle = () => setIsCustomerFormOpen((prevState) => !prevState)
-  const handleNewCustomerFormClose = () => setIsCustomerFormOpen(false)
-
-  const handleSelectCreatedCustomer = (payload) => {
-    formDispatch({ type: 'form', payload: { field: 'customer', value: payload } })
+  const handleFormClear = () => {
+    ref.current.clearForm()
   }
 
-  const handleSelectOrderType = (e) => {
-    formDispatch({ type: 'checkbox', payload: { field: 'type', value: e.target.name } })
-  }
-  const IsTypeCheckboxChecked = (name) => {
-    return form.type.includes(name)
+  const handleCreateOrder = () => {
+    ref.current.submit()
   }
 
   useEffect(() => {
-    if (!form.registeredById && session.data) {
-      handleFormChange('registeredBy', session.data.user.userId)
+    return () => {
+      dispatch(ordersActions.clearUploadedFiles())
     }
-  }, [form.registeredById, session.data])
+  }, [])
+
+  const confirmButton: DrawerActionButton = useMemo(() => {
+    return {
+      label: isLoading('newOrder') ? 'Ładowanie' : 'Utwórz',
+      startIcon: !isLoading('newOrder') ? (
+        <Add />
+      ) : (
+        <CircularProgress
+          size={16}
+          color="inherit"
+        />
+      ),
+      variant: 'contained',
+      color: 'success',
+      onClick: handleCreateOrder,
+      size: 'large',
+      fullWidth: true,
+      disabled: isLoading('newOrder'),
+    }
+  }, [isLoading])
 
   return (
-    <Drawer
-      anchor="right"
-      variant="temporary"
-      onClose={onClose}
-      open={isOpen}
-    >
-      <Box
-        sx={{
-          paddingX: 3,
-          paddingY: 5,
-          minWidth: '500px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          height: '100%',
-        }}
+    <>
+      <SideDrawer
+        title="Utwórz zlecenie"
+        onClose={onClose}
+        open={isOpen}
+        anchor="right"
+        width={500}
+        actionsList={[
+          { ...confirmButton },
+          {
+            label: 'Wyczyść',
+            startIcon: <Clear />,
+            variant: 'text',
+            color: 'error',
+            onClick: handleFormClear,
+            size: 'large',
+          },
+        ]}
       >
-        <Box>
-          <Typography variant="h4">Utwórz zlecenie</Typography>
-          <Stack spacing={3}>
-            <FormControl>
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={IsTypeCheckboxChecked(Types.BIOLOGY)}
-                      onChange={handleSelectOrderType}
-                      name={Types.BIOLOGY}
-                    />
-                  }
-                  label="Biologia"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={IsTypeCheckboxChecked(Types.TOXYCOLOGY)}
-                      onChange={handleSelectOrderType}
-                      name={Types.TOXYCOLOGY}
-                    />
-                  }
-                  label="Toksykologia"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={IsTypeCheckboxChecked(Types.FATHERHOOD)}
-                      onChange={handleSelectOrderType}
-                      name={Types.FATHERHOOD}
-                    />
-                  }
-                  label="Ustalanie ojcostwa"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={IsTypeCheckboxChecked(Types.PHYSICOCHEMISTRY)}
-                      onChange={handleSelectOrderType}
-                      name={Types.PHYSICOCHEMISTRY}
-                    />
-                  }
-                  label="Fizykochemia"
-                />
-              </FormGroup>
-            </FormControl>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 1,
-              }}
-            >
-              <Autocomplete
-                value={form.customer}
-                fullWidth
-                blurOnSelect
-                options={customersListOption}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                onChange={(e, newValue) => handleFormChange('customer', newValue)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Zleceniodawca"
-                  />
-                )}
-              />
-              <IconButton
-                size="large"
-                color="primary"
-                onClick={handleNewCustomerFormToggle}
-              >
-                <AddCircle sx={{ transform: `rotate(${isCustomerFormOpen ? '45deg' : '0'})` }} />
-              </IconButton>
-            </Box>
-            <NewCustomerForm
-              isOpen={isCustomerFormOpen}
-              onClose={handleNewCustomerFormClose}
-              onCustomerSet={handleSelectCreatedCustomer}
-              onRefreshCustomersList={onRefreshCustomersList}
-            />
-            <TextField
-              label="Sygnatura sprawy"
-              value={form.signature}
-              onChange={({ target }) => handleFormChange('signature', target.value)}
-            />
-            <DatePicker
-              label="Data odbioru"
-              value={dayjs(form.pickupAt)}
-              onChange={(date) => handleFormChange('pickupAt', dayjs(date).format())}
-            />
-            <TextField
-              label="Informacje dodatkowe"
-              value={form.notes}
-              multiline
-              rows="3"
-              onChange={({ target }) => handleFormChange('notes', target.value)}
-            />
-          </Stack>
-        </Box>
         <Box
           sx={{
             display: 'flex',
-            justifyContent: 'space-evenly',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            height: '100%',
           }}
         >
-          <Button
-            variant="contained"
-            color="success"
-            size="large"
-            fullWidth
-            sx={{ mr: 3 }}
-          >
-            <Check sx={{ mr: 1 }} />
-            Utwórz
-          </Button>
-          <Button
-            variant="outlined"
-            color="error"
-            size="large"
-            onClick={handleFormClear}
-          >
-            <Clear sx={{ mr: 1 }} />
-            Wyczyść
-          </Button>
+          <Stack spacing={3}>
+            <NewOrderForm
+              ref={ref}
+              onDrawerClose={onClose}
+            />
+            <Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  startIcon={<AddCircle />}
+                  onClick={onUploadFileModalOpen}
+                >
+                  <Badge
+                    badgeContent={attachments && attachments.length}
+                    color="error"
+                  >
+                    Dodaj załączniki
+                  </Badge>
+                </Button>
+              </Box>
+            </Box>
+          </Stack>
         </Box>
-      </Box>
-    </Drawer>
+      </SideDrawer>
+      {isUploadFileModalOpen && (
+        <UploadFileModal
+          isOpen={isUploadFileModalOpen}
+          onClose={onUploadFileModalClose}
+          method="createOrder"
+        />
+      )}
+    </>
   )
 }

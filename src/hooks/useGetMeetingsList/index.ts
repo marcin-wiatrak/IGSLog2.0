@@ -1,0 +1,1 @@
+export { useGetMeetingsList } from './useGetMeetingsList'

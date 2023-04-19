@@ -1,10 +1,10 @@
 import { Box, Button, ButtonGroup } from '@mui/material'
 import { TYPE_BUTTONS_LIST } from './FilterButtons.constants'
 import { FC } from 'react'
-import { OrderType } from '@src/types'
-import { Close, DeviceHub, Face, Pix, Spa } from '@mui/icons-material'
+import { Close } from '@mui/icons-material'
 import { useDispatch, useSelector } from 'react-redux'
 import { ordersActions, ordersSelectors } from '@src/store'
+import { getTypeIcon } from '@src/utils/typeIcons'
 
 type FilterButtonsProps = {
   onClearFiltersClick: () => void
@@ -14,19 +14,6 @@ type FilterButtonsProps = {
 export const FilterButtons: FC<FilterButtonsProps> = ({ onClearFiltersClick, onFilterDrawerOpen }) => {
   const dispatch = useDispatch()
   const selectedTypes = useSelector(ordersSelectors.selectFilterByType)
-
-  const icon = (name) => {
-    switch (name) {
-      case OrderType.FATHERHOOD:
-        return <Face />
-      case OrderType.BIOLOGY:
-        return <Spa />
-      case OrderType.TOXYCOLOGY:
-        return <DeviceHub />
-      case OrderType.PHYSYCOCHEMISTRY:
-        return <Pix />
-    }
-  }
 
   const handleTypeClick = (type) => {
     dispatch(ordersActions.setFilterByType({ filterByType: type }))
@@ -39,7 +26,7 @@ export const FilterButtons: FC<FilterButtonsProps> = ({ onClearFiltersClick, onF
           <Button
             key={el.label}
             onClick={() => handleTypeClick(el.name)}
-            startIcon={icon(el.name)}
+            startIcon={getTypeIcon(el.name)}
             color="primary"
             variant={selectedTypes.includes(el.name) ? 'contained' : 'outlined'}
             sx={{ width: { xs: '100%', sm: 'unset' } }}

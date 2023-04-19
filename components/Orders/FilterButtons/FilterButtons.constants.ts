@@ -14,7 +14,7 @@ export const TYPE_BUTTONS_LIST = [
     label: 'Toksykologia',
   },
   {
-    name: OrderType.PHYSYCOCHEMISTRY,
+    name: OrderType.PHYSICOCHEMISTRY,
     label: 'Fizykochemia',
   },
 ]

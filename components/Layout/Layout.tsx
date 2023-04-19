@@ -1,7 +1,16 @@
+import { UserMenu } from '@components/UI'
+import {
+  CalendarMonth,
+  Groups,
+  KeyboardDoubleArrowLeft,
+  KeyboardDoubleArrowRight,
+  Logout,
+  Menu,
+  Person,
+} from '@mui/icons-material'
 import {
   AppBar,
   Box,
-  Button,
   Drawer,
   IconButton,
   List,
@@ -10,10 +19,11 @@ import {
   ListItemText,
   Toolbar,
 } from '@mui/material'
-import Link from 'next/link'
-import { KeyboardDoubleArrowLeft, KeyboardDoubleArrowRight, Logout, Menu, Person } from '@mui/icons-material'
-import { useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
+import { withSnackbar } from '@components/HOC/WithSnackbar'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { useGetCustomersList } from '@src/hooks'
 
 const MENU_LIST_ITEMS = [
   {
@@ -26,16 +36,31 @@ const MENU_LIST_ITEMS = [
     href: '/returns',
     icon: <KeyboardDoubleArrowLeft />,
   },
+  {
+    name: 'Spotkania',
+    href: '/meetings',
+    icon: <Groups />,
+  },
+  {
+    name: 'Kalendarz',
+    href: '/calendar',
+    icon: <CalendarMonth />,
+  },
 ]
 
-export const Layout = ({ children }) => {
+const LayoutComponent = ({ children }) => {
   const { data } = useSession()
   const isAdmin = data?.user.role === 'ADMIN'
+  const { getCustomersList } = useGetCustomersList()
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
 
   const handleMenuOpen = () => setIsMenuOpen(true)
   const handleMenuClose = () => setIsMenuOpen(false)
+
+  useEffect(() => {
+    getCustomersList()
+  }, [])
 
   return (
     <Box>
@@ -51,16 +76,10 @@ export const Layout = ({ children }) => {
           >
             <Menu />
           </IconButton>
-          <Button
-            sx={{ display: { xs: 'none', sm: 'block' } }}
-            color="inherit"
-            onClick={() => signOut()}
-          >
-            Wyloguj
-          </Button>
+          <UserMenu />
         </Toolbar>
       </AppBar>
-      <Box paddingX={2}>{children}</Box>
+      <Box padding={2}>{children}</Box>
       <Drawer
         open={isMenuOpen}
         anchor="left"
@@ -88,7 +107,7 @@ export const Layout = ({ children }) => {
             ))}
             {isAdmin && (
               <Link
-                href="/admin/admin"
+                href="/admin"
                 style={{ textDecoration: 'none' }}
               >
                 <ListItemButton sx={{ paddingRight: 10 }}>
@@ -116,3 +135,5 @@ export const Layout = ({ children }) => {
     </Box>
   )
 }
+
+export const Layout = withSnackbar(LayoutComponent)

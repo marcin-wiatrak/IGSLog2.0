@@ -12,6 +12,21 @@ const handler = async (req, res) => {
             lastName: true,
           },
         },
+        customer: {
+          select: {
+            name: true,
+          },
+        },
+        handleBy: {
+          select: {
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'asc',
       },
     })
     .then((response) => {

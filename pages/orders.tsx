@@ -1,11 +1,16 @@
 import { NextPage } from 'next'
-import { Box, CircularProgress, Fab, Typography, Unstable_Grid2 as Grid } from '@mui/material'
+import { Fab, Typography, Unstable_Grid2 as Grid } from '@mui/material'
 import { Layout } from '@components/Layout'
 import { FilterButtons } from '@components/Orders/FilterButtons/FilterButtons'
 import { FiltersDrawer } from '@components/Orders/FiltersDrawer'
-import { useDrawer, useGetCustomersList, useGetOrdersList, useGetUsersList } from '@src/hooks'
-import { NewOrderDrawer, Table } from '@components/Orders'
+import { useDisclose, useGetCustomersList, useGetOrdersList, usePath } from '@src/hooks'
+import { NewOrderDrawer, OrdersTable } from '@components/Orders'
 import { Add } from '@mui/icons-material'
+import { ordersActions } from '@src/store'
+import { useDispatch } from 'react-redux'
+import { withSnackbar } from '@components/HOC/WithSnackbar'
+import { Paths } from '@src/types'
+import { useEffect } from 'react'
 
 const fabStyle = {
   position: 'absolute',
@@ -14,14 +19,21 @@ const fabStyle = {
 }
 
 const Orders: NextPage = () => {
-  const { isOpen: isFilterDrawerOpen, onOpen: onFilterDrawerOpen, onClose: onFilterDrawerClose } = useDrawer()
-  const { isOpen: isNewOrderDrawerOpen, onOpen: onNewOrderDrawerOpen, onClose: onNewOrderDrawerClose } = useDrawer()
+  const dispatch = useDispatch()
+  const { isOpen: isFilterDrawerOpen, onOpen: onFilterDrawerOpen, onClose: onFilterDrawerClose } = useDisclose()
+  const { isOpen: isNewOrderDrawerOpen, onOpen: onNewOrderDrawerOpen, onClose: onNewOrderDrawerClose } = useDisclose()
 
-  const { ordersList } = useGetOrdersList()
-  const { usersList } = useGetUsersList()
-  const { customersList, onRefreshCustomersList } = useGetCustomersList()
+  const { refreshOrdersList } = useGetOrdersList()
 
-  const handleClearFilters = () => {}
+  const { customersList, refreshCustomersList } = useGetCustomersList()
+
+  const handleClearFilters = () => dispatch(ordersActions.resetFilters())
+
+  usePath(Paths.ORDERS)
+
+  useEffect(() => {
+    refreshOrdersList()
+  }, [])
 
   return (
     <>
@@ -32,12 +44,7 @@ const Orders: NextPage = () => {
           sx={{ width: '100%' }}
         >
           <Grid xs={12}>
-            <Typography
-              variant="h1"
-              fontWeight="bolder"
-            >
-              Odbiory
-            </Typography>
+            <Typography variant="h1">Odbiory</Typography>
             <Grid
               container
               xs={12}
@@ -52,7 +59,7 @@ const Orders: NextPage = () => {
                 }}
               >
                 <FilterButtons
-                  onFilterDrawerOpen={onFilterDrawerClose}
+                  onFilterDrawerOpen={onFilterDrawerOpen}
                   onClearFiltersClick={handleClearFilters}
                 />
               </Grid>
@@ -64,7 +71,7 @@ const Orders: NextPage = () => {
             xs={12}
           >
             <Grid xs={12}>
-              <Table usersList={usersList} />
+              <OrdersTable />
             </Grid>
           </Grid>
         </Grid>
@@ -86,10 +93,10 @@ const Orders: NextPage = () => {
         isOpen={isNewOrderDrawerOpen}
         onClose={onNewOrderDrawerClose}
         customersList={customersList}
-        onRefreshCustomersList={onRefreshCustomersList}
+        onRefreshCustomersList={refreshCustomersList}
       />
     </>
   )
 }
 
-export default Orders
+export default withSnackbar(Orders)

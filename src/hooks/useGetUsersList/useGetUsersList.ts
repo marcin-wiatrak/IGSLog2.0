@@ -1,20 +1,22 @@
 import axios from 'axios'
-import { useCallback, useEffect, useState } from 'react'
-import { User } from '@prisma/client'
+import { useCallback, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { usersActions, usersSelectors } from '@src/store'
 
 export const useGetUsersList = () => {
-  const [usersList, setUsersList] = useState<User[]>([])
+  const usersList = useSelector(usersSelectors.selectUsersList)
+  const dispatch = useDispatch()
   const usersListQuery = async () => await axios.get('/api/user/list')
 
   const getUsersList = useCallback(() => {
     usersListQuery().then((res) => {
-      setUsersList(res.data)
+      dispatch(usersActions.setUsersList({ usersList: res.data }))
     })
   }, [])
 
   useEffect(() => {
-    getUsersList()
-  }, [getUsersList])
+    if (!usersList.length) getUsersList()
+  }, [getUsersList, usersList.length])
 
   return {
     usersList,

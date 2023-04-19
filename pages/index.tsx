@@ -1,27 +1,68 @@
-import React from 'react'
-import { Button, Grid, Typography } from '@mui/material'
+import React, { useEffect } from 'react'
+import { Box, Grid, Typography } from '@mui/material'
 import { NextPage } from 'next'
-import { signIn, signOut } from 'next-auth/react'
-import axios from 'axios'
+import { signIn, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 const Home: NextPage = () => {
-  const handleRegister = async () => {
-    await axios.post('/api/auth/register', { email: 'm@m.pl', password: '12345' })
-  }
+  const session = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (session.status === 'authenticated') {
+      router.push('/orders')
+    }
+
+    if (session.status === 'unauthenticated') {
+      signIn()
+    }
+  }, [session])
+
+  // if (session.status === 'loading') return null
 
   return (
-    <Grid>
-      <Typography>Test</Typography>
-      <Button onClick={() => signIn()}>Zaloguj</Button>
-      <Button onClick={handleRegister}>Rejestracja</Button>
-      <Button onClick={() => signOut()}>Wyloguj</Button>
-      <Button
-        component="a"
-        href="/orders"
-      >
-        Orders
-      </Button>
-    </Grid>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+      }}
+    >
+      <Typography variant="h1">IGSLog</Typography>
+      {/*<Button onClick={() => signIn()}>Zaloguj</Button>*/}
+      {/*<Button onClick={() => signOut()}>Wyloguj</Button>*/}
+      {/*<Button*/}
+      {/*  component="a"*/}
+      {/*  href="/orders"*/}
+      {/*>*/}
+      {/*  Odbiory*/}
+      {/*</Button>*/}
+      {/*<Button*/}
+      {/*  component="a"*/}
+      {/*  href="/returns"*/}
+      {/*>*/}
+      {/*  Zwroty*/}
+      {/*</Button>*/}
+      {/*<Button*/}
+      {/*  component="a"*/}
+      {/*  href="/meetings"*/}
+      {/*>*/}
+      {/*  Spotkania*/}
+      {/*</Button>*/}
+      {/*<Button*/}
+      {/*  component="a"*/}
+      {/*  href="/meetings"*/}
+      {/*>*/}
+      {/*  Kalendarz*/}
+      {/*</Button>*/}
+      {/*<Button*/}
+      {/*  component="a"*/}
+      {/*  href="/customers"*/}
+      {/*>*/}
+      {/*  Zleceniodawcy*/}
+      {/*</Button>*/}
+    </Box>
   )
 }
 

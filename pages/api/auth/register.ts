@@ -7,12 +7,7 @@ const handler = async (req, res) => {
     bcrypt.hash(password, salt, (err, password) => {
       const post = prisma.user
         .create({
-          data: {
-            email: req.body.email,
-            password: password,
-            firstName: 'Test',
-            lastName: 'Testowy',
-          },
+          data: { ...req.body, password },
         })
         .then(() => {
           res.status(201).json(post)
