@@ -1,12 +1,15 @@
 import { prisma } from '@server/db'
 
 const handler = async (req, res) => {
+  const { returnId } = req.query
   await prisma.return
-    .findMany({
+    .findUnique({
+      where: {
+        id: returnId,
+      },
       include: {
-        registeredBy: {
+        handleBy: {
           select: {
-            id: true,
             email: true,
             firstName: true,
             lastName: true,
@@ -17,16 +20,12 @@ const handler = async (req, res) => {
             name: true,
           },
         },
-        handleBy: {
+        registeredBy: {
           select: {
-            email: true,
             firstName: true,
             lastName: true,
           },
         },
-      },
-      orderBy: {
-        createdAt: 'asc',
       },
     })
     .then((response) => {

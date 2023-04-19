@@ -1,6 +1,7 @@
 import { UserMenu } from '@components/UI'
 import {
   CalendarMonth,
+  Groups,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
   Logout,
@@ -34,6 +35,11 @@ const MENU_LIST_ITEMS = [
     name: 'Zwroty',
     href: '/returns',
     icon: <KeyboardDoubleArrowLeft />,
+  },
+  {
+    name: 'Spotkania',
+    href: '/meetings',
+    icon: <Groups />,
   },
   {
     name: 'Kalendarz',
@@ -73,7 +79,7 @@ const LayoutComponent = ({ children }) => {
           <UserMenu />
         </Toolbar>
       </AppBar>
-      <Box paddingX={2}>{children}</Box>
+      <Box padding={2}>{children}</Box>
       <Drawer
         open={isMenuOpen}
         anchor="left"

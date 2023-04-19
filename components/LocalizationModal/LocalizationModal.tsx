@@ -1,22 +1,23 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
-import { ordersActions, ordersSelectors, returnsActions } from '@src/store'
+import { commonSelectors, ordersActions, ordersSelectors, returnsActions, returnsSelectors } from '@src/store'
 import { useEffect, useState } from 'react'
+import { Paths } from '@src/types'
 
 type LocalizationModalProps = {
   isOpen: boolean
   onClose: () => void
   onConfirm: () => void
-  source?: 'order' | 'return'
 }
 
-export const LocalizationModal = ({ isOpen, onClose, onConfirm, source }: LocalizationModalProps) => {
+export const LocalizationModal = ({ isOpen, onClose, onConfirm }: LocalizationModalProps) => {
   const dispatch = useDispatch()
   const { localization: orderLocalization } = useSelector(ordersSelectors.selectOrderDetails)
-  const { localization: returnLocalization } = useSelector(ordersSelectors.selectOrderDetails)
+  const { localization: returnLocalization } = useSelector(returnsSelectors.selectReturnDetails)
+  const currentPath = useSelector(commonSelectors.selectCurrentPath)
   const [isEdit, setIsEdit] = useState<boolean>(false)
 
-  const isOrder = source === 'order'
+  const isOrder = currentPath === Paths.ORDERS
   const localization = isOrder ? orderLocalization : returnLocalization
 
   useEffect(() => {

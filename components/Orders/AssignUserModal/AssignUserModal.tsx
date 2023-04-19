@@ -1,8 +1,16 @@
 import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { commonSelectors, ordersActions, ordersSelectors, returnsActions, usersSelectors } from '@src/store'
+import {
+  commonSelectors,
+  ordersActions,
+  ordersSelectors,
+  returnsActions,
+  returnsSelectors,
+  usersSelectors,
+} from '@src/store'
 import { Paths } from '@src/types'
+import { useGetUsersList } from '@src/hooks'
 
 type AssignUserModalProps = {
   isOpen: boolean
@@ -14,12 +22,17 @@ type AssignUserModalProps = {
 export const AssignUserModal: FC<AssignUserModalProps> = ({ isOpen, onClose, onAssignUser, onUnassignUser }) => {
   const dispatch = useDispatch()
   const currentPath = useSelector(commonSelectors.selectCurrentPath)
-  const usersLisRaw = useSelector(usersSelectors.selectUsersList)
+  const { usersList: usersLisRaw } = useGetUsersList()
+  const { handleById: orderHandleById } = useSelector(ordersSelectors.selectOrderDetails)
+  const { handleById: returnHandleById } = useSelector(returnsSelectors.selectReturnDetails)
+  const [selectedUser, setSelectedUser] = useState<{ id: string; label: string }>(null)
+
+  const isOrder = currentPath === Paths.ORDERS
+  const handleById = isOrder ? orderHandleById : returnHandleById
+
   const usersList = useMemo(() => {
     return usersLisRaw.map((user) => ({ id: user.id, label: `${user.firstName} ${user.lastName}` }))
   }, [usersLisRaw])
-  const selectedHandleById = useSelector(ordersSelectors.selectOrderDetails)
-  const [selectedUser, setSelectedUser] = useState<{ id: string; label: string }>(null)
 
   useEffect(() => {
     if (selectedUser?.id) {
@@ -30,9 +43,14 @@ export const AssignUserModal: FC<AssignUserModalProps> = ({ isOpen, onClose, onA
   }, [selectedUser])
 
   useEffect(() => {
-    const foundUser = usersList.find((el) => el.id === selectedHandleById.handleById)
-    setSelectedUser(foundUser ? foundUser : null)
-  }, [selectedHandleById])
+    if (handleById && usersList) {
+      const foundUser = usersList?.find((el) => el.id === handleById)
+      console.log(usersList, foundUser)
+      setSelectedUser(foundUser ? foundUser : null)
+    }
+  }, [handleById, usersList])
+
+  console.log(handleById)
 
   return (
     <Dialog

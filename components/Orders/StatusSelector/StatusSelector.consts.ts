@@ -10,6 +10,8 @@ export const orderStatusName = (status) => {
       return 'Dostarczone'
     case OrderStatuses.CLOSED:
       return 'Zakończone'
+    case OrderStatuses.PAUSED:
+      return 'Wstrzymane'
   }
 }
 
@@ -21,5 +23,7 @@ export const returnStatusName = (status) => {
       return 'Zwrot ustalony'
     case ReturnStatuses.CLOSED:
       return 'Zakończone'
+    case ReturnStatuses.PAUSED:
+      return 'Wstrzymane'
   }
 }

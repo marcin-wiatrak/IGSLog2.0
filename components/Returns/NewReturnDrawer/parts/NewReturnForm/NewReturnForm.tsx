@@ -28,7 +28,7 @@ import { AddCircle } from '@mui/icons-material'
 import { useDispatch, useSelector } from 'react-redux'
 import { customersSelectors, ordersActions, ordersSelectors, usersSelectors } from '@src/store'
 import { NewCustomerForm } from '@components/Orders/NewOrderDrawer/parts'
-import { useDisclose, useGetReturnsList } from '@src/hooks'
+import { useDisclose, useGetReturnsList, useGetUsersList } from '@src/hooks'
 import { translatedType } from '@src/utils/textFormatter'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
@@ -41,7 +41,7 @@ type NewOrderFormProps = {
 export interface IFormInput extends yup.InferType<typeof schema> {
   customer: AutocompleteOptionType
   signature: string
-  pickupAt: string
+  returnAt: string
   notes: string
   localization: string
   type: OrderType[]
@@ -52,7 +52,7 @@ export interface IFormInput extends yup.InferType<typeof schema> {
 const defaultValues = {
   customer: null,
   signature: '',
-  pickupAt: '',
+  returnAt: '',
   notes: '',
   localization: '',
   type: [],
@@ -63,7 +63,7 @@ const defaultValues = {
 const schema = yup.object({
   customer: yup.object().required(ErrorMessages.EMPTY),
   signature: yup.string().required(ErrorMessages.EMPTY),
-  pickupAt: yup.string().optional(),
+  returnAt: yup.string().optional(),
   localization: yup.string().optional(),
   notes: yup.string(),
   type: yup
@@ -82,7 +82,7 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
   const { refreshReturnsList } = useGetReturnsList()
   const buttonSubmitRef = useRef(null)
   const customersList = useSelector(customersSelectors.selectCustomersList)
-  const usersList = useSelector(usersSelectors.selectUsersList)
+  const { usersList } = useGetUsersList()
   const attachment = useSelector(ordersSelectors.selectUploadedFiles)
   const {
     control,
@@ -101,7 +101,7 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
     setLoading('newOrder', true)
     const payload = {
       ...data,
-      pickupAt: data.pickupAt || undefined,
+      returnAt: data.returnAt || undefined,
       notes: data.notes || undefined,
       localization: data.localization || undefined,
       customerId: data.customer.id,
@@ -143,6 +143,8 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
         id: customer.id,
         label: customer.name,
       }))
+    } else {
+      return []
     }
   }, [customersList])
 
@@ -152,6 +154,8 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
         id: user.id,
         label: `${user.firstName} ${user.lastName}`,
       }))
+    } else {
+      return []
     }
   }, [usersList])
 
@@ -205,7 +209,7 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
                   gap: 1,
                 }}
               >
-                {customersListOption && !!customersListOption.length && (
+                {customersListOption && (
                   <Autocomplete
                     {...rest}
                     value={value}
@@ -239,7 +243,7 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
             )}
           />
           <Controller
-            name="pickupAt"
+            name="returnAt"
             control={control}
             render={({ field: { onChange, value, ...rest } }) => (
               <DatePicker

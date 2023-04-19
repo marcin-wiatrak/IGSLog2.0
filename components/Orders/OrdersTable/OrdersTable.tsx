@@ -17,31 +17,25 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
-  Tooltip,
+  Typography,
 } from '@mui/material'
-import { FC, useCallback, useMemo, useState } from 'react'
-import { Return, User } from '@prisma/client'
-import { ReturnContent, TableOrderDirection } from '@src/types'
-import { getFullName, renameDownloadFile } from '@src/utils'
+import { useCallback, useMemo, useState } from 'react'
+import { Order } from '@prisma/client'
+import { TableOrderDirection } from '@src/types'
+import { renameDownloadFile } from '@src/utils'
 import { AssignUserModal, StatusSelector, UploadFileModal } from '@components/Orders'
-import { LocalizationModal } from '@components/LocalizationModal'
 import dayjs from 'dayjs'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  customersSelectors,
-  ordersActions,
-  ordersSelectors,
-  returnsActions,
-  returnsSelectors,
-  usersSelectors,
-} from '@src/store'
+import { ordersActions, ordersSelectors } from '@src/store'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
-import { useDisclose, useGetReturnsList } from '@src/hooks'
+import { useDisclose, useGetOrdersList } from '@src/hooks'
 import * as R from 'ramda'
 import { usePagination } from '@src/hooks/usePagination'
 import { TablePaginator } from '@components/TablePaginator'
-import { AddCircle, AttachFile, Description, Download, Inventory } from '@mui/icons-material'
+import { AddCircle, AttachFile, Download, Info } from '@mui/icons-material'
+import { LocalizationModal } from '@components/LocalizationModal'
+import { formatFullName } from '@src/utils/textFormatter'
 import { TypeElement } from '@components/TypeElement'
 
 const COLUMNS_SETUP = [
@@ -59,7 +53,7 @@ const COLUMNS_SETUP = [
   },
   {
     name: 'signature',
-    label: 'IGS',
+    label: 'Sygnatura',
     displayMobile: true,
     allowSorting: false,
   },
@@ -70,25 +64,19 @@ const COLUMNS_SETUP = [
     allowSorting: true,
   },
   {
-    name: 'returnAt',
-    label: 'Data zwrotu',
+    name: 'pickupAt',
+    label: 'Data odbioru',
     displayMobile: true,
     allowSorting: true,
   },
   {
     name: 'localization',
-    label: 'Miejsce zwrotu',
+    label: 'Miejsce odbioru',
     displayMobile: true,
     allowSorting: true,
   },
   {
-    name: 'contained',
-    label: 'Zawartość',
-    displayMobile: true,
-    allowSorting: false,
-  },
-  {
-    name: 'handleBy',
+    name: 'handledBy',
     label: 'Osoba odpowiedzialna',
     displayMobile: true,
     allowSorting: false,
@@ -105,22 +93,14 @@ const COLUMNS_SETUP = [
     displayMobile: true,
     allowSorting: false,
   },
-  {
-    name: 'attachment',
-    label: 'Załączniki',
-    displayMobile: true,
-    allowSorting: false,
-  },
 ]
 
-export const Table = () => {
+export const OrdersTable = () => {
   const { data } = useSession()
   const dispatch = useDispatch()
   const [attachmentsMenuAnchor, setAttachmentsMenuAnchor] = useState(null)
-  const customersList = useSelector(customersSelectors.selectCustomersList)
-  const usersList = useSelector(usersSelectors.selectUsersList)
-  const returnsList = useSelector(returnsSelectors.selectReturnsList)
-  const returnDetails = useSelector(returnsSelectors.selectReturnDetails)
+  const ordersList = useSelector(ordersSelectors.selectOrdersList)
+  const orderDetails = useSelector(ordersSelectors.selectOrderDetails)
   const filterByType = useSelector(ordersSelectors.selectFilterByType)
   const filters = useSelector(ordersSelectors.selectFilterRegisteredBy)
   const [attachmentHover, setAttachmentHover] = useState('')
@@ -128,7 +108,7 @@ export const Table = () => {
   const [sortBy, setSortBy] = useState('createdAt')
   const [sortDirection, setSortDirection] = useState<TableOrderDirection>('desc')
 
-  const { refreshReturnsList } = useGetReturnsList()
+  const { refreshOrdersList } = useGetOrdersList()
 
   const {
     isOpen: isAssignUserModalOpen,
@@ -149,26 +129,10 @@ export const Table = () => {
   } = useDisclose()
 
   const handleUploadFileModalOpen = (orderId?) => {
-    if (orderId) dispatch(returnsActions.setReturnDetails({ id: orderId }))
+    if (orderId) dispatch(ordersActions.setOrderDetails({ id: orderId }))
     onUploadFileModalOpen()
     setAttachmentsMenuAnchor(null)
   }
-
-  const mappedCustomersList = useMemo(() => {
-    if (customersList.length) {
-      return customersList.reduce((acc, customer) => {
-        return { ...acc, [customer.id]: customer }
-      }, {})
-    }
-  }, [customersList])
-
-  const mappedUsersList = useMemo(() => {
-    if (usersList.length) {
-      return usersList.reduce((acc, customer) => {
-        return { ...acc, [customer.id]: customer }
-      }, {})
-    }
-  }, [usersList])
 
   const handleChangeSorting = (column: string) => {
     setSortBy(column)
@@ -176,19 +140,19 @@ export const Table = () => {
   }
 
   const filterOrders = useCallback(
-    (returns: Return[]) =>
-      returns.filter(
-        (ret) =>
-          (filterByType.length ? filterByType.some((el) => ret.type.includes(el)) : true) &&
-          (filters.registeredBy.length ? filters.registeredBy.some((el) => el.id === ret.registeredById) : true) &&
-          (filters.handleBy.length ? filters.handleBy.some((el) => el.id === ret.handleById) : true) &&
-          (filters.localization && (!!ret.localization || !ret.localization)
-            ? ret.localization === null
+    (orders: Order[]) =>
+      orders.filter(
+        (order) =>
+          (filterByType.length ? filterByType.some((el) => order.type.includes(el)) : true) &&
+          (filters.registeredBy.length ? filters.registeredBy.some((el) => el.id === order.registeredById) : true) &&
+          (filters.handleBy.length ? filters.handleBy.some((el) => el.id === order.handleById) : true) &&
+          (filters.localization && (!!order.localization || !order.localization)
+            ? order.localization === null
               ? false
-              : ret.localization.includes(filters.localization)
+              : order.localization.includes(filters.localization)
             : true) &&
-          (filters.createdAtStart ? dayjs(ret.createdAt).isAfter(filters.createdAtStart) : true) &&
-          (filters.createdAtEnd ? dayjs(ret.createdAt).isBefore(filters.createdAtEnd) : true)
+          (filters.createdAtStart ? dayjs(order.createdAt).isAfter(filters.createdAtStart) : true) &&
+          (filters.createdAtEnd ? dayjs(order.createdAt).isBefore(filters.createdAtEnd) : true)
       ),
     [
       filterByType,
@@ -201,12 +165,12 @@ export const Table = () => {
   )
 
   const sortOrders = useCallback(
-    (returns) => {
+    (orders) => {
       const sort =
         sortDirection === 'asc'
           ? R.sortWith([R.ascend(R.prop(sortBy) || '')])
           : R.sortWith([R.descend(R.prop(sortBy) || '')])
-      return sort(returns)
+      return sort(orders)
     },
     [sortBy, sortDirection]
   )
@@ -216,15 +180,13 @@ export const Table = () => {
   })
 
   const handleAssignUserModalOpen = (orderId: string, handleById?: string) => {
-    dispatch(returnsActions.setReturnDetails({ id: orderId, handleById }))
+    dispatch(ordersActions.setOrderDetails({ id: orderId, handleById }))
     onAssignUserModalOpen()
   }
-
   const handleAssignUserModalClose = () => {
-    dispatch(returnsActions.clearReturnDetails())
+    dispatch(ordersActions.clearOrderDetails())
     onAssignUserModalClose()
   }
-
   const handleUpdateOrderHandleBy = async (
     {
       selectedUser,
@@ -240,77 +202,58 @@ export const Table = () => {
       id = data.user.userId
     }
     if (selectedUser) {
-      id = returnDetails.handleById
+      id = orderDetails.handleById
     }
-    await axios.post(`/api/return/${orderId || returnDetails.id}/update`, { handleById: id }).then(() => {
-      refreshReturnsList()
+    await axios.post(`/api/order/${orderId || orderDetails.id}/update`, { handleById: id }).then(() => {
+      refreshOrdersList()
       handleAssignUserModalClose()
     })
   }
 
   const handleEditLocalizationModalOpen = (orderId: string, localization?: string) => {
-    dispatch(returnsActions.setReturnDetails({ id: orderId, localization }))
+    dispatch(ordersActions.setOrderDetails({ id: orderId, localization }))
     onLocalizationModalOpen()
   }
 
   const handleEditLocalizationModalClose = () => {
-    dispatch(returnsActions.clearReturnDetails())
+    dispatch(ordersActions.clearOrderDetails())
     onLocalizationModalClose()
   }
 
   const handleUpdateOrderLocalization = async () => {
     await axios
-      .post(`/api/return/${returnDetails.id}/update`, { localization: returnDetails.localization })
+      .post(`/api/order/${orderDetails.id}/localization`, { localization: orderDetails.localization })
       .then(() => {
-        refreshReturnsList()
+        refreshOrdersList()
         handleEditLocalizationModalClose()
       })
   }
 
   const handleAttachmentsMenuClose = () => {
-    dispatch(returnsActions.clearReturnDetails())
+    dispatch(ordersActions.clearOrderDetails())
     setAttachmentsMenuAnchor(null)
   }
 
   const handleAttachmentsMenuOpen = (e, attachments?: string[], orderId?: string) => {
-    dispatch(returnsActions.setReturnDetails({ attachment: attachments, id: orderId }))
+    dispatch(ordersActions.setOrderDetails({ attachment: attachments, id: orderId }))
     setAttachmentsMenuAnchor(e.currentTarget)
   }
 
   const tableData = useMemo(() => {
-    return sortOrders(filterOrders(returnsList))
-  }, [filterOrders, returnsList, sortOrders])
+    return sortOrders(filterOrders(ordersList))
+  }, [filterOrders, ordersList, sortOrders])
 
   const { handlePagination, ...pagination } = usePagination(tableData, 10)
 
-  const formatContentToIcon = (content) => {
-    switch (content) {
-      case ReturnContent.DOC:
-        return (
-          <Tooltip title="Dokumentacja">
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Description color="success" />
-            </Box>
-          </Tooltip>
-        )
-      case ReturnContent.MAT:
-        return (
-          <Tooltip title="Materiał">
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Inventory color="warning" />
-            </Box>
-          </Tooltip>
-        )
-      case ReturnContent.MATDOC:
-        return (
-          <Tooltip title="Materiał + Dokumentacja">
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Inventory color="warning" />
-              <Description color="success" />
-            </Box>
-          </Tooltip>
-        )
-    }
+  if (!ordersList.length) {
+    return (
+      <Typography
+        color="text.secondary"
+        align="center"
+      >
+        Brak odbiorów. Utwórz pierwszy korzystając z przycisku w dolnym prawym rogu ekranu
+      </Typography>
+    )
   }
 
   return (
@@ -337,20 +280,33 @@ export const Table = () => {
                   )}
                 </TableCell>
               ))}
+              <TableCell />
             </TableRow>
           </TableHead>
           <TableBody>
-            {returnsList && !!returnsList.length && mappedCustomersList && mappedUsersList ? (
+            {ordersList ? (
               <>
                 {handlePagination(tableData).map((order) => (
                   <TableRow key={order.id}>
                     <TableCell>
-                      <TypeElement />
+                      <TypeElement types={order.type} />
                     </TableCell>
-                    <TableCell>{mappedCustomersList[order.customerId].name}</TableCell>
+                    <TableCell>{`${order.customer.name}`}</TableCell>
                     <TableCell>{order.signature}</TableCell>
                     <TableCell>{dayjs(order.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
-                    <TableCell>{order.returnAt ? dayjs(order.returnAt).format('DD/MM/YYYY HH:mm') : '-'}</TableCell>
+                    <TableCell>
+                      {order.pickupAt ? (
+                        dayjs(order.pickupAt).format('DD/MM/YYYY')
+                      ) : (
+                        <Button
+                          // TODO add method to set date
+                          // onClick={() => handleEditLocalizationModalOpen(order.id)}
+                          size="small"
+                        >
+                          Ustal
+                        </Button>
+                      )}
+                    </TableCell>
                     <TableCell>
                       {order.localization ? (
                         <Box
@@ -358,16 +314,21 @@ export const Table = () => {
                           sx={{
                             display: 'inline',
                             cursor: 'pointer',
+                            color: 'primary.main',
                             '&:hover': { color: 'text.secondary', cursor: 'pointer' },
                           }}
                         >
                           {order.localization}
                         </Box>
                       ) : (
-                        <Link onClick={() => handleEditLocalizationModalOpen(order.id)}>Edytuj</Link>
+                        <Button
+                          onClick={() => handleEditLocalizationModalOpen(order.id)}
+                          size="small"
+                        >
+                          Ustal
+                        </Button>
                       )}
                     </TableCell>
-                    <TableCell>{formatContentToIcon(order.content)}</TableCell>
                     <TableCell>
                       {order.handleById ? (
                         <Box
@@ -375,10 +336,11 @@ export const Table = () => {
                           sx={{
                             display: 'inline',
                             cursor: 'pointer',
+                            color: 'primary.main',
                             '&:hover': { color: 'text.secondary' },
                           }}
                         >
-                          {getFullName(mappedUsersList, order.handleById)}
+                          {formatFullName(order.handleBy)}
                         </Box>
                       ) : (
                         <>
@@ -400,7 +362,7 @@ export const Table = () => {
                         </>
                       )}
                     </TableCell>
-                    <TableCell>{getFullName(mappedUsersList, order.registeredById)}</TableCell>
+                    <TableCell>{formatFullName(order.registeredBy)}</TableCell>
                     <TableCell>
                       <StatusSelector
                         status={order.status}
@@ -428,6 +390,11 @@ export const Table = () => {
                           )}
                         </Badge>
                       </IconButton>
+                      <Link href={`/preview/order/${order.id}`}>
+                        <IconButton size="small">
+                          <Info />
+                        </IconButton>
+                      </Link>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -458,7 +425,7 @@ export const Table = () => {
         open={!!attachmentsMenuAnchor}
         onClose={handleAttachmentsMenuClose}
       >
-        {returnDetails.attachment?.map((att) => (
+        {orderDetails.attachment?.map((att) => (
           <MenuItem key={att}>
             <ListItemIcon>
               <Download />
@@ -496,7 +463,6 @@ export const Table = () => {
           isOpen={isLocalizationModalOpen}
           onClose={handleEditLocalizationModalClose}
           onConfirm={handleUpdateOrderLocalization}
-          source="return"
         />
       )}
       {isUploadFileModalOpen && (

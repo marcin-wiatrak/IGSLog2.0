@@ -1,2 +1,2 @@
 export { NewReturnDrawer } from './NewReturnDrawer'
-export { Table } from './Table'
+export { ReturnsTable } from './ReturnsTable'

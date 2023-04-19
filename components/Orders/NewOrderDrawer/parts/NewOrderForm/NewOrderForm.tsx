@@ -34,7 +34,7 @@ import { SnackbarFunctionProps, withSnackbar } from '@components/HOC'
 
 type NewOrderFormProps = {
   onDrawerClose: () => void
-  showSnackbar: (props: SnackbarFunctionProps) => void
+  // showSnackbar: (props: SnackbarFunctionProps) => void
 }
 
 export interface IFormInput extends yup.InferType<typeof schema> {
@@ -147,6 +147,8 @@ export const NewOrderForm = forwardRef<any, NewOrderFormProps>((props, ref) => {
         id: customer.id,
         label: customer.name,
       }))
+    } else {
+      return []
     }
   }, [customersList])
 
@@ -156,6 +158,8 @@ export const NewOrderForm = forwardRef<any, NewOrderFormProps>((props, ref) => {
         id: user.id,
         label: `${user.firstName} ${user.lastName}`,
       }))
+    } else {
+      return []
     }
   }, [usersList])
 
@@ -209,7 +213,7 @@ export const NewOrderForm = forwardRef<any, NewOrderFormProps>((props, ref) => {
                   gap: 1,
                 }}
               >
-                {customersListOption && !!customersListOption.length && (
+                {customersListOption && (
                   <Autocomplete
                     {...rest}
                     value={value}

@@ -35,3 +35,9 @@ export const getCurrentUserNameFromSession = ({ session, initials }: { session: 
     return initials ? `${firstName.charAt(0)}${lastName.charAt(0)}` : `${firstName} ${lastName}`
   }
 }
+
+export const formatFullName = (personalData) => {
+  if ('firstName' in personalData) {
+    return `${personalData.firstName} ${personalData.lastName}`
+  }
+}

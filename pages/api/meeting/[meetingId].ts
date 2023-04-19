@@ -1,22 +1,14 @@
 import { prisma } from '@server/db'
 
 const handler = async (req, res) => {
-  await prisma.return
-    .findMany({
+  const { meetingId } = req.query
+  console.log(meetingId)
+  await prisma.meeting
+    .findUnique({
+      where: {
+        id: meetingId,
+      },
       include: {
-        registeredBy: {
-          select: {
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
-        customer: {
-          select: {
-            name: true,
-          },
-        },
         handleBy: {
           select: {
             email: true,
@@ -24,9 +16,11 @@ const handler = async (req, res) => {
             lastName: true,
           },
         },
-      },
-      orderBy: {
-        createdAt: 'asc',
+        unit: {
+          select: {
+            name: true,
+          },
+        },
       },
     })
     .then((response) => {

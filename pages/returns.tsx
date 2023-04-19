@@ -3,7 +3,7 @@ import { Fab, Typography, Unstable_Grid2 as Grid } from '@mui/material'
 import { Layout } from '@components/Layout'
 import { FiltersDrawer } from '@components/Orders/FiltersDrawer'
 import { useDisclose, useGetReturnsList, usePath } from '@src/hooks'
-import { NewReturnDrawer, Table } from '@components/Returns'
+import { NewReturnDrawer, ReturnsTable } from '@components/Returns'
 import { Add } from '@mui/icons-material'
 import { ordersActions } from '@src/store'
 import { useDispatch } from 'react-redux'
@@ -72,7 +72,7 @@ const Returns: NextPage = () => {
             xs={12}
           >
             <Grid xs={12}>
-              <Table />
+              <ReturnsTable />
             </Grid>
           </Grid>
         </Grid>

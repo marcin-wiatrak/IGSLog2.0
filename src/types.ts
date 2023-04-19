@@ -12,12 +12,14 @@ export enum OrderStatuses {
   PICKED_UP = 'PICKED_UP',
   DELIVERED = 'DELIVERED',
   CLOSED = 'CLOSED',
+  PAUSED = 'PAUSED',
 }
 
 export enum ReturnStatuses {
   NEW = 'NEW',
   SET = 'SET',
   CLOSED = 'CLOSED',
+  PAUSED = 'PAUSED',
 }
 
 export enum ErrorMessages {
