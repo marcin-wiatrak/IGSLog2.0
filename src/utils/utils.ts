@@ -4,7 +4,6 @@ export const toggleValueInArray = (array, value) => {
 }
 
 export const getCustomerNameById = (customerId, customersArray) => {
-  console.log(customerId, customersArray)
   const customer = customersArray.find((item) => item.id === customerId)
   return customer.name
 }

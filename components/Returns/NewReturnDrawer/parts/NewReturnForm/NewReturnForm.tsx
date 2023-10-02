@@ -65,7 +65,7 @@ const schema = yup.object({
   signature: yup.string().required(ErrorMessages.EMPTY),
   returnAt: yup.string().optional(),
   localization: yup.string().optional(),
-  notes: yup.string(),
+  notes: yup.string().optional(),
   type: yup
     .array()
     .of(yup.string())
@@ -89,6 +89,7 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema), defaultValues })
 
@@ -191,7 +192,7 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
             render={({ field, fieldState: { error } }) => (
               <TextField
                 {...field}
-                label="IGS"
+                label="Sygnatura"
                 error={!!error}
                 helperText={error?.message}
               />

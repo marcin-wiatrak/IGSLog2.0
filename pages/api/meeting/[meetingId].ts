@@ -2,7 +2,6 @@ import { prisma } from '@server/db'
 
 const handler = async (req, res) => {
   const { meetingId } = req.query
-  console.log(meetingId)
   await prisma.meeting
     .findUnique({
       where: {

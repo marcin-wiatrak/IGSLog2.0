@@ -20,13 +20,13 @@ import {
   Typography,
 } from '@mui/material'
 import { useCallback, useMemo, useState } from 'react'
-import { Order } from '@prisma/client'
+import { Customer, Order } from '@prisma/client'
 import { TableOrderDirection } from '@src/types'
 import { renameDownloadFile } from '@src/utils'
 import { AssignUserModal, StatusSelector, UploadFileModal } from '@components/Orders'
 import dayjs from 'dayjs'
 import { useDispatch, useSelector } from 'react-redux'
-import { ordersActions, ordersSelectors } from '@src/store'
+import { commonSelectors, ordersActions, ordersSelectors } from '@src/store'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import { useDisclose, useGetOrdersList } from '@src/hooks'
@@ -34,11 +34,17 @@ import * as R from 'ramda'
 import { usePagination } from '@src/hooks/usePagination'
 import { TablePaginator } from '@components/TablePaginator'
 import { AddCircle, AttachFile, Download, Info } from '@mui/icons-material'
-import { LocalizationModal } from '@components/LocalizationModal'
 import { formatFullName } from '@src/utils/textFormatter'
 import { TypeElement } from '@components/TypeElement'
+import { LocalizationModal, PickupAtModal } from '@components/modals'
 
 const COLUMNS_SETUP = [
+  {
+    name: 'no',
+    label: 'LP',
+    displayMobile: true,
+    allowSorting: true,
+  },
   {
     name: 'type',
     label: 'Dział',
@@ -99,16 +105,16 @@ export const OrdersTable = () => {
   const { data } = useSession()
   const dispatch = useDispatch()
   const [attachmentsMenuAnchor, setAttachmentsMenuAnchor] = useState(null)
-  const ordersList = useSelector(ordersSelectors.selectOrdersList)
   const orderDetails = useSelector(ordersSelectors.selectOrderDetails)
   const filterByType = useSelector(ordersSelectors.selectFilterByType)
   const filters = useSelector(ordersSelectors.selectFilterRegisteredBy)
   const [attachmentHover, setAttachmentHover] = useState('')
+  const findString = useSelector(commonSelectors.selectFindString)
 
-  const [sortBy, setSortBy] = useState('createdAt')
+  const [sortBy, setSortBy] = useState('no')
   const [sortDirection, setSortDirection] = useState<TableOrderDirection>('desc')
 
-  const { refreshOrdersList } = useGetOrdersList()
+  const { ordersList, refreshOrdersList } = useGetOrdersList()
 
   const {
     isOpen: isAssignUserModalOpen,
@@ -128,6 +134,8 @@ export const OrdersTable = () => {
     onClose: onUploadFileModalClose,
   } = useDisclose()
 
+  const { isOpen: isPickupAtModalOpen, onOpen: onPickupAtModalOpen, onClose: onPickupAtModalClose } = useDisclose()
+
   const handleUploadFileModalOpen = (orderId?) => {
     if (orderId) dispatch(ordersActions.setOrderDetails({ id: orderId }))
     onUploadFileModalOpen()
@@ -140,7 +148,7 @@ export const OrdersTable = () => {
   }
 
   const filterOrders = useCallback(
-    (orders: Order[]) =>
+    (orders: (Order & { customer?: Customer })[]) =>
       orders.filter(
         (order) =>
           (filterByType.length ? filterByType.some((el) => order.type.includes(el)) : true) &&
@@ -152,7 +160,11 @@ export const OrdersTable = () => {
               : order.localization.includes(filters.localization)
             : true) &&
           (filters.createdAtStart ? dayjs(order.createdAt).isAfter(filters.createdAtStart) : true) &&
-          (filters.createdAtEnd ? dayjs(order.createdAt).isBefore(filters.createdAtEnd) : true)
+          (filters.createdAtEnd ? dayjs(order.createdAt).isBefore(filters.createdAtEnd) : true) &&
+          ((findString ? order.localization?.toLowerCase().includes(findString.toLowerCase()) : true) ||
+            (findString ? order.customer?.name?.toLowerCase().includes(findString.toLowerCase()) : true) ||
+            (findString ? order.signature?.toLowerCase().includes(findString.toLowerCase()) : true) ||
+            (findString ? order.no.toString().includes(findString.toLowerCase()) : true))
       ),
     [
       filterByType,
@@ -161,6 +173,7 @@ export const OrdersTable = () => {
       filters.handleBy,
       filters.localization,
       filters.registeredBy,
+      findString,
     ]
   )
 
@@ -178,6 +191,8 @@ export const OrdersTable = () => {
   const dummyArray = new Array(8).fill('0').map((_, index) => {
     return index + 1
   })
+
+  const handleClearOrderDetails = () => dispatch(ordersActions.clearOrderDetails())
 
   const handleAssignUserModalOpen = (orderId: string, handleById?: string) => {
     dispatch(ordersActions.setOrderDetails({ id: orderId, handleById }))
@@ -216,7 +231,7 @@ export const OrdersTable = () => {
   }
 
   const handleEditLocalizationModalClose = () => {
-    dispatch(ordersActions.clearOrderDetails())
+    handleClearOrderDetails()
     onLocalizationModalClose()
   }
 
@@ -230,13 +245,26 @@ export const OrdersTable = () => {
   }
 
   const handleAttachmentsMenuClose = () => {
-    dispatch(ordersActions.clearOrderDetails())
+    handleClearOrderDetails()
     setAttachmentsMenuAnchor(null)
   }
 
   const handleAttachmentsMenuOpen = (e, attachments?: string[], orderId?: string) => {
     dispatch(ordersActions.setOrderDetails({ attachment: attachments, id: orderId }))
     setAttachmentsMenuAnchor(e.currentTarget)
+  }
+
+  const handlePickupAtModalOpen = (orderId: string, pickupAt?: string) => {
+    dispatch(ordersActions.setOrderDetails({ id: orderId, pickupAt }))
+    onPickupAtModalOpen()
+  }
+
+  const handleUpdatePickupAt = async () => {
+    await axios.post(`/api/order/${orderDetails.id}/update`, { pickupAt: orderDetails.pickupAt }).then((res) => {
+      onPickupAtModalClose()
+      refreshOrdersList()
+      handleClearOrderDetails()
+    })
   }
 
   const tableData = useMemo(() => {
@@ -288,19 +316,29 @@ export const OrdersTable = () => {
               <>
                 {handlePagination(tableData).map((order) => (
                   <TableRow key={order.id}>
+                    <TableCell>{order.no}</TableCell>
                     <TableCell>
                       <TypeElement types={order.type} />
                     </TableCell>
-                    <TableCell>{`${order.customer.name}`}</TableCell>
+                    <TableCell>{order.customer.name}</TableCell>
                     <TableCell>{order.signature}</TableCell>
                     <TableCell>{dayjs(order.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
                     <TableCell>
                       {order.pickupAt ? (
-                        dayjs(order.pickupAt).format('DD/MM/YYYY')
+                        <Box
+                          onClick={() => handlePickupAtModalOpen(order.id, order.pickupAt)}
+                          sx={{
+                            display: 'inline',
+                            cursor: 'pointer',
+                            color: 'primary.main',
+                            '&:hover': { color: 'text.secondary', cursor: 'pointer' },
+                          }}
+                        >
+                          {dayjs(order.pickupAt).format('DD/MM/YYYY')}
+                        </Box>
                       ) : (
                         <Button
-                          // TODO add method to set date
-                          // onClick={() => handleEditLocalizationModalOpen(order.id)}
+                          onClick={() => handlePickupAtModalOpen(order.id)}
                           size="small"
                         >
                           Ustal
@@ -470,6 +508,13 @@ export const OrdersTable = () => {
           isOpen={isUploadFileModalOpen}
           onClose={onUploadFileModalClose}
           method="updateOrder"
+        />
+      )}
+      {isPickupAtModalOpen && (
+        <PickupAtModal
+          isOpen={isPickupAtModalOpen}
+          onClose={onPickupAtModalClose}
+          onConfirm={handleUpdatePickupAt}
         />
       )}
     </>

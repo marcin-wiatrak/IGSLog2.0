@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Box, Grid, Typography } from '@mui/material'
+import { Box, CircularProgress, Grid, Stack, Typography } from '@mui/material'
 import { NextPage } from 'next'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
@@ -29,7 +29,13 @@ const Home: NextPage = () => {
         minHeight: '100vh',
       }}
     >
-      <Typography variant="h1">IGSLog</Typography>
+      <Stack
+        alignItems="center"
+        spacing={3}
+      >
+        <Typography variant="h1">IGSLog</Typography>
+        <CircularProgress />
+      </Stack>
       {/*<Button onClick={() => signIn()}>Zaloguj</Button>*/}
       {/*<Button onClick={() => signOut()}>Wyloguj</Button>*/}
       {/*<Button*/}

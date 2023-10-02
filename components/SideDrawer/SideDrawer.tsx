@@ -14,7 +14,9 @@ type SideDrawerProps = {
 export const SideDrawer = ({ title, children, actionsList, onClose, width = 350, ...props }: SideDrawerProps) => {
   return (
     <Drawer
-      onClose={onClose}
+      onClose={(event, reason) => {
+        if (reason !== 'backdropClick') onClose()
+      }}
       {...props}
     >
       <Box

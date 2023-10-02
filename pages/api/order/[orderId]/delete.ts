@@ -3,13 +3,16 @@ import { prisma } from '@server/db'
 const handler = async (req, res) => {
   const { orderId } = req.query
   await prisma.order
-    .delete({
+    .update({
+      data: {
+        deleted: true,
+      },
       where: {
         id: orderId,
       },
     })
-    .then((response) => {
-      res.status(200).json(response)
+    .then(() => {
+      res.status(200).json({ isOk: true })
     })
     .finally(async () => {
       await prisma.$disconnect()

@@ -3,6 +3,9 @@ import { prisma } from '@server/db'
 const handler = async (req, res) => {
   await prisma.order
     .findMany({
+      where: {
+        deleted: false,
+      },
       include: {
         registeredBy: {
           select: {

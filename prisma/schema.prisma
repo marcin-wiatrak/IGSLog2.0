@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["darwin-arm64"]
 }
 
 datasource db {
@@ -24,6 +25,7 @@ model User {
   returnAssignedTo  Return[]  @relation("handleBy")
   returnCreatedBy   Return[]  @relation("registeredBy")
   meetingAssignedTo Meeting[] @relation("handleBy")
+  suspended         Boolean   @default(false)
 
   @@unique([id, firstName, lastName])
 }
@@ -35,6 +37,7 @@ enum Role {
 
 model Order {
   id             String      @id @default(uuid())
+  no             Int?        @default(autoincrement())
   customer       Customer    @relation(fields: [customerId], references: [id])
   customerId     String
   attachment     String[]
@@ -50,6 +53,7 @@ model Order {
   type           String[]
   notes          String?
   status         orderStatus @default(NEW)
+  deleted        Boolean     @default(false)
 }
 
 enum orderStatus {
@@ -74,6 +78,7 @@ model Customer {
 
 model Return {
   id             String       @id @default(uuid())
+  no             Int?         @default(autoincrement())
   customer       Customer     @relation(fields: [customerId], references: [id])
   customerId     String
   attachment     String[]
@@ -90,6 +95,7 @@ model Return {
   type           String[]
   notes          String?
   status         ReturnStatus @default(NEW)
+  deleted        Boolean      @default(false)
 }
 
 enum ReturnStatus {
@@ -101,6 +107,7 @@ enum ReturnStatus {
 
 model Meeting {
   id         String   @id @default(uuid())
+  no         Int?     @default(autoincrement())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   unit       Unit     @relation(name: "unit", fields: [unitId], references: [id])
@@ -112,6 +119,7 @@ model Meeting {
   handleById String?
   details    String?
   notes      String?
+  deleted    Boolean  @default(false)
 }
 
 model Unit {

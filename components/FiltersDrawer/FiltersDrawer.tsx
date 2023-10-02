@@ -1,11 +1,13 @@
 import { Autocomplete, Stack, TextField } from '@mui/material'
 import { FC, useMemo } from 'react'
-import { ordersActions, ordersSelectors, usersSelectors } from '@src/store'
+import { commonSelectors, ordersActions, ordersSelectors, returnsActions, returnsSelectors } from '@src/store'
 import { useDispatch, useSelector } from 'react-redux'
 import dayjs from 'dayjs'
 import { DatePicker } from '@mui/x-date-pickers'
 import { SideDrawer } from '@components/SideDrawer'
 import { Close } from '@mui/icons-material'
+import { Paths } from '@src/types'
+import { useGetUsersList } from '@src/hooks'
 
 type FiltersDrawerProps = {
   isOpen: boolean
@@ -13,8 +15,12 @@ type FiltersDrawerProps = {
 }
 
 export const FiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose }) => {
-  const users = useSelector(usersSelectors.selectUsersList)
-  const filters = useSelector(ordersSelectors.selectFilterRegisteredBy)
+  const currentPath = useSelector(commonSelectors.selectCurrentPath)
+  const { usersList: users } = useGetUsersList()
+  const ordersFilter = useSelector(ordersSelectors.selectFilterRegisteredBy)
+  const returnsFilters = useSelector(returnsSelectors.selectFilters)
+
+  const filters = currentPath === Paths.ORDERS ? ordersFilter : returnsFilters
 
   const dispatch = useDispatch()
 
@@ -27,22 +33,33 @@ export const FiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose }) => {
   }, [usersOptions])
 
   const handleChangeFilterRegisteredBy = (_, newValue) => {
-    dispatch(ordersActions.setFilterRegisteredBy({ filterRegisteredBy: newValue }))
+    currentPath === Paths.ORDERS
+      ? dispatch(ordersActions.setFilterRegisteredBy({ filterRegisteredBy: newValue }))
+      : dispatch(returnsActions.setFilters({ registeredBy: newValue }))
   }
 
   const handleChangeFilterUserId = (_, newValue) => {
-    dispatch(ordersActions.setFilterUserId({ filterHandleBy: newValue }))
+    currentPath === Paths.ORDERS
+      ? dispatch(ordersActions.setFilterUserId({ filterHandleBy: newValue }))
+      : dispatch(returnsActions.setFilters({ handleBy: newValue }))
   }
 
   const handleChangeFilterLocalization = ({ target }) => {
-    dispatch(ordersActions.setFilterLocalization({ filterLocalization: target.value }))
+    currentPath === Paths.ORDERS
+      ? dispatch(ordersActions.setFilterLocalization({ filterLocalization: target.value }))
+      : dispatch(returnsActions.setFilters({ localization: target.value }))
   }
 
   const handleChangeFilterCreatedAtStart = (date) => {
-    dispatch(ordersActions.setFilterCreatedAtStart({ filterCreatedAtStart: dayjs(date).format() }))
+    currentPath === Paths.ORDERS
+      ? dispatch(ordersActions.setFilterCreatedAtStart({ filterCreatedAtStart: dayjs(date).format() }))
+      : dispatch(returnsActions.setFilters({ createdAtStart: dayjs(date).format() }))
   }
+
   const handleChangeFilterCreatedAtEnd = (date) => {
-    dispatch(ordersActions.setFilterCreatedAtEnd({ filterCreatedAtEnd: dayjs(date).endOf('day').format() }))
+    currentPath === Paths.ORDERS
+      ? dispatch(ordersActions.setFilterCreatedAtEnd({ filterCreatedAtEnd: dayjs(date).endOf('day').format() }))
+      : dispatch(returnsActions.setFilters({ createdAtEnd: dayjs(date).endOf('day').format() }))
   }
 
   return (
@@ -57,7 +74,7 @@ export const FiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose }) => {
       <Stack spacing={3}>
         <Autocomplete
           multiple
-          value={filters.registeredBy}
+          value={filters.registeredBy as any[]}
           onChange={handleChangeFilterRegisteredBy}
           renderInput={(params) => (
             <TextField
@@ -69,7 +86,7 @@ export const FiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose }) => {
         />
         <Autocomplete
           multiple
-          value={filters.handleBy}
+          value={filters.handleBy as any[]}
           onChange={handleChangeFilterUserId}
           renderInput={(params) => (
             <TextField

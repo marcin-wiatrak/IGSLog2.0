@@ -5,6 +5,7 @@ import { UserSummarizedTab } from '@components/Calendar/TabView/UserSummarizedTa
 
 export const TabView = () => {
   const [tab, setTab] = useState(0)
+
   return (
     <Paper sx={{ p: 3 }}>
       <Tabs

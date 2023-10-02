@@ -1,16 +1,39 @@
-import { Box, Chip, CircularProgress, Link, Paper, Stack, Typography, Unstable_Grid2 as Grid } from '@mui/material'
-import { useRouter } from 'next/router'
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Checkbox,
+  Chip,
+  CircularProgress,
+  FormControlLabel,
+  Link,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+  Unstable_Grid2 as Grid,
+} from '@mui/material'
+import Router, { useRouter } from 'next/router'
 import { Layout } from '@components/Layout'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { DateTemplate, DateTimeTemplate, getFullName, renameDownloadFile } from '@src/utils'
+import { DateTemplate, DateTimeTemplate, getFullName, renameDownloadFile, toggleValueInArray } from '@src/utils'
 import { Customer, Order, User } from '@prisma/client'
-import { OrderType, Paths } from '@src/types'
+import { AutocompleteOptionType, ErrorMessages, OrderType, Paths } from '@src/types'
 import { getTypeIcon } from '@src/utils/typeIcons'
 import { formatFullName, translatedType } from '@src/utils/textFormatter'
 import { StatusSelector } from '@components/Orders'
-import { usePath } from '@src/hooks'
+import { useDisclose, useGetCustomersList, useGetUsersList, usePath } from '@src/hooks'
+import { ordersActions } from '@src/store'
+import { useDispatch } from 'react-redux'
+import { DeleteOrderConfirmationModal, PickupAtModal } from '@components/modals'
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
+import { DatePicker } from '@mui/x-date-pickers'
+import { ConfirmationModal } from '@components/UI'
+import { useSession } from 'next-auth/react'
 
 type OrderProps = Order & { handleBy: User; customer: Customer; registeredBy: User }
 
@@ -32,14 +55,147 @@ const Loader = () => (
   </Grid>
 )
 
+export interface IFormInput extends yup.InferType<typeof schema> {
+  customer: AutocompleteOptionType
+  signature: string
+  pickupAt: string
+  notes: string
+  localization: string
+  handleBy: AutocompleteOptionType
+}
+
+const defaultValues = {
+  customer: null,
+  signature: '',
+  pickupAt: '',
+  notes: '',
+  localization: '',
+  handleBy: null,
+}
+
+const schema = yup.object({
+  customer: yup.object().required(ErrorMessages.EMPTY),
+  signature: yup.string().required(ErrorMessages.EMPTY),
+  pickupAt: yup.string().nullable(),
+  localization: yup.string().optional().nullable(),
+  notes: yup.string().optional().nullable(),
+  handleBy: yup.object().nullable(),
+})
+
 const OrderPreview = () => {
-  const [orderData, setOrderData] = useState<OrderProps | null>(null)
+  const { data } = useSession()
+
   const router = useRouter()
   const { orderId } = router.query
 
+  const { usersList } = useGetUsersList()
+  const { customersList } = useGetCustomersList()
+
+  const [orderData, setOrderData] = useState<OrderProps | null>(null)
+  const [loadingData, setLoadingData] = useState(true)
+  const [isUnlocked, setIsUnlocked] = useState(false)
+
+  const confirmationModal = useDisclose()
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = useForm({ resolver: yupResolver(schema), defaultValues })
+
+  const backToOrders = () => router.push('/orders')
+
+  const handleDeleteOrder = () => {
+    axios.post(`/api/order/${orderId}/delete`).then((res) => {
+      confirmationModal.onClose()
+      if (res.statusText) {
+        backToOrders()
+      }
+    })
+  }
+
   const handleGetOrderDetails = useCallback(() => {
-    orderId && axios.get(`/api/order/${orderId}`).then((res) => setOrderData(res.data))
-  }, [orderId])
+    if (orderId) {
+      setLoadingData(true)
+      axios
+        .get(`/api/order/${orderId}`)
+        .then((res) => {
+          const data = res.data
+
+          console.log('orderData', data)
+
+          const handleBy = data.handleBy
+            ? {
+                id: data.handleById,
+                label: `${data.handleBy.firstName} ${data.handleBy.lastName}`,
+              }
+            : undefined
+          const customer = {
+            id: data.customerId,
+            label: data.customer.name,
+          }
+
+          const payload = {
+            customer,
+            handleBy,
+            signature: data.signature,
+            pickupAt: data.pickupAt,
+            notes: data.notes,
+            localization: data.localization,
+            content: data.content,
+          }
+
+          reset(payload)
+          setOrderData(res.data)
+        })
+        .catch((err) => console.log(err))
+        .finally(() => setLoadingData(false))
+    }
+  }, [orderId, reset])
+
+  const usersListOption = useMemo(() => {
+    if (usersList && usersList.length) {
+      return usersList.map((user) => ({
+        id: user.id,
+        label: `${user.firstName} ${user.lastName}`,
+      }))
+    } else {
+      return []
+    }
+  }, [usersList])
+
+  const customersListOptions = useMemo(() => {
+    if (customersList && customersList.length) {
+      return customersList.map((customer) => ({
+        id: customer.id,
+        label: customer.name,
+      }))
+    } else {
+      return []
+    }
+  }, [customersList])
+
+  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+    const payload = {
+      ...data,
+      customerId: data.customer.id,
+      handleById: data.handleBy?.id,
+    }
+    delete payload.customer
+    delete payload.handleBy
+
+    console.log(data, payload)
+
+    await axios
+      .post(`/api/order/${orderId}/update`, payload)
+      .then((res) => {
+        if (res.statusText === 'OK') backToOrders()
+      })
+      .catch((err) => {
+        console.error('WYSTĄPIŁ BŁĄD', orderId, err)
+      })
+  }
 
   useEffect(() => {
     handleGetOrderDetails()
@@ -47,199 +203,288 @@ const OrderPreview = () => {
 
   usePath(Paths.ORDERS)
 
+  if (loadingData) return <Loader />
+
   return (
-    <Layout>
-      <Typography variant="h1">Szczegóły odbioru</Typography>
-      <Grid
-        xs={12}
-        container
-        sx={{
-          my: 3,
-        }}
-      >
-        {orderData ? (
-          <Grid xs={12}>
-            <Paper
-              sx={{
-                p: 2,
-              }}
-            >
+    <>
+      <Layout>
+        <Typography variant="h1">Szczegóły odbioru</Typography>
+        <Grid
+          xs={12}
+          container
+          sx={{
+            my: 3,
+          }}
+        >
+          {orderData ? (
+            <>
+              <Grid xs />
               <Grid
                 xs={12}
-                container
-                spacing={2}
+                sm={10}
+                md={8}
+                lg={6}
+                xl={4}
               >
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      ID
-                    </Typography>
-                    <Typography>{orderData.id}</Typography>
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Sygnatura
-                    </Typography>
-                    <Typography>{orderData.signature}</Typography>
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Typ
-                    </Typography>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                    >
-                      {orderData.type.map((type: OrderType) => (
-                        <Chip
-                          key={type}
-                          avatar={getTypeIcon(type)}
-                          label={translatedType[type]}
-                        />
-                      ))}
-                    </Stack>
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack
-                    direction="column"
-                    justifyContent="center"
-                    alignItems="flex-start"
+                <Stack spacing={3}>
+                  <Paper
+                    sx={{
+                      p: 2,
+                    }}
                   >
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Status
-                    </Typography>
-                    <StatusSelector
-                      status={orderData.status}
-                      orderId={orderId as string}
-                    />
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Data utworzenia
-                    </Typography>
-                    <Typography>{dayjs(orderData.createdAt).format(DateTimeTemplate.DDMMYYYYHHmm)}</Typography>
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Osoba odpowiedzialna
-                    </Typography>
-                    {orderData.handleBy ? (
-                      <Typography>{formatFullName(orderData.handleBy)}</Typography>
-                    ) : (
-                      <Typography color="text.secondary">(brak przypisanej osoby)</Typography>
-                    )}
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Miejsce odbioru
-                    </Typography>
-                    {orderData.localization ? (
-                      <Typography>{orderData.localization}</Typography>
-                    ) : (
-                      <Typography color="text.secondary">(brak miejsca odbioru)</Typography>
-                    )}
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Data odbioru
-                    </Typography>
-                    <Typography>{dayjs(orderData.createdAt).locale('pl').format(DateTemplate.DDMMMMYYYY)}</Typography>
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Zarejestrowane przez
-                    </Typography>
-                    <Typography>{formatFullName(orderData.registeredBy)}</Typography>
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Załączniki
-                    </Typography>
-                    {orderData.attachment.length ? (
-                      orderData.attachment.map((att) => (
-                        <Box key={att}>
-                          <Link
-                            href={`/upload/${att}`}
-                            target="_blank"
-                            sx={{ textDecoration: 'none', color: 'primary' }}
-                            download={renameDownloadFile(att)}
+                    <Stack spacing={2}>
+                      <Grid xs={12}>
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            variant="overline"
                           >
-                            {renameDownloadFile(att)}
-                          </Link>
-                        </Box>
-                      ))
-                    ) : (
-                      <Typography>Brak załączników</Typography>
-                    )}
-                  </Stack>
-                </Grid>
-
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
+                            LP / ID
+                          </Typography>
+                          <Typography>{`${orderData.no} / ${orderData.id}`}</Typography>
+                        </Stack>
+                      </Grid>
+                      <Grid xs={12}>
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            variant="overline"
+                          >
+                            Data utworzenia
+                          </Typography>
+                          <Typography>{dayjs(orderData.createdAt).format(DateTimeTemplate.DDMMYYYYHHmm)}</Typography>
+                        </Stack>
+                      </Grid>
+                      <Grid xs={12}>
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            variant="overline"
+                          >
+                            Typ
+                          </Typography>
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                          >
+                            {orderData.type.map((type: OrderType) => (
+                              <Chip
+                                key={type}
+                                avatar={getTypeIcon(type)}
+                                label={translatedType[type]}
+                              />
+                            ))}
+                          </Stack>
+                        </Stack>
+                      </Grid>
+                      <Grid xs={12}>
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            variant="overline"
+                          >
+                            Zarejestrowane przez
+                          </Typography>
+                          <Typography>{formatFullName(orderData.registeredBy)}</Typography>
+                        </Stack>
+                      </Grid>
+                      <Controller
+                        name="signature"
+                        control={control}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            label="Sygnatura"
+                            error={!!error}
+                            helperText={error?.message}
+                          />
+                        )}
+                      />
+                      <Controller
+                        name="handleBy"
+                        control={control}
+                        render={({ field: { onChange, value, ...rest }, fieldState: { error } }) => (
+                          <Autocomplete
+                            {...rest}
+                            value={value}
+                            fullWidth
+                            blurOnSelect
+                            options={usersListOption}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            onChange={(e, newValue) => onChange(newValue)}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Osoba odpowiedzialna"
+                                error={!!error}
+                                color="success"
+                                helperText={error?.message}
+                              />
+                            )}
+                          />
+                        )}
+                      />
+                      <Controller
+                        name="customer"
+                        control={control}
+                        render={({ field: { onChange, value, ...rest }, fieldState: { error } }) => (
+                          <Autocomplete
+                            {...rest}
+                            value={value}
+                            fullWidth
+                            blurOnSelect
+                            options={customersListOptions}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            onChange={(e, newValue) => onChange(newValue)}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Zleceniodawca"
+                                error={!!error}
+                                helperText={error?.message}
+                              />
+                            )}
+                          />
+                        )}
+                      />
+                      <Controller
+                        name="localization"
+                        control={control}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            label="Miejsce odbioru"
+                            error={!!error}
+                            helperText={error?.message}
+                          />
+                        )}
+                      />
+                      <Controller
+                        name="pickupAt"
+                        control={control}
+                        render={({ field: { onChange, value, ...rest } }) => (
+                          <DatePicker
+                            {...rest}
+                            value={value ? dayjs(value) : null}
+                            onChange={(date) => onChange(dayjs(date).format())}
+                            label="Data odbioru"
+                            format={DateTemplate.DDMMYYYY}
+                          />
+                        )}
+                      />
+                      <Controller
+                        name="notes"
+                        control={control}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            label="Informacje dodatkowe / notatki"
+                            multiline
+                            rows="3"
+                            error={!!error}
+                            helperText={error?.message}
+                          />
+                        )}
+                      />
+                      <Grid xs={12}>
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            variant="overline"
+                          >
+                            Załączniki
+                          </Typography>
+                          {orderData.attachment.length ? (
+                            orderData.attachment.map((att) => (
+                              <Box key={att}>
+                                <Link
+                                  href={`/upload/${att}`}
+                                  target="_blank"
+                                  sx={{ textDecoration: 'none', color: 'primary' }}
+                                  download={renameDownloadFile(att)}
+                                >
+                                  {renameDownloadFile(att)}
+                                </Link>
+                              </Box>
+                            ))
+                          ) : (
+                            <Typography>Brak załączników</Typography>
+                          )}
+                        </Stack>
+                      </Grid>
+                      <Stack
+                        direction="row"
+                        justifyContent="flex-end"
+                        spacing={1}
+                      >
+                        {isDirty && (
+                          <Button
+                            color="error"
+                            onClick={backToOrders}
+                          >
+                            Wróć bez zapisywania
+                          </Button>
+                        )}
+                        <Button
+                          variant="contained"
+                          onClick={handleSubmit(onSubmit)}
+                        >
+                          {isDirty ? 'Zapisz zmiany' : 'Wróć'}
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </Paper>
+                  {data?.user?.role === 'ADMIN' && (
+                    <Paper
+                      sx={{
+                        p: 2,
+                      }}
                     >
-                      Informacje dodatkowe/notatki
-                    </Typography>
-                    <Typography sx={{ whiteSpace: 'pre' }}>{orderData.notes}</Typography>
-                  </Stack>
-                </Grid>
+                      <Stack spacing={3}>
+                        <Stack
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Typography variant="h4">Usuń zlecenie</Typography>
+                          <FormControlLabel
+                            label="Odblokuj"
+                            control={
+                              <Checkbox
+                                checked={isUnlocked}
+                                onChange={({ target }) => setIsUnlocked(target.checked)}
+                              />
+                            }
+                          />
+                        </Stack>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          fullWidth
+                          disabled={!isUnlocked}
+                          onClick={confirmationModal.onOpen}
+                        >
+                          Usuń zlecenie
+                        </Button>
+                      </Stack>
+                    </Paper>
+                  )}
+                </Stack>
               </Grid>
-            </Paper>
-          </Grid>
-        ) : (
-          <Loader />
-        )}
-      </Grid>
-    </Layout>
+              <Grid xs />
+            </>
+          ) : (
+            <Loader />
+          )}
+        </Grid>
+      </Layout>
+      <DeleteOrderConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={confirmationModal.onClose}
+        onConfirm={handleDeleteOrder}
+        data={orderData}
+      />
+    </>
   )
 }
 

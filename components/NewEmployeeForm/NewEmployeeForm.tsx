@@ -7,6 +7,7 @@ import { useEffect } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { Role } from '@src/types'
+import { SnackbarFunctionProps, withSnackbar } from '@components/HOC'
 
 const schema = yup
   .object({
@@ -24,7 +25,11 @@ interface IFormInput extends yup.InferType<typeof schema> {
   role: Role
 }
 
-export const NewEmployeeForm = () => {
+type NewEmployeeFormProps = {
+  showSnackbar: (props: SnackbarFunctionProps) => void
+}
+
+const NewEmployeeFormComponent = ({ showSnackbar }: NewEmployeeFormProps) => {
   const {
     control,
     handleSubmit,
@@ -47,8 +52,8 @@ export const NewEmployeeForm = () => {
         ...data,
         password: '1234',
       })
-      .then((res) => {
-        console.log(res)
+      .then(() => {
+        showSnackbar({ message: 'Konto utworzone. Hasło domyślne to 1234', severity: 'success', duration: 10000 })
         refreshUsersList()
       })
       .catch((error) => console.log(error))
@@ -134,3 +139,5 @@ export const NewEmployeeForm = () => {
     </>
   )
 }
+
+export const NewEmployeeForm = withSnackbar(NewEmployeeFormComponent)

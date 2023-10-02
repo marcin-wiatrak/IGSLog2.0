@@ -1,22 +1,20 @@
-import { Order } from '@prisma/client'
 import { Card, CardContent, Chip, Typography, Unstable_Grid2 as MuiGrid } from '@mui/material'
-import { translatedStatus, translatedType } from '@src/utils/textFormatter'
-import { OrderType } from '@src/types'
+import { formatFullName, translatedType } from '@src/utils/textFormatter'
+import { OrderExtended, OrderType } from '@src/types'
 import { getTypeIcon } from '@src/utils/typeIcons'
-import { getCustomerNameById } from '@src/utils/utils'
-import { useGetCustomersList } from '@src/hooks'
+import { useRouter } from 'next/router'
 
 type OrderContentProps = {
-  orderData: Order & { list?: string }
+  orderData: OrderExtended
 }
 
 export const OrderContent = ({ orderData }: OrderContentProps) => {
-  const { customersList } = useGetCustomersList()
+  const router = useRouter()
 
   const Grid = ({ children }) => (
     <MuiGrid
-      xs={6}
-      sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+      xs={12}
+      sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}
     >
       {children}
     </MuiGrid>
@@ -25,7 +23,7 @@ export const OrderContent = ({ orderData }: OrderContentProps) => {
   return (
     <Card
       key={orderData.id}
-      onClick={() => console.log('goToInfo', orderData.id)}
+      onClick={() => router.push(`/preview/order/${orderData.id}`)}
       sx={{ '&:hover': { boxShadow: 3, cursor: 'pointer' }, mb: 1, flex: 1 }}
     >
       <CardContent>
@@ -38,22 +36,10 @@ export const OrderContent = ({ orderData }: OrderContentProps) => {
               variant="caption"
               color="text.secondary"
             >
-              IGS:
+              IGS/Sygnatura:
             </Typography>
             <Chip
               label={orderData.signature}
-              color="success"
-            />
-          </Grid>
-          <Grid>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-            >
-              STATUS:
-            </Typography>
-            <Chip
-              label={translatedStatus[orderData.status]}
               color="success"
             />
           </Grid>
@@ -80,12 +66,26 @@ export const OrderContent = ({ orderData }: OrderContentProps) => {
               variant="caption"
               color="text.secondary"
             >
-              ZLECENIODAWCA:
+              Miejsce odbioru:
             </Typography>
             <Chip
-              label={getCustomerNameById(orderData.customerId, customersList)}
+              label={orderData.localization}
               color="success"
             />
+          </Grid>
+          <Grid>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+            >
+              Osoba odpowiedzialna:
+            </Typography>
+            {orderData.handleBy && (
+              <Chip
+                label={formatFullName(orderData.handleBy)}
+                color="success"
+              />
+            )}
           </Grid>
         </MuiGrid>
       </CardContent>

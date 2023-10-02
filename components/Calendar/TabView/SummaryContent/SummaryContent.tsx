@@ -1,9 +1,7 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import axios from 'axios'
-import { useDispatch, useSelector } from 'react-redux'
-import { commonActions, commonSelectors } from '@src/store'
-import { useEffect } from 'react'
+import { Typography, Unstable_Grid2 as Grid } from '@mui/material'
+import { useSelector } from 'react-redux'
+import { commonSelectors } from '@src/store'
+import { useMemo } from 'react'
 import { OrderContent } from '@components/Calendar/TabView/SummaryContent/OrderContent'
 import { ReturnContent } from '@components/Calendar/TabView/SummaryContent/ReturnContent'
 import dayjs from 'dayjs'
@@ -14,102 +12,76 @@ type SummaryContentProps = {
 }
 
 export const SummaryContent = ({ userId }: SummaryContentProps) => {
-  const dispatch = useDispatch()
-  const date = useSelector(commonSelectors.selectCalendarDay)
-  const calendarSummaryData = useSelector(commonSelectors.selectCalendarSummaryData)
-  const summaryData = useSelector(commonSelectors.selectCalendarDay)
+  const selectedDay = useSelector(commonSelectors.selectCalendarDay)
+  const calendarData = useSelector(commonSelectors.selectCalendarData)
 
-  useEffect(() => {
-    axios.post(`/api/calendar/${userId}/summary`, { date }).then((res) => {
-      dispatch(commonActions.setCalendarSummaryData({ calendarSummaryData: res.data }))
-    })
-  }, [date, userId])
-
-  if (!calendarSummaryData) return null
-
-  const { createdBy: orders, returnCreatedBy: returns, meetingAssignedTo: meetings } = calendarSummaryData
-
-  const AccordionBox = ({ title, dataCount }) => (
-    <>
-      <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-        <Typography
-          sx={{ flex: 1 }}
-          variant="h6"
-        >
-          {title}
-        </Typography>
-        <Typography
-          sx={{ flex: 1 }}
-          color="text.secondary"
-        >
-          zlecenia: {dataCount}
-        </Typography>
-      </Box>
-    </>
+  const filterOrdersForUser = useMemo(
+    () => ({
+      orders: calendarData.orders.filter((el) =>
+        el.handleById === userId && el.pickupAt ? dayjs(el.pickupAt).isSame(selectedDay, 'day') : false
+      ),
+      returns: calendarData.returns.filter((el) =>
+        el.handleById === userId && el.returnAt ? dayjs(el.returnAt).isSame(selectedDay, 'day') : false
+      ),
+    }),
+    [calendarData, selectedDay, userId]
   )
 
-  if (!orders?.length && !returns?.length && !meetings?.length) {
+  console.log(filterOrdersForUser)
+
+  if (!filterOrdersForUser.orders.length && !filterOrdersForUser.returns.length) {
     return (
       <Typography
         color="text.secondary"
         textAlign="center"
       >
-        Brak zleceń z dnia {dayjs(summaryData).locale('pl').format(DateTemplate.DDMMMMYYYY)}
+        Brak zleceń z dnia {dayjs(selectedDay).locale('pl').format(DateTemplate.DDMMMMYYYY)}
       </Typography>
     )
   }
 
   return (
     <>
-      {!!orders.length && (
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <AccordionBox
-              title="Odbiory"
-              dataCount={orders.length}
-            />
-          </AccordionSummary>
-          <AccordionDetails>
-            {orders.map((orderData) => (
+      <Grid
+        container
+        xs={12}
+        columnSpacing={3}
+      >
+        {!!filterOrdersForUser.orders.length && (
+          <Grid xs={12}>
+            <Typography
+              variant="h6"
+              align="center"
+              marginBottom={3}
+            >
+              Odbiory
+            </Typography>
+            {filterOrdersForUser.orders.map((el) => (
               <OrderContent
-                orderData={orderData}
-                key={orderData.id}
+                key={el.id}
+                orderData={el}
               />
             ))}
-          </AccordionDetails>
-        </Accordion>
-      )}
-      {!!returns.length && (
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <AccordionBox
-              title="Zwroty"
-              dataCount={returns.length}
-            />
-          </AccordionSummary>
-          <AccordionDetails>
-            {returns.map((returnData) => (
+          </Grid>
+        )}
+        {!!filterOrdersForUser.returns.length && (
+          <Grid xs={12}>
+            <Typography
+              variant="h6"
+              align="center"
+              marginBottom={3}
+            >
+              Zwroty
+            </Typography>
+            {filterOrdersForUser.returns.map((el) => (
               <ReturnContent
-                returnData={returnData}
-                key={returnData.id}
+                key={el.id}
+                returnData={el}
               />
             ))}
-          </AccordionDetails>
-        </Accordion>
-      )}
-      {!!meetings.length && (
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <AccordionBox
-              title="Spotkania"
-              dataCount={meetings.length}
-            />
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography>Zawartość</Typography>
-          </AccordionDetails>
-        </Accordion>
-      )}
+          </Grid>
+        )}
+      </Grid>
     </>
   )
 }

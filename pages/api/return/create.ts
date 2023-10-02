@@ -2,7 +2,7 @@ import { prisma } from '@server/db'
 
 const handler = async (req, res) => {
   const data = req.body
-  console.log('form', data)
+
   await prisma.return
     .create({
       data,

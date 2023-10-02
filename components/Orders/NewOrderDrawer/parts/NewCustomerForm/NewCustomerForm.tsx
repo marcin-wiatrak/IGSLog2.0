@@ -11,7 +11,7 @@ import { SnackbarFunctionProps, withSnackbar } from '@components/HOC'
 
 type NewCustomerFormProps = {
   onDialogClose: () => void
-  onCustomerSet: (payload: { id: string; label: string }) => void
+  onCustomerSet?: (payload: { id: string; label: string }) => void
   showSnackbar: (props: SnackbarFunctionProps) => void
 }
 
@@ -61,14 +61,14 @@ const NewCustomerFormComponent = ({ onCustomerSet, onDialogClose, showSnackbar }
       .then(async (response) => {
         const { id, name } = response.data
         await refreshCustomersList()
-        onCustomerSet({ id, label: name })
+        onCustomerSet && onCustomerSet({ id, label: name })
         showSnackbar({
           message: 'Dodano',
           severity: 'success',
         })
         onDialogClose()
       })
-      .catch((err) => {
+      .catch(() => {
         showSnackbar({
           message: 'Error',
           severity: 'error',
@@ -77,7 +77,7 @@ const NewCustomerFormComponent = ({ onCustomerSet, onDialogClose, showSnackbar }
   }
 
   useEffect(() => {
-    isSubmitSuccessful && reset({ name: '', address: '', phoneNumber: '', contactName: '' })
+    isSubmitSuccessful && reset(defaultValues)
   }, [isSubmitted, reset, isSubmitSuccessful])
 
   return (

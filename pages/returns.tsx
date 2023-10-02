@@ -1,7 +1,7 @@
 import { NextPage } from 'next'
 import { Fab, Typography, Unstable_Grid2 as Grid } from '@mui/material'
 import { Layout } from '@components/Layout'
-import { FiltersDrawer } from '@components/Orders/FiltersDrawer'
+import { FiltersDrawer } from 'components/FiltersDrawer'
 import { useDisclose, useGetReturnsList, usePath } from '@src/hooks'
 import { NewReturnDrawer, ReturnsTable } from '@components/Returns'
 import { Add } from '@mui/icons-material'
@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux'
 import { withSnackbar } from '@components/HOC/WithSnackbar'
 import { Paths } from '@src/types'
 import { useEffect } from 'react'
+import { FilterButtons } from '@components/Orders'
 
 const fabStyle = {
   position: 'absolute',
@@ -59,10 +60,10 @@ const Returns: NextPage = () => {
                   alignItems: { sm: 'center' },
                 }}
               >
-                {/*<FilterButtons*/}
-                {/*  onFilterDrawerOpen={onFilterDrawerOpen}*/}
-                {/*  onClearFiltersClick={handleClearFilters}*/}
-                {/*/>*/}
+                <FilterButtons
+                  onFilterDrawerOpen={onFilterDrawerOpen}
+                  onClearFiltersClick={handleClearFilters}
+                />
               </Grid>
             </Grid>
           </Grid>

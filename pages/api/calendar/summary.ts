@@ -13,6 +13,15 @@ const handler = async (req, res) => {
     .findMany({
       where: {
         createdAt,
+        deleted: false,
+      },
+      include: {
+        handleBy: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     })
     .then((res) => res.map((el) => ({ ...el, list: 'order' })))
@@ -21,6 +30,15 @@ const handler = async (req, res) => {
     .findMany({
       where: {
         createdAt,
+        deleted: false,
+      },
+      include: {
+        handleBy: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     })
     .then((res) => res.map((el) => ({ ...el, list: 'return' })))
@@ -29,6 +47,15 @@ const handler = async (req, res) => {
     .findMany({
       where: {
         createdAt,
+        deleted: false,
+      },
+      include: {
+        handleBy: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     })
     .then((res) => res.map((el) => ({ ...el, list: 'meeting' })))

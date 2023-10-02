@@ -10,6 +10,9 @@ const handler = async (req, res) => {
         address: true,
         contactName: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     })
     .then((response) => {
       res.status(200).json(response)

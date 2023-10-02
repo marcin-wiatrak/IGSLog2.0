@@ -1,8 +1,8 @@
-import { createSelector, createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
+import { createSelector, createSlice } from '@reduxjs/toolkit'
 import { Order } from '@prisma/client'
 import { RootState } from '@src/store'
-import { AutocompleteOptionType, OrderType } from '@src/types'
+import { AutocompleteOptionType, OrderStatus, OrderType } from '@src/types'
 import { toggleValueInArray } from '@src/utils'
 
 export type OrdersStateProps = {
@@ -21,7 +21,7 @@ export type OrdersStateProps = {
   orderDetails: Partial<Order>
 }
 
-type CreateOrder = Omit<Order, 'id' | 'createdAt' | 'updatedAt' | 'status'>
+type CreateOrder = Partial<Order>
 
 type SetOrdersListPayload = {
   ordersList: Order[]
@@ -79,6 +79,11 @@ type SetCreateOrderPayload = {
   pickupAt?: Date
   notes?: string
   signature?: string
+}
+
+type UpdateOrderStatusPayload = {
+  orderId: string
+  status: OrderStatus
 }
 
 const initialState: OrdersStateProps = {
@@ -169,6 +174,10 @@ export const ordersState = createSlice({
     },
     clearOrderDetails: (state) => {
       state.orderDetails = initialState.orderDetails
+    },
+    updateOrderStatus: (state, { payload }: PayloadAction<UpdateOrderStatusPayload>) => {
+      const order = state.ordersList.find((el) => el.id === payload.orderId)
+      order.status = payload.status
     },
   },
 })

@@ -1,3 +1,5 @@
+import { Customer, Order, Return, User } from '@prisma/client'
+
 export enum OrderType {
   BIOLOGY = 'BIOLOGY',
   TOXYCOLOGY = 'TOXYCOLOGY',
@@ -35,9 +37,14 @@ export enum Role {
   ADMIN = 'ADMIN',
 }
 
-export type OrderStatus = OrderStatuses.NEW | OrderStatuses.PICKED_UP | OrderStatuses.DELIVERED | OrderStatuses.CLOSED
+export type OrderStatus =
+  | OrderStatuses.NEW
+  | OrderStatuses.PICKED_UP
+  | OrderStatuses.DELIVERED
+  | OrderStatuses.CLOSED
+  | OrderStatuses.PAUSED
 
-export type ReturnStatus = ReturnStatuses.NEW | ReturnStatuses.SET | ReturnStatuses.CLOSED
+export type ReturnStatus = ReturnStatuses.NEW | ReturnStatuses.SET | ReturnStatuses.CLOSED | ReturnStatuses.PAUSED
 
 export type AutocompleteOptionType = {
   id: string
@@ -56,5 +63,8 @@ export enum ReturnContent {
   MAT = 'MAT',
   MATDOC = 'MAT+DOC',
 }
+
+export type OrderExtended = Order & { handleBy?: User; customer?: Customer; registeredBy?: User }
+export type ReturnExtended = Return & { handleBy?: User; customer?: Customer; registeredBy?: User }
 
 // export type ReturnContent

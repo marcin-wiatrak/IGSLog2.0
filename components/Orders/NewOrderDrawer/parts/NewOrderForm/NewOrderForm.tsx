@@ -90,7 +90,6 @@ export const NewOrderForm = forwardRef<any, NewOrderFormProps>((props, ref) => {
 
   const handleSelectCreatedCustomer = (payload) => {
     setValue('customer', payload)
-    dispatch(ordersActions.setCreateOrder({ registeredById: payload }))
   }
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {

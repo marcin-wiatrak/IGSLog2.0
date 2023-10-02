@@ -1,8 +1,8 @@
 import { NextPage } from 'next'
 import { Fab, Typography, Unstable_Grid2 as Grid } from '@mui/material'
 import { Layout } from '@components/Layout'
-import { FilterButtons } from '@components/Orders/FilterButtons/FilterButtons'
-import { FiltersDrawer } from '@components/Orders/FiltersDrawer'
+import { FilterButtons } from '@components/FilterButtons/FilterButtons'
+import { FiltersDrawer } from 'components/FiltersDrawer'
 import { useDisclose, useGetCustomersList, useGetOrdersList, usePath } from '@src/hooks'
 import { NewOrderDrawer, OrdersTable } from '@components/Orders'
 import { Add } from '@mui/icons-material'
@@ -18,7 +18,7 @@ const fabStyle = {
   right: 16,
 }
 
-const Orders: NextPage = () => {
+const Orders: NextPage = ({}) => {
   const dispatch = useDispatch()
   const { isOpen: isFilterDrawerOpen, onOpen: onFilterDrawerOpen, onClose: onFilterDrawerClose } = useDisclose()
   const { isOpen: isNewOrderDrawerOpen, onOpen: onNewOrderDrawerOpen, onClose: onNewOrderDrawerClose } = useDisclose()

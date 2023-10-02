@@ -3,7 +3,7 @@ services:
   next:
     build: .
     ports:
-      - '9002:3000'
+      - '3000:3000'
     volumes:
       - /home/wicherixen/Dev/upload:/usr/app/public/upload:rw
     env_file:
@@ -21,3 +21,8 @@ services:
       PGDATA: /var/lib/postgresql/data/
     ports:
       - '5433:5432'
+  nginx:
+    build: ./nginx
+    ports:
+      - '80:80'
+    restart: always

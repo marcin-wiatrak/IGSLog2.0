@@ -3,6 +3,7 @@ import { prisma } from '@server/db'
 const handler = async (req, res) => {
   const { returnId } = req.query
   const data = req.body
+
   await prisma.return
     .update({
       data,

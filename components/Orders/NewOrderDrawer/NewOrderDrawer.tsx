@@ -38,9 +38,9 @@ export const NewOrderDrawer: FC<NewOrderDrawerProps> = ({ isOpen, onClose }) => 
   }
 
   useEffect(() => {
-    return () => {
-      dispatch(ordersActions.clearUploadedFiles())
-    }
+    // return () => {
+    // dispatch(ordersActions.clearUploadedFiles())
+    // }
   }, [])
 
   const confirmButton: DrawerActionButton = useMemo(() => {

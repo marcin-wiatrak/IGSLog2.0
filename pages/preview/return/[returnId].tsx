@@ -1,16 +1,38 @@
-import { Box, Chip, CircularProgress, Link, Paper, Stack, Typography, Unstable_Grid2 as Grid } from '@mui/material'
+import {
+  Autocomplete,
+  Button,
+  Checkbox,
+  Chip,
+  CircularProgress,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+  Unstable_Grid2 as Grid,
+} from '@mui/material'
 import { useRouter } from 'next/router'
 import { Layout } from '@components/Layout'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { DateTemplate, DateTimeTemplate, renameDownloadFile } from '@src/utils'
+import { DateTemplate, DateTimeTemplate } from '@src/utils'
 import { Customer, Return, User } from '@prisma/client'
-import { OrderType, Paths } from '@src/types'
+import { AutocompleteOptionType, ErrorMessages, OrderType, Paths } from '@src/types'
 import { getTypeIcon } from '@src/utils/typeIcons'
-import { translatedType } from '@src/utils/textFormatter'
-import { StatusSelector } from '@components/Orders'
-import { usePath } from '@src/hooks'
+import { formatFullName, translatedType } from '@src/utils/textFormatter'
+import { useDisclose, useGetCustomersList, useGetUsersList, usePath } from '@src/hooks'
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
+import { DatePicker } from '@mui/x-date-pickers'
+import { DeleteOrderConfirmationModal } from '@components/modals'
+import { useSession } from 'next-auth/react'
 
 type ReturnProps = Return & { handleBy: User; customer: Customer; registeredBy: User }
 
@@ -32,14 +54,146 @@ const Loader = () => (
   </Grid>
 )
 
+export interface IFormInput extends yup.InferType<typeof schema> {
+  customer: AutocompleteOptionType
+  signature: string
+  returnAt: string
+  notes: string
+  localization: string
+  handleBy: AutocompleteOptionType
+  content: string
+}
+
+const defaultValues = {
+  customer: null,
+  signature: '',
+  returnAt: '',
+  notes: '',
+  localization: '',
+  handleBy: null,
+  content: '',
+}
+
+const schema = yup.object({
+  customer: yup.object().required(ErrorMessages.EMPTY),
+  signature: yup.string().required(ErrorMessages.EMPTY),
+  returnAt: yup.string().nullable(),
+  localization: yup.string().optional(),
+  notes: yup.string().optional().nullable(),
+  handleBy: yup.object().nullable(),
+  content: yup.string().required(ErrorMessages.EMPTY),
+})
+
 const ReturnPreview = () => {
-  const [returnData, setReturnData] = useState<ReturnProps | null>(null)
+  const { data } = useSession()
+
   const router = useRouter()
   const { returnId } = router.query
 
+  const { usersList } = useGetUsersList()
+  const { customersList } = useGetCustomersList()
+
+  const [returnData, setReturnData] = useState<ReturnProps | null>(null)
+  const [loadingData, setLoadingData] = useState(true)
+  const [isUnlocked, setIsUnlocked] = useState(false)
+
+  const confirmationModal = useDisclose()
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = useForm({ resolver: yupResolver(schema), defaultValues })
+
+  const backToReturns = () => router.push('/returns')
+
+  const handleDeleteOrder = () => {
+    axios.post(`/api/return/${returnId}/delete`).then((res) => {
+      confirmationModal.onClose()
+      if (res.statusText) {
+        backToReturns()
+      }
+    })
+  }
+
   const handleGetReturnDetails = useCallback(() => {
-    returnId && axios.get(`/api/return/${returnId}`).then((res) => setReturnData(res.data))
-  }, [returnId])
+    if (returnId) {
+      setLoadingData(true)
+      axios
+        .get(`/api/return/${returnId}`)
+        .then((res) => {
+          const data = res.data
+
+          const handleBy = data.handleBy
+            ? {
+                id: data.handleById,
+                label: `${data.handleBy.firstName} ${data.handleBy.lastName}`,
+              }
+            : undefined
+          const customer = {
+            id: data.customerId,
+            label: data.customer.name,
+          }
+
+          const payload = {
+            customer,
+            handleBy,
+            signature: data.signature,
+            returnAt: data.returnAt,
+            notes: data.notes,
+            localization: data.localization,
+            content: data.content,
+          }
+
+          reset(payload)
+          setReturnData(data)
+        })
+        .catch((err) => console.log(err))
+        .finally(() => setLoadingData(false))
+    }
+  }, [reset, returnId])
+
+  const usersListOption = useMemo(() => {
+    if (usersList && usersList.length) {
+      return usersList.map((user) => ({
+        id: user.id,
+        label: `${user.firstName} ${user.lastName}`,
+      }))
+    } else {
+      return []
+    }
+  }, [usersList])
+
+  const customersListOptions = useMemo(() => {
+    if (customersList && customersList.length) {
+      return customersList.map((customer) => ({
+        id: customer.id,
+        label: customer.name,
+      }))
+    } else {
+      return []
+    }
+  }, [customersList])
+
+  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+    const payload = {
+      ...data,
+      customerId: data.customer.id,
+      handleById: data.handleBy?.id,
+    }
+    delete payload.customer
+    delete payload.handleBy
+
+    await axios
+      .post(`/api/return/${returnId}/update`, payload)
+      .then((res) => {
+        if (res.statusText === 'OK') backToReturns()
+      })
+      .catch((err) => {
+        console.error('WYSTĄPIŁ BŁĄD', returnId, err)
+      })
+  }
 
   useEffect(() => {
     handleGetReturnDetails()
@@ -47,191 +201,308 @@ const ReturnPreview = () => {
 
   usePath(Paths.ORDERS)
 
+  if (loadingData) return <Loader />
+
   return (
-    <Layout>
-      <Typography variant="h1">Szczegóły odbioru</Typography>
-      <Grid
-        xs={12}
-        container
-        sx={{
-          my: 3,
-        }}
-      >
-        {returnData ? (
-          <Grid xs={12}>
-            <Paper
-              sx={{
-                p: 2,
-              }}
-            >
+    <>
+      <Layout>
+        <Typography variant="h1">Szczegóły zwrotu</Typography>
+        <Grid
+          xs={12}
+          container
+          sx={{
+            my: 3,
+          }}
+        >
+          {returnData ? (
+            <>
+              <Grid xs />
               <Grid
                 xs={12}
-                container
-                spacing={2}
+                sm={10}
+                md={8}
+                lg={6}
+                xl={4}
               >
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      ID
-                    </Typography>
-                    <Typography>{returnData.id}</Typography>
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Sygnatura
-                    </Typography>
-                    <Typography>{returnData.signature}</Typography>
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Typ
-                    </Typography>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                    >
-                      {returnData.type.map((type: OrderType) => (
-                        <Chip
-                          key={type}
-                          avatar={getTypeIcon(type)}
-                          label={translatedType[type]}
-                        />
-                      ))}
-                    </Stack>
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack
-                    direction="column"
-                    justifyContent="center"
-                    alignItems="flex-start"
+                <Stack spacing={3}>
+                  <Paper
+                    sx={{
+                      p: 2,
+                    }}
                   >
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Status
-                    </Typography>
-                    <StatusSelector
-                      status={returnData.status}
-                      orderId={returnId as string}
-                    />
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Data utworzenia
-                    </Typography>
-                    <Typography>{dayjs(returnData.createdAt).format(DateTimeTemplate.DDMMYYYYHHmm)}</Typography>
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Osoba odpowiedzialna
-                    </Typography>
-                    <Typography>{`${returnData.handleBy.firstName} ${returnData.handleBy.lastName}`}</Typography>
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Miejsce odbioru
-                    </Typography>
-                    <Typography>{returnData.localization}</Typography>
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Data odbioru
-                    </Typography>
-                    <Typography>{dayjs(returnData.createdAt).locale('pl').format(DateTemplate.DDMMMMYYYY)}</Typography>
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Zarejestrowane przez
-                    </Typography>
-                    <Typography>{`${returnData.registeredBy.firstName} ${returnData.handleBy.lastName}`}</Typography>
-                  </Stack>
-                </Grid>
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
-                    >
-                      Załączniki
-                    </Typography>
-                    {returnData.attachment.length ? (
-                      returnData.attachment.map((att) => (
-                        <Box key={att}>
-                          <Link
-                            href={`/upload/${att}`}
-                            target="_blank"
-                            sx={{ textDecoration: 'none', color: 'primary' }}
-                            download={renameDownloadFile(att)}
+                    <Stack spacing={2}>
+                      <Grid xs={12}>
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            variant="overline"
                           >
-                            {renameDownloadFile(att)}
-                          </Link>
-                        </Box>
-                      ))
-                    ) : (
-                      <Typography>Brak załączników</Typography>
-                    )}
-                  </Stack>
-                </Grid>
-
-                <Grid xs={12}>
-                  <Stack>
-                    <Typography
-                      color="text.secondary"
-                      variant="overline"
+                            LP / ID
+                          </Typography>
+                          <Typography>{`${returnData.no} / ${returnData.id}`}</Typography>
+                        </Stack>
+                      </Grid>
+                      <Grid xs={12}>
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            variant="overline"
+                          >
+                            Data utworzenia
+                          </Typography>
+                          <Typography>{dayjs(returnData.createdAt).format(DateTimeTemplate.DDMMYYYYHHmm)}</Typography>
+                        </Stack>
+                      </Grid>
+                      <Grid xs={12}>
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            variant="overline"
+                          >
+                            Typ
+                          </Typography>
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                          >
+                            {returnData.type.map((type: OrderType) => (
+                              <Chip
+                                key={type}
+                                avatar={getTypeIcon(type)}
+                                label={translatedType[type]}
+                              />
+                            ))}
+                          </Stack>
+                        </Stack>
+                      </Grid>
+                      <Grid xs={12}>
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            variant="overline"
+                          >
+                            Zarejestrowane przez
+                          </Typography>
+                          <Typography>{formatFullName(returnData.registeredBy)}</Typography>
+                        </Stack>
+                      </Grid>
+                      <Controller
+                        name="signature"
+                        control={control}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            label="Sygnatura"
+                            error={!!error}
+                            helperText={error?.message}
+                          />
+                        )}
+                      />
+                      <Controller
+                        name="content"
+                        control={control}
+                        render={({ field, fieldState: { error } }) => (
+                          <FormControl>
+                            <InputLabel component="legend">Zawartość</InputLabel>
+                            <Select
+                              {...field}
+                              label="Zawartość"
+                              error={!!error}
+                            >
+                              <MenuItem value="MAT">Materiał</MenuItem>
+                              <MenuItem value="DOC">Dokumentacja</MenuItem>
+                              <MenuItem value="MAT+DOC">Materiał + Dokumentacja</MenuItem>
+                            </Select>
+                            {!!error && (
+                              <FormHelperText error>{error.message || 'Zawartość jest wymagana'}</FormHelperText>
+                            )}
+                          </FormControl>
+                        )}
+                      />
+                      <Controller
+                        name="handleBy"
+                        control={control}
+                        render={({ field: { onChange, value, ...rest }, fieldState: { error } }) => (
+                          <Autocomplete
+                            {...rest}
+                            value={value}
+                            fullWidth
+                            blurOnSelect
+                            options={usersListOption}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            onChange={(e, newValue) => onChange(newValue)}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Osoba odpowiedzialna"
+                                error={!!error}
+                                helperText={error?.message}
+                              />
+                            )}
+                          />
+                        )}
+                      />
+                      <Controller
+                        name="customer"
+                        control={control}
+                        render={({ field: { onChange, value, ...rest }, fieldState: { error } }) => (
+                          <Autocomplete
+                            {...rest}
+                            value={value}
+                            fullWidth
+                            blurOnSelect
+                            options={customersListOptions}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            onChange={(e, newValue) => onChange(newValue)}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Zleceniodawca"
+                                error={!!error}
+                                helperText={error?.message}
+                              />
+                            )}
+                          />
+                        )}
+                      />
+                      <Controller
+                        name="localization"
+                        control={control}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            label="Miejsce zwrotu"
+                            error={!!error}
+                            helperText={error?.message}
+                          />
+                        )}
+                      />
+                      <Controller
+                        name="returnAt"
+                        control={control}
+                        render={({ field: { onChange, value, ...rest } }) => (
+                          <DatePicker
+                            {...rest}
+                            value={value ? dayjs(value) : null}
+                            onChange={(date) => onChange(dayjs(date).format())}
+                            label="Data zwrotu"
+                            format={DateTemplate.DDMMYYYY}
+                          />
+                        )}
+                      />
+                      <Controller
+                        name="notes"
+                        control={control}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            label="Informacje dodatkowe"
+                            multiline
+                            rows="3"
+                            error={!!error}
+                            helperText={error?.message}
+                          />
+                        )}
+                      />
+                      {/*<Grid xs={12}>*/}
+                      {/*  <Stack>*/}
+                      {/*    <Typography*/}
+                      {/*      color="text.secondary"*/}
+                      {/*      variant="overline"*/}
+                      {/*    >*/}
+                      {/*      Załączniki*/}
+                      {/*    </Typography>*/}
+                      {/*    {returnData.attachment.length ? (*/}
+                      {/*      returnData.attachment.map((att) => (*/}
+                      {/*        <Box key={att}>*/}
+                      {/*          <Link*/}
+                      {/*            href={`/upload/${att}`}*/}
+                      {/*            target="_blank"*/}
+                      {/*            sx={{ textDecoration: 'none', color: 'primary' }}*/}
+                      {/*            download={renameDownloadFile(att)}*/}
+                      {/*          >*/}
+                      {/*            {renameDownloadFile(att)}*/}
+                      {/*          </Link>*/}
+                      {/*        </Box>*/}
+                      {/*      ))*/}
+                      {/*    ) : (*/}
+                      {/*      <Typography>Brak załączników</Typography>*/}
+                      {/*    )}*/}
+                      {/*  </Stack>*/}
+                      {/*</Grid>*/}
+                      <Stack
+                        direction="row"
+                        justifyContent="flex-end"
+                        spacing={1}
+                      >
+                        {isDirty && (
+                          <Button
+                            color="error"
+                            onClick={backToReturns}
+                          >
+                            Wróć bez zapisywania
+                          </Button>
+                        )}
+                        <Button
+                          variant="contained"
+                          onClick={isDirty ? handleSubmit(onSubmit) : backToReturns}
+                        >
+                          {isDirty ? 'Zapisz zmiany' : 'Wróć'}
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </Paper>
+                  {data?.user?.role === 'ADMIN' && (
+                    <Paper
+                      sx={{
+                        p: 2,
+                      }}
                     >
-                      Informacje dodatkowe/notatki
-                    </Typography>
-                    <Typography sx={{ whiteSpace: 'pre' }}>{returnData.notes}</Typography>
-                  </Stack>
-                </Grid>
+                      <Stack spacing={3}>
+                        <Stack
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Typography variant="h4">Usuń zlecenie</Typography>
+                          <FormControlLabel
+                            label="Odblokuj"
+                            control={
+                              <Checkbox
+                                checked={isUnlocked}
+                                onChange={({ target }) => setIsUnlocked(target.checked)}
+                              />
+                            }
+                          />
+                        </Stack>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          fullWidth
+                          disabled={!isUnlocked}
+                          onClick={confirmationModal.onOpen}
+                        >
+                          Usuń zlecenie
+                        </Button>
+                      </Stack>
+                    </Paper>
+                  )}
+                </Stack>
               </Grid>
-            </Paper>
-          </Grid>
-        ) : (
-          <Loader />
-        )}
-      </Grid>
-    </Layout>
+              <Grid xs />
+            </>
+          ) : (
+            <Typography>Wystąpił błąd. Sprawdź ID zlecenia.</Typography>
+          )}
+        </Grid>
+      </Layout>
+      <DeleteOrderConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={confirmationModal.onClose}
+        onConfirm={handleDeleteOrder}
+        data={returnData}
+      />
+    </>
   )
 }
 

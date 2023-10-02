@@ -6,15 +6,28 @@ import { TabView } from '@components/Calendar/TabView'
 import { useDispatch, useSelector } from 'react-redux'
 import { commonActions, commonSelectors } from '@src/store'
 import dayjs from 'dayjs'
+import { useEffect } from 'react'
+import axios from 'axios'
 
 const Calendar: NextPage = () => {
   const dispatch = useDispatch()
+  // const [highlightedDays, setHighlightedDays] = useState([1, 2, 15])
   const selectedDay = useSelector(commonSelectors.selectCalendarDay)
   const selectedDate = dayjs(selectedDay)
 
   const handleChangeSelectedDay = (newDate) => {
     dispatch(commonActions.setCalendarDay({ calendarDay: dayjs(newDate).startOf('day').format() }))
   }
+
+  const getData = async () => {
+    await axios
+      .get('/api/calendar/list')
+      .then((res) => dispatch(commonActions.setCalendarData({ calendarData: res.data })))
+  }
+
+  useEffect(() => {
+    getData()
+  }, [])
 
   return (
     <Layout>
@@ -28,7 +41,6 @@ const Calendar: NextPage = () => {
       >
         <Grid
           xs={12}
-          md={6}
           lg={4}
         >
           <Paper
@@ -39,13 +51,11 @@ const Calendar: NextPage = () => {
             <DateCalendar
               value={selectedDate}
               onChange={handleChangeSelectedDay}
-              disableFuture
             />
           </Paper>
         </Grid>
         <Grid
           xs={12}
-          md={6}
           lg={8}
         >
           <TabView />

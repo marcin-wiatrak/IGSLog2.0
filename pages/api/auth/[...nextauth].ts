@@ -28,6 +28,9 @@ const authOptions: NextAuthOptions = {
           .finally(async () => {
             await prisma.$disconnect()
           })
+        if (data.suspended) {
+          throw new Error('Account suspended')
+        }
         const login = bcrypt.compare(inputPassword, data.password).then((result) => {
           if (result) {
             return {

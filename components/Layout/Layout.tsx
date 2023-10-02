@@ -1,6 +1,7 @@
 import { UserMenu } from '@components/UI'
 import {
   CalendarMonth,
+  Engineering,
   Groups,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
@@ -42,6 +43,11 @@ const MENU_LIST_ITEMS = [
     icon: <Groups />,
   },
   {
+    name: 'Zleceniodawcy',
+    href: '/customers',
+    icon: <Engineering />,
+  },
+  {
     name: 'Kalendarz',
     href: '/calendar',
     icon: <CalendarMonth />,
@@ -63,7 +69,7 @@ const LayoutComponent = ({ children }) => {
   }, [])
 
   return (
-    <Box>
+    <Box sx={{ maxHeight: '100vh', overflowY: 'scroll', paddingBottom: 10 }}>
       <AppBar position="static">
         <Toolbar
           sx={{ display: 'flex', justifyContent: 'space-between' }}

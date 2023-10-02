@@ -45,12 +45,9 @@ export const AssignUserModal: FC<AssignUserModalProps> = ({ isOpen, onClose, onA
   useEffect(() => {
     if (handleById && usersList) {
       const foundUser = usersList?.find((el) => el.id === handleById)
-      console.log(usersList, foundUser)
       setSelectedUser(foundUser ? foundUser : null)
     }
   }, [handleById, usersList])
-
-  console.log(handleById)
 
   return (
     <Dialog

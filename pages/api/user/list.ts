@@ -9,6 +9,7 @@ const handler = async (req, res) => {
         firstName: true,
         lastName: true,
         role: true,
+        suspended: true,
       },
       orderBy: {
         lastName: 'asc',

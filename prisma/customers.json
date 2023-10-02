@@ -1,0 +1,2054 @@
+[
+  {
+    "name": "Komenda Miejska Policji w Grudziądzu",
+    "address": "ul. Chełmińska 111, 86-300 Grudziądz",
+    "contactName": "",
+    "phoneNumber": "47 754 52 21"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Jaworze",
+    "address": "ul. Wrocławska26, 59-400 Jawor",
+    "contactName": "",
+    "phoneNumber": "767294602"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Tarnowie",
+    "address": "ul. J. Dąbrowskiego 27, 33-100 Tarnów",
+    "contactName": "",
+    "phoneNumber": "146222731"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Lesku",
+    "address": "ul. Unii Brzeskiej 14, 38-600 Lesko",
+    "contactName": "",
+    "phoneNumber": "13 4689510"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Radziejowie",
+    "address": "ul. Wyzwolenia 63, 88-200 RADZIEJÓW",
+    "contactName": "",
+    "phoneNumber": "54 23 76 300"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Dzierżoniowie",
+    "address": "ul. Rolna 1, 58-200 Dzierżoniów",
+    "contactName": "",
+    "phoneNumber": "74-832-80-00"
+  },
+  {
+    "name": "Sąd Rejonowy w Rypinie",
+    "address": "ul. Warszawska 42, 87-500 Rypin",
+    "contactName": "",
+    "phoneNumber": "54 280 24 58"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Ełku",
+    "address": "ul. Chopina 10, 19-300 Ełk",
+    "contactName": "",
+    "phoneNumber": "47 7355 200"
+  },
+  {
+    "name": "Prokuratura Rejonowa Toruń – Wschód",
+    "address": "ul. Grudziądzka 47, 87-100 Toruń",
+    "contactName": "",
+    "phoneNumber": "56 611 77 59"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Rypinie",
+    "address": "ul. Warszawska 42, 87-500 Rypin",
+    "contactName": "",
+    "phoneNumber": "54 23 76 350"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Elblągu",
+    "address": "ul. Płk Stanisława Dąbka 8-12, 82-300 Elbląg",
+    "contactName": "",
+    "phoneNumber": "(55) 239-41-44"
+  },
+  {
+    "name": "Prokuratura Rejonowa Gdańsk - Oliwa",
+    "address": "ul. Piekarnicza 10/C, 80-126 Gdańsk",
+    "contactName": "",
+    "phoneNumber": "587679800"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Iławie",
+    "address": "ul. Gen. Władysława Andersa 2, 14-200 Iława",
+    "contactName": "",
+    "phoneNumber": "896496065"
+  },
+  {
+    "name": "Komenda Miejska Policji w Elblągu",
+    "address": "ul. Tysiąclecia 3, 82-300 Elbląg",
+    "contactName": "",
+    "phoneNumber": "47 73 415 55"
+  },
+  {
+    "name": "Komenda Miejska Policji w Bielsku-Białej",
+    "address": "ul. Wapienna 45, 43-300 Bielsko-Biała",
+    "contactName": "",
+    "phoneNumber": "47 85 712 55"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Będzinie",
+    "address": "ul. Bema 1, 42-500 Będzin",
+    "contactName": "",
+    "phoneNumber": "47 85 362 00"
+  },
+  {
+    "name": "Komisariat Policji IV w Bielsku-Białej",
+    "address": "ul. Komorowicka 235, 43-300 Bielsko-Biała",
+    "contactName": "",
+    "phoneNumber": "47 85 704 00"
+  },
+  {
+    "name": "Prokuratura Rejonowa we Włocławku",
+    "address": "ul. Okrężna 2c, 87-800 Włocławek",
+    "contactName": "",
+    "phoneNumber": "54 23 76 400"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Sulęcinie",
+    "address": "ul. Plac Kościelny 1, 69-200 Sulęcin",
+    "contactName": "",
+    "phoneNumber": "95 755 48 86"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Lipnie",
+    "address": "ul. Piłsudskiego 15/17, 87-600 Lipno",
+    "contactName": "",
+    "phoneNumber": "54 23 76 200"
+  },
+  {
+    "name": "LK KWP Gdańsk",
+    "address": "ul. Biskupia 23, 80-819 Gdańsk",
+    "contactName": "",
+    "phoneNumber": "477414851"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Bolesławcu",
+    "address": "ul. Bolesława Chrobrego 5, 59-700 Bolesławiec",
+    "contactName": "",
+    "phoneNumber": "75 64 41 720"
+  },
+  {
+    "name": "Posterunek Policji w Skępem",
+    "address": "ul. Wymyślińska 2, 87-630 Skępe",
+    "contactName": "",
+    "phoneNumber": "47 75 387 10"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Grudziądzu",
+    "address": "ul. Legionów 46, 86 – 300 Grudziądz",
+    "contactName": "",
+    "phoneNumber": "56 644 60 22"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Kartuzach",
+    "address": "ul. 3 Maja 15, 83-300 Kartuzy",
+    "contactName": "",
+    "phoneNumber": "586812612"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Gdyni",
+    "address": "ul. 10 Lutego 39, 81-364 Gdynia",
+    "contactName": "",
+    "phoneNumber": "586610400"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Międzyrzeczu",
+    "address": "ul. Wojska Polskiego 13a, 66-300 Międzyrzecz",
+    "contactName": "",
+    "phoneNumber": "95 741 19 69"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Działdowie",
+    "address": "ul. Władysława Jagiełły 31, 13-200 Działdowo",
+    "contactName": "",
+    "phoneNumber": "23 697-29-79"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Tucholi",
+    "address": "ul. Świecka 23, 89-500 Tuchola",
+    "contactName": "",
+    "phoneNumber": "52 33 42 741"
+  },
+  {
+    "name": "Komenda Miejska Policji w Olsztynie",
+    "address": "ul. Partyzantów 23, 10-526 Olsztyn",
+    "contactName": "",
+    "phoneNumber": "47 73 134 24"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Bieruniu",
+    "address": "ul. Turystyczna 1A, 43-155 Bieruń",
+    "contactName": "",
+    "phoneNumber": "47 85 272 00"
+  },
+  {
+    "name": "Komisariat Policji w Żabnie",
+    "address": "ul. Sieradzka 19, 33-240 Żabno",
+    "contactName": "",
+    "phoneNumber": "47 831-2420"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Grójcu",
+    "address": "ul. Sportowa 14, 05-600 Grójec",
+    "contactName": "",
+    "phoneNumber": "486648100"
+  },
+  {
+    "name": "Prokuratura Rejonowa Gryfino",
+    "address": "ul. Grunwaldzka 2, 74-100 Gryfino",
+    "contactName": "",
+    "phoneNumber": "914645150"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Starogardzie Gdańskim",
+    "address": "ul. Kościuszki 6, 83-200 Starogard Gd.",
+    "contactName": "",
+    "phoneNumber": "585624610"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Jarosławiu",
+    "address": "ul. Jana Pawła II nr 11, 37-500 Jarosław",
+    "contactName": "",
+    "phoneNumber": "16 621 33 64"
+  },
+  {
+    "name": "Oś. Zamiejscowy PR w Ostródzie z siedz. w Morągu",
+    "address": "ul. Warmińska 17A, 14-300 Morąg",
+    "contactName": "",
+    "phoneNumber": "897574272"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Głogowie",
+    "address": "ul. Sienkiewicza 1, 67-200 Głogów",
+    "contactName": "",
+    "phoneNumber": "767271502"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Zamościu",
+    "address": "ul. Szczebrzeska 47, 22-400 Zamość",
+    "contactName": "",
+    "phoneNumber": "84 65 17 200"
+  },
+  {
+    "name": "Prokuratura Rejonowa Łodź – Polesie",
+    "address": "ul. Dąbrowskiego 40a, 93-277 Łódź",
+    "contactName": "",
+    "phoneNumber": "(42) 254-07-00"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Stargardzie",
+    "address": "ul. Warszawska 29, 73-110 Stargard",
+    "contactName": "",
+    "phoneNumber": "47 78 29 505"
+  },
+  {
+    "name": "Łódzki Wydział Zamiejscowy Departamentu do Spraw Przestępczości Zorganizowanej i Korupcji w Łodzi",
+    "address": "ul. Kilińskiego 152, 90-322 Łódź",
+    "contactName": "",
+    "phoneNumber": "(42) 676 86 48"
+  },
+  {
+    "name": "Prokuratura Rejonowa Tychy",
+    "address": "ul. Wojska Polskiego 8, 43-100 Tychy",
+    "contactName": "",
+    "phoneNumber": "(32) 788-23-00"
+  },
+  {
+    "name": "Prokuratura Rejonowa Toruń Centrum – Zachód",
+    "address": "ul. Grudziądzka 45, 87 – 100 Toruń",
+    "contactName": "",
+    "phoneNumber": "56 611 76 00"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Dąbrowie Tarnowskiej",
+    "address": "ul. Wyszyńskiego 2, 33-200 Dąbrowa Tarnowska",
+    "contactName": "",
+    "phoneNumber": "146422748"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Ostródzie",
+    "address": "ul. Jana III Sobieskiego 12, 14-100 Ostróda",
+    "contactName": "",
+    "phoneNumber": "(89) 642-57-00"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Bystrzycy Kłodzkiej",
+    "address": "ul. Sempołowskiej 4, 57 - 500 Bystrzyca Kł.",
+    "contactName": "",
+    "phoneNumber": "74-869-70-00"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Ostrowcu Świętokrzyskim",
+    "address": "ul. A. Wardyńskiego 15 C, 27-400 Ostrowiec Świętokrzyski",
+    "contactName": "",
+    "phoneNumber": "41 267-14-00"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Opolu",
+    "address": "ul. Reymonta 24, 45-954 Opole",
+    "contactName": "",
+    "phoneNumber": "(77) 400-12-00"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Nakle nad Notecią",
+    "address": "ul. Sądowa 1-3, 89-100 Nakło",
+    "contactName": "",
+    "phoneNumber": "52 38-67-863"
+  },
+  {
+    "name": "Posterunek Policji w Lubieniu Kujawskim",
+    "address": "ul. Szkolna 44, 87-840 Lubień Kujawski",
+    "contactName": "",
+    "phoneNumber": "47 75 318 10"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Kwidzynie",
+    "address": "ul. Kościuszki 30 A, 82-500 Kwidzyn",
+    "contactName": "",
+    "phoneNumber": "(55) 2793676"
+  },
+  {
+    "name": "Prokuratura Rejonowa Radom – Zachód w Radomiu",
+    "address": "ul. Żeromskiego 91/93, 26-610 Radom",
+    "contactName": "",
+    "phoneNumber": "(48) 36-81-010"
+  },
+  {
+    "name": "Łódzki Wydział Zamiejscowy Departamentu do Spraw Przestępczości Zorganizowanej i Korupcji w Łodzi",
+    "address": "ul. Kilińskiego 152, 90-322 Łódź",
+    "contactName": "",
+    "phoneNumber": "(42) 676 86 48"
+  },
+  {
+    "name": "Posterunek Policji w Zblewie",
+    "address": "ul. Główna 3, 83-210 Zblewo",
+    "contactName": "",
+    "phoneNumber": "47 74 27 281"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Chełmnie",
+    "address": "ul. Krótka 1a, 86 – 200 Chełmno",
+    "contactName": "",
+    "phoneNumber": "56 677 08 11"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Leżajsku",
+    "address": "ul. Mickiewicza 47, 37-300 Leżajsk",
+    "contactName": "",
+    "phoneNumber": "17 5061 465"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Lipnie",
+    "address": "ul. Platanowa 1, 87 – 600 Lipno",
+    "contactName": "",
+    "phoneNumber": "47 75 382 00"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Iławie",
+    "address": "ul. Wiejska 4, 14-200 Iława",
+    "contactName": "",
+    "phoneNumber": "47 73 262 11"
+  },
+  {
+    "name": "Sąd Rejonowy w Szubinie III Wydział Rodzinny i Nieletnich",
+    "address": "Plac Wolności 4",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Kluczborku",
+    "address": "ul. Ludwika Waryńskiego 30, 46-200 Kluczbork",
+    "contactName": "",
+    "phoneNumber": "(77) 41 86 800"
+  },
+  {
+    "name": "Komenda Miejska Policji w Legnicy",
+    "address": "Asnyka 3, 59-220 Legnica",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa Gdańsk-Wrzeszcz w Gdańsku",
+    "address": "ul. Piekarnicza 10/C, 80-126 Gdańsk",
+    "contactName": "",
+    "phoneNumber": "(58) 3213955"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Nidzicy",
+    "address": "ul. Kościuszki 28 13-100 Nidzica",
+    "contactName": "",
+    "phoneNumber": "896251810"
+  },
+  {
+    "name": "KPP Golub-Dobrzyń",
+    "address": "ul. Marszałka Józefa Piłsudskiego 19 87-400 Golub-Dobrzyń",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Łukowie",
+    "address": "ul. Piłsudskiego 28, 21-400 Łuków",
+    "contactName": "",
+    "phoneNumber": "25 797 12 50"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Tczewie",
+    "address": "ul. Sadowa 6, 83-110 Tczew",
+    "contactName": "",
+    "phoneNumber": "(58) 5310641"
+  },
+  {
+    "name": "Prokuratura Rejonowa Częstochowa-Północ w Częstochowie",
+    "address": "ul. Gen. W. Sikorskiego 80, 42-200 Częstochowa",
+    "contactName": "",
+    "phoneNumber": "883 337 613"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Łukowie",
+    "address": "ul. Piłsudskiego 28, 21-400 Łuków",
+    "contactName": "",
+    "phoneNumber": "25 797 12 50"
+  },
+  {
+    "name": "Prokuratura Rejonowa Łodź – Widzew",
+    "address": "ul. Dąbrowskiego 40a, 93-277 Łódź",
+    "contactName": "",
+    "phoneNumber": "(42) 254-07-69"
+  },
+  {
+    "name": "Komisariat Policji w Mroczy",
+    "address": "ul. Marszałka Józefa Piłsudskiego 8, 89 - 115 Mrocza",
+    "contactName": "",
+    "phoneNumber": "47 75 29 410"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Golubiu – Dobrzyniu",
+    "address": "ul. Plac 1000- lecia25c, 87-400 Golub- Dobrzyń",
+    "contactName": "",
+    "phoneNumber": "56 683 23 77"
+  },
+  {
+    "name": "Prokuratura Rejonowa Olsztyn-Południe w Olsztynie",
+    "address": "ul. Leśna 1",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Nowym Mieście Lubawskim",
+    "address": "13-300 Nowe Miasto Lubawskie, ul. Grunwaldzka 6",
+    "contactName": "",
+    "phoneNumber": "47 73 222 00"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Nidzicy",
+    "address": "ul. Mickiewicza 17, 13-100 Nidzica",
+    "contactName": "",
+    "phoneNumber": "47 732 52 00"
+  },
+  {
+    "name": "Komenda Miejska Policji w Wałbrzychu",
+    "address": "Mazowiecka 2, 58-300 Wałbrzych",
+    "contactName": "Wojciech Zawadzki",
+    "phoneNumber": "478751978"
+  },
+  {
+    "name": "Prokuratura Rejnowa Olsztyn-Północ",
+    "address": "ul. Emilii Plater 12, 10-959 Olsztyn",
+    "contactName": "",
+    "phoneNumber": "89 767 82 17"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Brodnicy",
+    "address": "ul. Wiejska 4, 87 – 300 Brodnica",
+    "contactName": "",
+    "phoneNumber": "56 498 24 12"
+  },
+  {
+    "name": "Sąd Rejonowy w Starachowicach",
+    "address": "ul. Staszica 12, 27-200 Starachowice",
+    "contactName": "",
+    "phoneNumber": "41 246-13-12"
+  },
+  {
+    "name": "Komisariat Policji w Koronowie",
+    "address": "ul. Paderewskiego 31, 86-010 Koronowo",
+    "contactName": "",
+    "phoneNumber": "47 752 12 05"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Gryfinie",
+    "address": "ul. Policyjna 2, 74-100 Gryfino",
+    "contactName": "Irena Przybyłek",
+    "phoneNumber": "477823533"
+  },
+  {
+    "name": "Prokuratura Okręgowa  w Legnicy I Wydział Śledzczy",
+    "address": "ul. Grunwaldzka 8, 59-220 Legnica",
+    "contactName": "76 72 31 150",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Posterunek Policji w Brusach",
+    "address": "ul. Wojska Polskiego 35, 89-632 Brusy",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komisariat Policji w Pasłęku",
+    "address": "ul. Gdańska 7, 14-400 Pasłęk",
+    "contactName": "",
+    "phoneNumber": "(47) 734 19 00"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Inowrocławiu",
+    "address": "Toruńska 13-15",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komisariat Policji w Olsztynku",
+    "address": "ul. Chopina 25, 11-015 Olsztynek",
+    "contactName": "",
+    "phoneNumber": "47 731 19 90"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Chojnicach",
+    "address": "Warszawska 13, 89-600 Chojnice",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa Bydgoszcz- Południe",
+    "address": "ul. Nowy Rynek 10, 85-131 Bydgoszcz",
+    "contactName": "",
+    "phoneNumber": "52 347 76 10"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Świeciu",
+    "address": "ul. Wojska Polskiego 153, 86-100 Świecie",
+    "contactName": "",
+    "phoneNumber": "47 75 252 00"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Słubicach",
+    "address": "Kazimierza Wielkiego 1, 69-100 Słubice",
+    "contactName": "",
+    "phoneNumber": "47 792 32 11"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Kętrzynie",
+    "address": "ul. Sikorskiego 49, 11-400 Kętrzyn",
+    "contactName": "",
+    "phoneNumber": "89 752 97 00"
+  },
+  {
+    "name": "Prokuratura Okręgowa w Suwałkach",
+    "address": "ul. Generała Kazimierza Pułaskiego 26, 16-400 Suwałki",
+    "contactName": "",
+    "phoneNumber": "(87) 562-86-00"
+  },
+  {
+    "name": "Komisariat III Policji w Gdańsku",
+    "address": "ul. Biała 1A",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komisariat Policji IV w Łodzi",
+    "address": "Kopernika 29/31",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Bartoszycach",
+    "address": "ul. Bohaterów Warszawy 16, 11-200 Bartoszyce",
+    "contactName": "Łukasz Pająk",
+    "phoneNumber": "694900124"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Bolesławcu",
+    "address": "ul. Zygmunta Augusta 20, 59-700 Bolesławiec",
+    "contactName": "Grzegorz Łapanowski",
+    "phoneNumber": "478733231"
+  },
+  {
+    "name": "KPP Ostróda",
+    "address": "ul. Handlowa 6",
+    "contactName": "asp.sztab. Marek Litwiński",
+    "phoneNumber": "47 732 42 00"
+  },
+  {
+    "name": "Oddział Żandarmerii Wojskowej w Żaganiu",
+    "address": "ul. Żarska 17, 68-100 Żagań",
+    "contactName": "Adam Skowroński",
+    "phoneNumber": "887 570 618"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Lęborku",
+    "address": "ul. Toruńska 5, 84-300 Lębork",
+    "contactName": "",
+    "phoneNumber": "47 742 48 22"
+  },
+  {
+    "name": "Komisariat Policji w Radlinie",
+    "address": "Mariacka 93, 44-310 Radlin",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komisariat Policji Orneta",
+    "address": "Kwiatowa 13, 11-130 Orneta",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Iławie - III Wydział Rodzinny i Nieletnich",
+    "address": "ulica Mikołaja Kopernika 4B",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy Katowice Zachód - V Wydział Rodzinny i Nieletnich",
+    "address": "ulica Warszawka 45, Katowice",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Sieradzu - III Wydział Rodzinny i Nieletnich",
+    "address": "ulica Aleja Zwycięstwa nr 1 w Sieradzu",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Płocku - III Wydział Rodzinny i Nieletnich",
+    "address": "ulica Piekarska 11 w Płocku",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Wejherowo - III Wydział Rodzinny i Nieletnich",
+    "address": "ulica Reformatów 9 w Wejherowie",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Zgierzu - III Wydział Rodzinny i Nieletnich",
+    "address": "ulica Sokołowska 6, Zgierz",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Bydgoszczy - VI Wydział Rodzinny i Nieletnich",
+    "address": "ulica Grudziądzka 45, Bydgoszcz",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Stargardzie - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Wojska Polskiego 17-19, Stargard",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Malborku",
+    "address": "Pl. Słowiański 6, 82-200 Malbork",
+    "contactName": "",
+    "phoneNumber": "(55) 2722494"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Ciechanowie",
+    "address": "ul. Mikołajczyka 5, 06-400 Ciechanów",
+    "contactName": "",
+    "phoneNumber": "23 6723726"
+  },
+  {
+    "name": "Sąd Rejonowy w Bytowie - III Wydział Rodzinny i Nieletnich",
+    "address": "ulica Zamkowa 1, Bytów",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Kartuzach - III Wydział Rodzinny i Nieletnich",
+    "address": "ulica Kościuszki 1, Kartuzy",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Strzelcach Krajeńskich",
+    "address": "ul. Gorzowska 38, 66-500 Strzelce Krajeńskie",
+    "contactName": "",
+    "phoneNumber": "95 763 11 97"
+  },
+  {
+    "name": "Sąd Rejonowy w Radomiu - III Wydział Rodzinny i Nieletnich",
+    "address": "ulica Warszawska 1, Radom",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Pszczynie",
+    "address": "ul. Stefana Batorego 10, 43-200 Pszczyna",
+    "contactName": "",
+    "phoneNumber": "(32) 210-31-77"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Krotoszynie",
+    "address": "Park Wojska Polskiego 2, 63-700 Krotoszyn",
+    "contactName": "",
+    "phoneNumber": "62 721 37 20"
+  },
+  {
+    "name": "Komisariat Policji w Kruszwicy",
+    "address": "ul. Niepodległości 47, 88-150 Kruszwica",
+    "contactName": "",
+    "phoneNumber": "47 75 281 04"
+  },
+  {
+    "name": "Sąd Rejonowy w Lidzbarku Warmińskim - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Bartoszycka 4, Lidzbark Warmiński",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Drawsku Pomorskim - III Wydział Rodzinny i Nieletnich",
+    "address": "ulica Złocieniecka 5, Drawsko Pomorskie",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Kutnie",
+    "address": "ul.Toruńska 14, 99-300 Kutno",
+    "contactName": "",
+    "phoneNumber": "47 842-21-00"
+  },
+  {
+    "name": "Prokuratura Rejonowa Szczytno",
+    "address": "ul. Marii Konopnickiej 61, 12-100 Szczytno",
+    "contactName": "",
+    "phoneNumber": "89 623 20 30"
+  },
+  {
+    "name": "Sąd Rejonowy w Kościerzynie - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Dworcowa 2",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Sopocie",
+    "address": "Artura Grottgera 3/5, 81-809 Sopot",
+    "contactName": "",
+    "phoneNumber": "58 551 09 22"
+  },
+  {
+    "name": "Komenda Miejska Policji w Sopocie",
+    "address": "Armii Krajowej 112A, 81-824 Sopot",
+    "contactName": "",
+    "phoneNumber": "47 742 62 22"
+  },
+  {
+    "name": "Sąd Rejonowy w Kwidzynie - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Kościuszki 30, Kwidzyn",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Olsztynie - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Dąbrowszczaków 44, Olsztyn",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy dla Warszawy Pragi-Północ - V wydział Rodzinny i Nieletnich",
+    "address": "ul. Terespolska 15a, Warszawa",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Dierżoniowie - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Świdnicka 51, Dzierżoniów",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Przemyślu - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Mickiewicza 14, Przemyśl",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Grudziądzu - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Sikorskiego 19/23, Grudziądz",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Działdowie - I Wydział Cywilny",
+    "address": "ul. Jagiełły 31, Działdowo",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Człuchowie - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Szczecińska 1, Człuchów",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Brzozowie - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. 3 Maja 2a, Brzozów",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Lublinie",
+    "address": "ul. Chmielna 10, 20-075 Lublin",
+    "contactName": "81 52 88 022",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Strzelcach Opolskich - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Opolska 11, Strzelce Opolskie",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Lipsku - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Partyzantów 7, Lipsko",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Bydgoszczy - V Wydział Rodzinny i Nieletnich",
+    "address": "Ul. Grudziądzka 45, Bydgoszcz",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Wieluniu - III Wydział Rodzinny i Nieletnich",
+    "address": "Plac Jagielloński 1, Wieluń",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Toruniu - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Warneńczyka 1, Toruń",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa Bydgoszcz-Północ",
+    "address": "ul. Przyrzecze 2-4, 85-102 Bydgoszcz",
+    "contactName": "",
+    "phoneNumber": "52 34 77 536"
+  },
+  {
+    "name": "Sąd Rejonowy w Międzyrzeczu - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Wojska Polskiego 1, Międzyrzecz",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Słupsku - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Szarych Szeregów 13, Słupsk",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Jarocinie - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Niepodległości 15, Jarocin",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy dla Warszawy-Mokotowa w Warszawie - V Wydział i Nieletnich",
+    "address": "ul. Płocka 9/11 B",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Opocznie - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Biernackiego 20",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Tczewie - III Wydział Rodzinny i Nieletnich",
+    "address": "Aleja Zwycięstwa 14, Tczew",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa Radom-Wschód w Radomiu",
+    "address": "ul. Żeromskiego 43/45",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Lipnie - III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Piłsudskiego 15/17, Lipno",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PSG w Kołobrzegu",
+    "address": "ul. Sikorskiego 7, 78-100 Kołobrzeg",
+    "contactName": "Arkadiusz Czarnecki",
+    "phoneNumber": "501475896"
+  },
+  {
+    "name": "Komisariat Policji w Wojkowicach",
+    "address": "Proletariatu 7, 42-580 Wojkowice",
+    "contactName": "",
+    "phoneNumber": "47 853 67 10"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Lipsku",
+    "address": "ul. Partyzantów 4, 27-300 Lipsko",
+    "contactName": "",
+    "phoneNumber": "centrala: 48 37-81-520"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Brzegu",
+    "address": "Młynarska 12, 49-306 Brzeg",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Strzelcach Opolskich",
+    "address": "ul. Kościuszki 8",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Kędzierzyn Koźle",
+    "address": "Racławicka 3",
+    "contactName": "Tomasz Olszewski",
+    "phoneNumber": "478634418"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Świdnicy",
+    "address": "Zamkowa 2, 58-100 Świdnica",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Wągrowcu",
+    "address": "ul. Jeżyka 7a",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Tarnobrzegu",
+    "address": "ul. 1 Maja 2",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Tarnowie",
+    "address": "ul.Dąbrowskiego 27, 33-100 Tarnów",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR Tarnów",
+    "address": "ul. Dąbrowskiego 27",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Częstochowie",
+    "address": "Jana Kilińskiego 23",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Koszalinie",
+    "address": "ul. Zwycięstwa 107, Koszalin 75-950",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa Łódź-Śródmieście",
+    "address": "ul. Kilińskiego 152, 90-322 Łódź",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Łasku",
+    "address": "Przemysłowa 5, 98-100 Łódź",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa Kraków-Nowa Huta w Krakowie",
+    "address": "os. Stalowe 16D",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR Dąbrowa Tarnowska",
+    "address": "ul. Wyszyńskiego 2",
+    "contactName": "",
+    "phoneNumber": "146422748"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Cieszynie",
+    "address": "ul. Garncarska 8",
+    "contactName": "prok. Ryszard Mojeścik",
+    "phoneNumber": "602 32 3319"
+  },
+  {
+    "name": "KPP Nakło nad  Notecią",
+    "address": "Pocztowa 11, 89-103 Nakło nad Notecią",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Brodnica",
+    "address": "ul. Zamkowa 13 87-300 Brodnica",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Kętrzynie",
+    "address": "Wojska Polskiego 5, 11-400 Kętrzyn",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa dla miasta Rzeszów",
+    "address": "Lisa-Kuli 20, 35-025 Rzeszów",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Brześciu Kujawskim",
+    "address": "Stary Brześć 23",
+    "contactName": "Paweł Lewandowski",
+    "phoneNumber": "477531116"
+  },
+  {
+    "name": "KMP Włocławek",
+    "address": "87-800 Włocławek, Okrężna 25",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Bartoszycach",
+    "address": "ul. Wyszyńskiego 28",
+    "contactName": "Beata Patecka",
+    "phoneNumber": "796762132"
+  },
+  {
+    "name": "KPP Nidzica",
+    "address": "ul. Mickiewicza 17",
+    "contactName": "Arkadiusz Grzejdak",
+    "phoneNumber": "477325267"
+  },
+  {
+    "name": "KPP Aleksandrów Kujawski",
+    "address": "Wojska Polskiego 15, 87-700 Aleksandrów Kujawski",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Nowy Dwór Gdański",
+    "address": "Kościuszki 10",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Ciechocinek",
+    "address": "Mikołaja Kopernika 24, 87-720 Ciechocinek",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Chorzów",
+    "address": "Legnicka 1, 41-503 Chorzów",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Kalety",
+    "address": "Żwirki i Wigury 2, 42-660 Kalety",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Gliwice",
+    "address": "Powstańców Warszawy 10/12, 44-100 Gliwice",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Knurów",
+    "address": "Dworcowa 1a, 44-190 Knurów",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Sosnowiec",
+    "address": "Janowskiego 16, 41-200 Sosnowiec",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Zabrze",
+    "address": "1 Maja 10, 41-800 Zabrze",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Wodzisław Śląski",
+    "address": "Kokoszycka 180b, 44-313 Wodzisław Śląski",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP I Gliwice",
+    "address": "Kościelna 2, 44-100 Gliwice",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP III Bytom",
+    "address": "Powstańców Warszawskich 74, 41-902 Bytom",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Mysłowice",
+    "address": "Starokościelna 2, 41-400 Mysłowice",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Kłobuck",
+    "address": "Bohaterów Bitwy pod Mokrą 5, 42-100 kłobuck",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Białe Błota",
+    "address": "Bezpieczna 2, 86-005 Białe Błota",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Białe Błota",
+    "address": "Bezpieczna 2, 86-005 Białe Błota",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Łęczyca",
+    "address": "Ozorkowskie Przedmieście 4, 99-100 Łęczyca",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Złotowie III Wydział Rodzinny i Nieletnich",
+    "address": "Konopnickiej 15",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Pabianicach, III Wydział Rodzinny i Nieletnich",
+    "address": "Partyzancka 105/127",
+    "contactName": "",
+    "phoneNumber": "(42)2255140"
+  },
+  {
+    "name": "Komisariat Policji Gdynia Śródmieście",
+    "address": "ul. Jerzego Waszyngtona 11; 81-342 Gdynia",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Bytom",
+    "address": "Powstańców Warszawskich 74, 41-902 Bytom",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Morąg",
+    "address": "Adama Mickiewicza 7, 14-300 Morąg",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Żninie",
+    "address": "ul. Plac Wolności 4, 88-400 Żnin",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Dąbrowa Górnicza",
+    "address": "aleja Józefa Piłsudskiego 11, 41-300 Dąbrowa Górnicza",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Ruda Śląska",
+    "address": "Hallera 9 Ruda Śląska",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komisariat Policji VI w Gdańsku",
+    "address": "ul. Kasztanowa 6, 80-540 Gdańsk",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Dąbrowa Tarnowska",
+    "address": "ul. B. Joselewicza 4, 33-200 Dąbrowa Tarnowska",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Pszczyna",
+    "address": "Ks. Bp. Bernarda Bogedaina 18, 43-200 Pszczyna",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP I Katowice",
+    "address": "Żwirki i Wigury 28, 40-063 Katowice",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komenda Miejska Policji w Rybniku",
+    "address": "Plac Armii Krajowej 5",
+    "contactName": "",
+    "phoneNumber": "47 85 572 55"
+  },
+  {
+    "name": "Komisariat Policji VI w Łodzi",
+    "address": "ul. Wysoka 45",
+    "contactName": "Sekretariat Wydziału Dochodzeniowo Śledzczego",
+    "phoneNumber": "478411316"
+  },
+  {
+    "name": "Komisariat Policji w Żukowie",
+    "address": "ul. Polna 2 C",
+    "contactName": "Dyżurny",
+    "phoneNumber": "47 7422 179"
+  },
+  {
+    "name": "Komenda Miejska Policji w Łodzi",
+    "address": "ul. Sienkiewicza 28/30, 90-114 Łódź",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR Gliwice-Wschód",
+    "address": "ul. Stanisława Dubois 16",
+    "contactName": "",
+    "phoneNumber": "32 780 91 00"
+  },
+  {
+    "name": "Komisariat Policji II Gdańsk",
+    "address": "ul. Długa Grobla4",
+    "contactName": "Dyżurny",
+    "phoneNumber": "47 741 15 22"
+  },
+  {
+    "name": "Komisariat Policji w Brześciu Kujawskim",
+    "address": "Stary Brześć 23",
+    "contactName": "",
+    "phoneNumber": "477531112"
+  },
+  {
+    "name": "Komenda Powiatowa Policji Tarnowskie Góry",
+    "address": "ul. Bytomska 6",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KOMENDA MIEJSKA POLICJI W POZNANIU",
+    "address": "ul. Szylinga 2, 60-787 Poznań",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa Kraków - Prądnik Biały",
+    "address": "31-858 Kraków, os. Kościuszkowskie 2",
+    "contactName": "12 646-77-00",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Kartuzach",
+    "address": "Sambora 41, 83-300 Kartuzy",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Susz",
+    "address": "Piastowska 9, 14-240 Susz",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR Aleksandrów Kujawski",
+    "address": "Gabriela Narutowicza 16, 87-700 Aleksandrów Kujawski",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Żywiec",
+    "address": "aleja Marszałka Józefa Piłsudskiego 52, 34-315 Żywiec",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR Brzozów",
+    "address": "Plac Grunwaldzki 4, 36-200 Brzozów",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Krosno Odrzańskie",
+    "address": "ulica Sienkiewicza 22, 66-600 Krosno Odrzańskie",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Piekary Śląskie",
+    "address": "Kalwaryjska 62, 41-940 Piekary Śląskie",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Janowiec Wielkopolski",
+    "address": "ul. Szkolna 7, 88-430 Janowiec Wlkp.",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Pucku",
+    "address": "ul. 1 Maja 15",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Dobre Miasto",
+    "address": "plac 1 Sierpnia 1",
+    "contactName": "Kamila Domańska",
+    "phoneNumber": "47 731 15 63"
+  },
+  {
+    "name": "KP Krzepice",
+    "address": "Mickiewicza 34",
+    "contactName": "Bartłomiej Szewczyk",
+    "phoneNumber": "478582518"
+  },
+  {
+    "name": "PP Luzino",
+    "address": "Ofiar Stutthofu 58",
+    "contactName": "Krzysztof Michalak",
+    "phoneNumber": "508 606 282"
+  },
+  {
+    "name": "KPP Mikołów",
+    "address": "Rymera 1",
+    "contactName": "Robert Kaczmarczyk",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR Włocławek",
+    "address": "ul. Okrężna 2c",
+    "contactName": "",
+    "phoneNumber": "54 2376400"
+  },
+  {
+    "name": "PR Gdańsk-Śródmieście",
+    "address": "ul. Piekarnicza 10/C, 80-126 Gdańsk",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Świętochłowice",
+    "address": "ul. Wojska Polskiego 16c",
+    "contactName": "",
+    "phoneNumber": "47 854 42 66"
+  },
+  {
+    "name": "KP Jeleśnia",
+    "address": "Jana Kazimierrza 79",
+    "contactName": "",
+    "phoneNumber": "47 857 28 10"
+  },
+  {
+    "name": "KPP Myszków",
+    "address": "Koścuszki 105",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR Ostróda",
+    "address": "Jana Sobieskiego 12",
+    "contactName": "",
+    "phoneNumber": "89 506 57 28"
+  },
+  {
+    "name": "KP Bydgoszcz Fordon",
+    "address": "Wyzwolenia 122, 85-790 Bydgoszcz",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP II Katowice",
+    "address": "Iłłakowiczówny 2, 40-134 Katowice",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP VII Katowice",
+    "address": "Tysiąclecia 5, 40-873 Katowice",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Instytut Ekspertyz Sądowych w Krakowie",
+    "address": "Westerplatte 9, 31-033 Kraków",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Krzyżanowice",
+    "address": "Tworkowska 10, 47-450 Krzyżanowice",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP III Częstochowa",
+    "address": "Kiedrzyńska 98, 42-200 Częstochowa",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP V Katowice",
+    "address": "Lwowska 7, 40-389 Katowice",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa Gdańsk-Śródmieście w Gdańsku",
+    "address": "ul. Piekarnicza 10/C, 80-126 Gdańsk",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP IV Bytom",
+    "address": "Zabrzańska 91, 41-907 Bytom",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Wydział Żandarmerii Wojskowej w Bemowie Piskim",
+    "address": "ul. Kętrzyńskiego 1, 12-230 Biała Piska",
+    "contactName": "",
+    "phoneNumber": "KOMENDANT ŻW 261 333 326"
+  },
+  {
+    "name": "Komisariat Policji Toruń-Rubinkowo",
+    "address": "87-100 Toruń, ul. Dziewulskiego 1",
+    "contactName": "",
+    "phoneNumber": "47 754 25 70/71"
+  },
+  {
+    "name": "KMP Rzeszów",
+    "address": "Jagiellońska 13, 35-959 Rzeszów",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Żandarmeria Wojskowa w Elblągu",
+    "address": "ul. Królewiecka 130",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Kwidzyn",
+    "address": "ul. Kościuszki 30",
+    "contactName": "",
+    "phoneNumber": "477429222"
+  },
+  {
+    "name": "KP Kolbudy",
+    "address": "ul. Staromłyńska",
+    "contactName": "",
+    "phoneNumber": "47 742 43 16"
+  },
+  {
+    "name": "Prokuratura Rejonowa w Lubinie",
+    "address": "59-300 Lubin, ul. Wrocławska 1",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komenda Miejska Policji w Koszalinie",
+    "address": "ul. Słowackiego 11, 75-950 Koszalin",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Wejherowie",
+    "address": "ul. Dworcowa 14, 84-200 Wejherowo",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Braniewo",
+    "address": "Moniuszki 11 a, 14-500 Braniewo",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Sztum",
+    "address": "Sienkiewicza 7",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Sztum",
+    "address": "Sienkiewicza 7",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP II Zabrze",
+    "address": "Trocera 36, 41-800 Zabrze",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Sulejów",
+    "address": "Szkolna 5, 97-330 Sulejów",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP III Zabrze",
+    "address": "Wolności 438, 41-806 Zabrze",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Wieluniu",
+    "address": "ul. Kilińskiego 12, 98-300 Wieluń",
+    "contactName": "",
+    "phoneNumber": "43 843 78 20"
+  },
+  {
+    "name": "Prokuratura Rejonowa Kraków-Śródmieście-Zachód",
+    "address": "ul. Mosiężnicza 2, 30-965 Kraków",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa Bielsko-Biała Południe",
+    "address": "ul. Sobieskiego 9, 43-300 Bielsko-Biała",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komisariat Policji w Cedrach Wielkich",
+    "address": "Macieja Płażyńskiego 10, 83-020 Cedry Wielkie",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PROKURATURA REJONOWA W GŁOGOWIE",
+    "address": "67-200 Głogów ul. Sienkiewicza 1",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Sierpcu, III Wydział Rodzinny i Nieletnich",
+    "address": "ul. Wiosny Ludów 1",
+    "contactName": "",
+    "phoneNumber": "24 2752901"
+  },
+  {
+    "name": "PR Braniewo",
+    "address": "Sądowa 1, 14-500 Braniewo",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Ośrodek Zamiejscowy PR w Szubinie z siedzibą w Żninie",
+    "address": "ul. Spokojna 24, 88-400 Żnin",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Nowe Miasto Lubawskie",
+    "address": "Grunwaldzka 6, 13-300 Nowe Miasto Lubawskie",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP VI Katowice",
+    "address": "Stawowa 8, 40-095 Katowice",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Barczewo",
+    "address": "Grunwaldzka 9, 11-010 Barczewo",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Szemud",
+    "address": "ul. Wejherowska 29",
+    "contactName": "Jarosław Flisikowski",
+    "phoneNumber": "47 74 298 75"
+  },
+  {
+    "name": "Komenda Miejska Policji w Gdyni",
+    "address": "Portowa 15/6, 81-350 Gdynia",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP I Gdańsk",
+    "address": "ul. PLATYNOWA 6 F",
+    "contactName": "dyżurny",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Zebrzydowice",
+    "address": "Dworcowa 11, 43-410 Zebrzydowice",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Ustroń",
+    "address": "3 Maja 21, 43-450 Ustroń",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Brześć Kujawski",
+    "address": "Stary Breść 23",
+    "contactName": "Paweł Lewandowski",
+    "phoneNumber": "47/753-11-16"
+  },
+  {
+    "name": "Pomorski Urząd Celno-Skarbowy w Gdyni",
+    "address": "ul. Północna 9a",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komisariat Policji w Dobrzejewicach",
+    "address": "Dobrzejewice 65, 87-123 Dobrzejewice",
+    "contactName": "",
+    "phoneNumber": "47 754 29 00"
+  },
+  {
+    "name": "KPP Wąbrzeźno",
+    "address": "ul. Wolości 28",
+    "contactName": "dyżurny",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR PRUSZCZ GDAŃSKI",
+    "address": "UL. WOJSKA POLSKIEGO 7B",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Prabuty",
+    "address": "Kwidzyńska 4",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Racibórz",
+    "address": "Bosackas 42",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Gdynia Redłowo",
+    "address": "Korczaka 1a",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Starogardzie Gdańskim",
+    "address": "Bohaterów Getta 2, 83-200 Starogard Gdański",
+    "contactName": "",
+    "phoneNumber": "47 742 72 22"
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Pucku",
+    "address": "Dworcowa 5, 84-100 Puck",
+    "contactName": "",
+    "phoneNumber": "47 742 52 22"
+  },
+  {
+    "name": "KMP Jastrzębie Zdrój",
+    "address": "Śląska 12",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PP Skarszewy",
+    "address": "Dworcowa 33",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Rydułtowy",
+    "address": "44-280 Rydułtowy ul. Raciborska 371",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Zawiercie",
+    "address": "Jana Kasprowicza 9, 42-400 Zawiercie",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PROKURATURA REJONOWA W RZESZOWIE",
+    "address": "Lisa-Kuli 20, 39-959 Rzeszów",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Wejherowie",
+    "address": "ul. Hallera 21, 84-200 Wejherowo",
+    "contactName": "",
+    "phoneNumber": "(58) 6729860"
+  },
+  {
+    "name": "KMP Toruń",
+    "address": "ul. Grudziądzka",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Żory",
+    "address": "Wodzisławska 3, 44-240 Żory",
+    "contactName": "Przemysław Bobusia",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Będzin",
+    "address": "Generała Józefa Bema 1, 42-500 Będzin",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Jarosławiu",
+    "address": "CZARNIECKIEGO 4, 37-500 Jaroslaw",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Brzezinach",
+    "address": "ul. Sienkiewicza 9, 95-060 Brzeziny",
+    "contactName": "",
+    "phoneNumber": "(46) 874-31-90"
+  },
+  {
+    "name": "KP III Gliwice",
+    "address": "Pszczyńska 20, 44-122 Gliwice",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PP Młynary",
+    "address": "ul. Kwiatowa 11",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Czerwionka -Leszczyny",
+    "address": "ul. 3 Maja 40",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Głogowie",
+    "address": "ul. St. Kutrzeby 2",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Mrągowo",
+    "address": "Wolności 2, 11-700 Mrągowo",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Legionowie",
+    "address": "ul. Sobieskiego 47,  05-120 Legionowo",
+    "contactName": "",
+    "phoneNumber": "(22) 764-09-11"
+  },
+  {
+    "name": "KMP Tychy",
+    "address": "al. Bielska 46, 43-100 Tychy",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Katowice",
+    "address": "Lompy 19, 40-018 Katowice",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR Stalowa Wola",
+    "address": "Księdza Jerzego Popiełuszki 16, 37-450 Stalowa Wola",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Lesznie",
+    "address": "Kasprowicza 3, 64-100 Leszno",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP III W Łodzi",
+    "address": "ul. Armii Krajowej 33",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP I Częstochowa",
+    "address": "Popiełuszki 5",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Sosnowiec",
+    "address": "Janowskiego 16",
+    "contactName": "Ewelina Urbańska",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Rypin",
+    "address": "ul. Sportowa 35",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "SR Bydgoszcz XI Wydział Karny",
+    "address": "ul. Wały Jagiellońskie 4",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Lubliniec",
+    "address": "Oświęcimska 6, 42-700 Lubliniec",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Sławków",
+    "address": "ul. PCK 3, 41-260 Sławków",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "SR Toruń, II Wydział Karny",
+    "address": "ul. W. Warneńczyka 1, 87-100 Toruń",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Szczytno",
+    "address": "Marszałka Józefa Piłsudskiego 39, 12-100 Szczytno",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PP Kisielice",
+    "address": "Daszyńskiego 5",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KMP Tarnów",
+    "address": "ul. Traugutta 4 33-101 Tarnów",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Giżycko",
+    "address": "Aleja 1 Maja 26",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR Kutno",
+    "address": "Stanisława Staszica 3, 99-320 Kutno",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR Lipno",
+    "address": "ul. Piłsudskiego  15/17",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Okręgowa w Częstochowie",
+    "address": "Generała Jana Henryka Dąbrowskiego 23/35, 42-218 Częstochowa",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KP Czersk",
+    "address": "Doktora Zielińskiego 6, 89-650 Czersk",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Staszowie",
+    "address": "ul. Wschodnia 13",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komenda Powiatowa Policji w Tucholi",
+    "address": "ul. Dworcowa 17A, 89-500 Tuchola",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Inowrocławiu",
+    "address": "ul. Aleja Ratuszowa 23",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR Lidzbark Warmiński",
+    "address": "ul. Wyszyńskiego 37, 11-100 Lidzbark Warmiński",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Rejonowy w Działdowie - II Wydział Karny",
+    "address": "ul. Jagiełły 31 13-200 Działdowo",
+    "contactName": "",
+    "phoneNumber": "23 697 07 60"
+  },
+  {
+    "name": "Prokuratura Rejonowa Sosnowiec-Północ w Sosnowcu",
+    "address": "ul. Aleksandra Janowskiego 14, 41-200 Sosnowiec",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KPP Człuchów",
+    "address": "Kasztanowa 17, 77-300 Człuchów",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR Świecie",
+    "address": "10 Lutego 9, 86-100 Świecie",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PP Pruszcz",
+    "address": "ul. Główna 33 86-120 Pruszcz",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komenda Miejska Policji w Jaworznie",
+    "address": "43-600 Jaworzno, ul. Narutowicza 1",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "KOMISARIAT POLICJI W GILOWICACH",
+    "address": "Aleja Piłsudskiego 52, 34-300 Żywiec",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komenda Miejska Policji  w BIELSKU-BIAŁEJ",
+    "address": "43-300 Bielsko-Biała, ul. Wapienna 45",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Posterunek Policji w Chodczu",
+    "address": "ul. Kościelna 7, 87-860 Chodecz",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Posterunek Policji w Chodczu",
+    "address": "ul. Kościelna 7, 87-860 Chodecz",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa w Nysie",
+    "address": "ul. Bohaterów Warszawy 32, 48-300 Nysa",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR Głubczyce",
+    "address": "Powstańców Śląskich 4 48-100 Głubczyce",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "PR Łęczyca",
+    "address": "ul. Lotnicza 4 99-100 Łęczyca",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Sąd Okręgowy w Elblągu, II Wydz. Karny",
+    "address": "Plac Konstytucji 1, 82-300 Elbląg",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Rejonowa Łódź – Górna",
+    "address": "ul. Sieradzka 11a",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komisariat Policji w Kowalu",
+    "address": "ul. Matejki 10",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Komendy Powiatowej Policji w Strzelcach Opolskich",
+    "address": "ul. Piłsudskiego 3",
+    "contactName": "",
+    "phoneNumber": ""
+  },
+  {
+    "name": "Prokuratura Okręgowa we Włocławku",
+    "address": "Orla 2",
+    "contactName": "",
+    "phoneNumber": ""
+  }
+]

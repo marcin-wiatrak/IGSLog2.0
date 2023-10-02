@@ -11,13 +11,20 @@ const SignIn: NextPage = () => {
 
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [formError, setFormError] = useState<string>('')
 
-  const handleSubmit = async () => {
-    const res = await signIn('credentials', {
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const response = await signIn('credentials', {
       email,
       password,
       redirect: false,
     })
+    if (!response.ok) {
+      setFormError(
+        response.error === 'Invalid credentials' ? 'Nieprawidłowe dane logowania' : 'Wystąpił błąd logowania'
+      )
+    }
   }
 
   return (
@@ -38,36 +45,54 @@ const SignIn: NextPage = () => {
             sx={{ padding: 5 }}
             elevation={4}
           >
-            <Stack spacing={3}>
-              <Typography
-                align="center"
-                variant="h3"
-                fontWeight="bold"
-              >
-                IGSLog Logowanie
-              </Typography>
-              <TextField
-                variant="outlined"
-                label="E-mail"
-                name="email"
-                value={email}
-                onChange={({ target }) => setEmail(target.value)}
-              />
-              <TextField
-                variant="outlined"
-                label="Hasło"
-                type="password"
-                name="password"
-                value={password}
-                onChange={({ target }) => setPassword(target.value)}
-              />
-              <Button
-                variant="contained"
-                onClick={handleSubmit}
-              >
-                Zaloguj
-              </Button>
-            </Stack>
+            <form onSubmit={handleSubmit}>
+              <Stack spacing={3}>
+                <Typography
+                  align="center"
+                  variant="h3"
+                  fontWeight="bold"
+                >
+                  IGSLog Logowanie
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  label="E-mail"
+                  name="email"
+                  value={email}
+                  onChange={({ target }) => {
+                    setFormError('')
+                    setEmail(target.value)
+                  }}
+                  error={!!formError}
+                />
+                <TextField
+                  variant="outlined"
+                  label="Hasło"
+                  type="password"
+                  name="password"
+                  value={password}
+                  onChange={({ target }) => {
+                    setFormError('')
+                    setPassword(target.value)
+                  }}
+                  error={!!formError}
+                />
+                {!!formError && (
+                  <Typography
+                    color="red"
+                    align="center"
+                  >
+                    {formError}
+                  </Typography>
+                )}
+                <Button
+                  variant="contained"
+                  type="submit"
+                >
+                  Zaloguj
+                </Button>
+              </Stack>
+            </form>
           </Paper>
         </Grid>
       </Grid>

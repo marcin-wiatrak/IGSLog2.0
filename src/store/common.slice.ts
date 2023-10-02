@@ -15,11 +15,18 @@ type CalendarSummaryDataProps = {
   returnCreatedBy: Return[]
 }
 
+type CalendarDataProps = {
+  orders: Order[]
+  returns: Return[]
+}
+
 export type CommonStateProps = {
   isLoading: IsLoadingType
   currentPath: CurrentPath
   calendarDay: string
   calendarSummaryData: CalendarSummaryDataProps
+  findString: string
+  calendarData: CalendarDataProps
 }
 
 export type SetIsLoadingPayload = {
@@ -39,11 +46,21 @@ export type SetCalendarSummaryDataPayload = {
   calendarSummaryData: CalendarSummaryDataProps
 }
 
+export type SetFindStringPayload = {
+  value: string
+}
+
+export type SetCalendarDataPayload = {
+  calendarData: CalendarDataProps
+}
+
 const initialState: CommonStateProps = {
   isLoading: {},
   currentPath: null,
   calendarDay: dayjs().startOf('day').format(),
   calendarSummaryData: null,
+  findString: '',
+  calendarData: null,
 }
 
 export const commonState = createSlice({
@@ -65,6 +82,12 @@ export const commonState = createSlice({
     setCalendarSummaryData: (state, { payload }: PayloadAction<SetCalendarSummaryDataPayload>) => {
       state.calendarSummaryData = payload.calendarSummaryData
     },
+    setFindString: (state, { payload }: PayloadAction<SetFindStringPayload>) => {
+      state.findString = payload.value
+    },
+    setCalendarData: (state, { payload }: PayloadAction<SetCalendarDataPayload>) => {
+      state.calendarData = payload.calendarData
+    },
   },
 })
 
@@ -75,6 +98,8 @@ export const commonSelectors = {
   selectCurrentPath: createSelector(getCommon, (common) => common.currentPath),
   selectCalendarDay: createSelector(getCommon, (common) => common.calendarDay),
   selectCalendarSummaryData: createSelector(getCommon, (common) => common.calendarSummaryData),
+  selectFindString: createSelector(getCommon, (common) => common.findString),
+  selectCalendarData: createSelector(getCommon, (common) => common.calendarData),
 }
 
 export const commonActions = commonState.actions

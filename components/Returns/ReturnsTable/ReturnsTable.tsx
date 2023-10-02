@@ -21,14 +21,15 @@ import {
   Typography,
 } from '@mui/material'
 import { FC, useCallback, useMemo, useState } from 'react'
-import { Return, User } from '@prisma/client'
+import { Customer, Return, User } from '@prisma/client'
 import { ReturnContent, TableOrderDirection } from '@src/types'
 import { getFullName, renameDownloadFile } from '@src/utils'
 import { AssignUserModal, StatusSelector, UploadFileModal } from '@components/Orders'
-import { LocalizationModal } from '@components/LocalizationModal'
+import { LocalizationModal } from 'components/modals/LocalizationModal'
 import dayjs from 'dayjs'
 import { useDispatch, useSelector } from 'react-redux'
 import {
+  commonSelectors,
   customersSelectors,
   ordersActions,
   ordersSelectors,
@@ -45,8 +46,16 @@ import { TablePaginator } from '@components/TablePaginator'
 import { AddCircle, AttachFile, Description, Download, Info, Inventory } from '@mui/icons-material'
 import { TypeElement } from '@components/TypeElement'
 import { formatFullName } from '@src/utils/textFormatter'
+import { PickupAtModal } from '@components/modals/PickupAtModal'
+import { SnackbarFunctionProps, withSnackbar } from '@components/HOC'
 
 const COLUMNS_SETUP = [
+  {
+    name: 'no',
+    label: 'LP',
+    displayMobile: true,
+    allowSorting: true,
+  },
   {
     name: 'type',
     label: 'Dział',
@@ -61,7 +70,7 @@ const COLUMNS_SETUP = [
   },
   {
     name: 'signature',
-    label: 'IGS',
+    label: 'Sygnatura',
     displayMobile: true,
     allowSorting: false,
   },
@@ -115,19 +124,23 @@ const COLUMNS_SETUP = [
   },
 ]
 
-export const ReturnsTable = () => {
+type ReturnsTableProps = {
+  showSnackbar: (props: SnackbarFunctionProps) => void
+}
+
+const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
   const { data } = useSession()
   const dispatch = useDispatch()
   const [attachmentsMenuAnchor, setAttachmentsMenuAnchor] = useState(null)
   const customersList = useSelector(customersSelectors.selectCustomersList)
-  const usersList = useSelector(usersSelectors.selectUsersList)
+  const findString = useSelector(commonSelectors.selectFindString)
   const returnsList = useSelector(returnsSelectors.selectReturnsList)
   const returnDetails = useSelector(returnsSelectors.selectReturnDetails)
   const filterByType = useSelector(ordersSelectors.selectFilterByType)
   const filters = useSelector(ordersSelectors.selectFilterRegisteredBy)
   // const [attachmentHover, setAttachmentHover] = useState('')
 
-  const [sortBy, setSortBy] = useState('createdAt')
+  const [sortBy, setSortBy] = useState('no')
   const [sortDirection, setSortDirection] = useState<TableOrderDirection>('desc')
 
   const { refreshReturnsList } = useGetReturnsList()
@@ -150,6 +163,8 @@ export const ReturnsTable = () => {
     onClose: onUploadFileModalClose,
   } = useDisclose()
 
+  const { isOpen: isPickupAtModalOpen, onOpen: onPickupAtModalOpen, onClose: onPickupAtModalClose } = useDisclose()
+
   const handleUploadFileModalOpen = (orderId?) => {
     if (orderId) dispatch(returnsActions.setReturnDetails({ id: orderId }))
     onUploadFileModalOpen()
@@ -170,7 +185,7 @@ export const ReturnsTable = () => {
   }
 
   const filterOrders = useCallback(
-    (returns: Return[]) =>
+    (returns: (Return & { customer?: Customer })[]) =>
       returns.filter(
         (ret) =>
           (filterByType.length ? filterByType.some((el) => ret.type.includes(el)) : true) &&
@@ -182,7 +197,10 @@ export const ReturnsTable = () => {
               : ret.localization.includes(filters.localization)
             : true) &&
           (filters.createdAtStart ? dayjs(ret.createdAt).isAfter(filters.createdAtStart) : true) &&
-          (filters.createdAtEnd ? dayjs(ret.createdAt).isBefore(filters.createdAtEnd) : true)
+          (filters.createdAtEnd ? dayjs(ret.createdAt).isBefore(filters.createdAtEnd) : true) &&
+          ((findString ? ret.localization?.toLowerCase().includes(findString.toLowerCase()) : true) ||
+            (findString ? ret.customer?.name?.toLowerCase().includes(findString.toLowerCase()) : true) ||
+            (findString ? ret.signature?.toLowerCase().includes(findString.toLowerCase()) : true))
       ),
     [
       filterByType,
@@ -215,7 +233,7 @@ export const ReturnsTable = () => {
   }
 
   const handleAssignUserModalClose = () => {
-    dispatch(returnsActions.clearReturnDetails())
+    handleClearReturnDetails()
     onAssignUserModalClose()
   }
 
@@ -242,13 +260,15 @@ export const ReturnsTable = () => {
     })
   }
 
+  const handleClearReturnDetails = () => dispatch(returnsActions.clearReturnDetails())
+
   const handleEditLocalizationModalOpen = (orderId: string, localization?: string) => {
     dispatch(returnsActions.setReturnDetails({ id: orderId, localization }))
     onLocalizationModalOpen()
   }
 
   const handleEditLocalizationModalClose = () => {
-    dispatch(returnsActions.clearReturnDetails())
+    handleClearReturnDetails()
     onLocalizationModalClose()
   }
 
@@ -262,7 +282,7 @@ export const ReturnsTable = () => {
   }
 
   const handleAttachmentsMenuClose = () => {
-    dispatch(returnsActions.clearReturnDetails())
+    handleClearReturnDetails()
     setAttachmentsMenuAnchor(null)
   }
 
@@ -270,6 +290,20 @@ export const ReturnsTable = () => {
   //   dispatch(returnsActions.setReturnDetails({ attachment: attachments, id: orderId }))
   //   setAttachmentsMenuAnchor(e.currentTarget)
   // }
+
+  const handleReturnAtModalOpen = (returnId: string, returnAt?: string) => {
+    dispatch(returnsActions.setReturnDetails({ id: returnId, returnAt }))
+    onPickupAtModalOpen()
+  }
+
+  const handleUpdateReturnAt = async () => {
+    await axios.post(`/api/return/${returnDetails.id}/update`, { returnAt: returnDetails.returnAt }).then(() => {
+      showSnackbar({ message: 'Data zwrotu zmieniona', severity: 'success' })
+      onPickupAtModalClose()
+      refreshReturnsList()
+      handleClearReturnDetails()
+    })
+  }
 
   const tableData = useMemo(() => {
     return sortOrders(filterOrders(returnsList))
@@ -347,19 +381,19 @@ export const ReturnsTable = () => {
           <TableBody>
             {returnsList ? (
               <>
-                {handlePagination(tableData).map((order) => (
-                  <TableRow key={order.id}>
+                {handlePagination(tableData).map((ret) => (
+                  <TableRow key={ret.id}>
+                    <TableCell>{ret.no}</TableCell>
                     <TableCell>
-                      <TypeElement types={order.type} />
+                      <TypeElement types={ret.type} />
                     </TableCell>
-                    <TableCell>{order.customer.name}</TableCell>
-                    <TableCell>{order.signature}</TableCell>
-                    <TableCell>{dayjs(order.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
-                    <TableCell>{order.returnAt ? dayjs(order.returnAt).format('DD/MM/YYYY') : '-'}</TableCell>
+                    <TableCell>{ret.customer.name}</TableCell>
+                    <TableCell>{ret.signature}</TableCell>
+                    <TableCell>{dayjs(ret.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
                     <TableCell>
-                      {order.localization ? (
+                      {ret.returnAt ? (
                         <Box
-                          onClick={() => handleEditLocalizationModalOpen(order.id, order.localization)}
+                          onClick={() => handleReturnAtModalOpen(ret.id, ret.returnAt)}
                           sx={{
                             display: 'inline',
                             cursor: 'pointer',
@@ -367,17 +401,39 @@ export const ReturnsTable = () => {
                             '&:hover': { color: 'text.secondary', cursor: 'pointer' },
                           }}
                         >
-                          {order.localization}
+                          {dayjs(ret.returnAt).format('DD/MM/YYYY')}
                         </Box>
                       ) : (
-                        <Link onClick={() => handleEditLocalizationModalOpen(order.id)}>Edytuj</Link>
+                        <Button
+                          onClick={() => handleReturnAtModalOpen(ret.id)}
+                          size="small"
+                        >
+                          Ustal
+                        </Button>
                       )}
                     </TableCell>
-                    <TableCell>{formatContentToIcon(order.content)}</TableCell>
                     <TableCell>
-                      {order.handleById ? (
+                      {ret.localization ? (
                         <Box
-                          onClick={() => handleAssignUserModalOpen(order.id, order.handleById)}
+                          onClick={() => handleEditLocalizationModalOpen(ret.id, ret.localization)}
+                          sx={{
+                            display: 'inline',
+                            cursor: 'pointer',
+                            color: 'primary.main',
+                            '&:hover': { color: 'text.secondary', cursor: 'pointer' },
+                          }}
+                        >
+                          {ret.localization}
+                        </Box>
+                      ) : (
+                        <Link onClick={() => handleEditLocalizationModalOpen(ret.id)}>Edytuj</Link>
+                      )}
+                    </TableCell>
+                    <TableCell>{formatContentToIcon(ret.content)}</TableCell>
+                    <TableCell>
+                      {ret.handleById ? (
+                        <Box
+                          onClick={() => handleAssignUserModalOpen(ret.id, ret.handleById)}
                           sx={{
                             display: 'inline',
                             cursor: 'pointer',
@@ -385,14 +441,14 @@ export const ReturnsTable = () => {
                             '&:hover': { color: 'text.secondary' },
                           }}
                         >
-                          {formatFullName(order.handleBy)}
+                          {formatFullName(ret.handleBy)}
                         </Box>
                       ) : (
                         <>
                           <Button
                             variant="text"
                             size="small"
-                            onClick={() => handleAssignUserModalOpen(order.id)}
+                            onClick={() => handleAssignUserModalOpen(ret.id)}
                           >
                             Przypisz
                           </Button>
@@ -400,18 +456,18 @@ export const ReturnsTable = () => {
                             variant="text"
                             size="small"
                             color="warning"
-                            onClick={() => handleUpdateOrderHandleBy({ selfAssign: true }, order.id)}
+                            onClick={() => handleUpdateOrderHandleBy({ selfAssign: true }, ret.id)}
                           >
                             Do mnie
                           </Button>
                         </>
                       )}
                     </TableCell>
-                    <TableCell>{formatFullName(order.registeredBy)}</TableCell>
+                    <TableCell>{formatFullName(ret.registeredBy)}</TableCell>
                     <TableCell>
                       <StatusSelector
-                        status={order.status}
-                        orderId={order.id}
+                        status={ret.status}
+                        orderId={ret.id}
                       />
                     </TableCell>
                     <TableCell>
@@ -435,7 +491,7 @@ export const ReturnsTable = () => {
                       {/*      )}*/}
                       {/*    </Badge>*/}
                       {/*  </IconButton>*/}
-                      <Link href={`/preview/return/${order.id}`}>
+                      <Link href={`/preview/return/${ret.id}`}>
                         <IconButton size="small">
                           <Info />
                         </IconButton>
@@ -517,6 +573,15 @@ export const ReturnsTable = () => {
           method="updateOrder"
         />
       )}
+      {isPickupAtModalOpen && (
+        <PickupAtModal
+          isOpen={isPickupAtModalOpen}
+          onClose={onPickupAtModalClose}
+          onConfirm={handleUpdateReturnAt}
+        />
+      )}
     </>
   )
 }
+
+export const ReturnsTable = withSnackbar(ReturnsTableComponent)

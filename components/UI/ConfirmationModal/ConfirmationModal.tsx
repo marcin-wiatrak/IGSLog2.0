@@ -24,6 +24,8 @@ export const ConfirmationModal: FC<ConfirmationModalType> = ({
     <Dialog
       open={open}
       onClose={onCancel}
+      maxWidth="sm"
+      fullWidth
     >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
