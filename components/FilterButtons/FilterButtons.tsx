@@ -1,11 +1,11 @@
 import { Box, Button, ButtonGroup, IconButton, Stack, TextField } from '@mui/material'
 import { ORDER_TYPE_BUTTONS_LIST, RETURN_TYPE_BUTTONS_LIST } from './FilterButtons.constants'
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { Close } from '@mui/icons-material'
 import { useDispatch, useSelector } from 'react-redux'
 import { commonActions, commonSelectors, ordersActions, ordersSelectors } from '@src/store'
 import { getTypeIcon } from '@src/utils/typeIcons'
-import { Paths } from '@src/types'
+import { OrderType, Paths } from '@src/types'
 
 type FilterButtonsProps = {
   onClearFiltersClick: () => void
@@ -21,9 +21,34 @@ export const FilterButtons: FC<FilterButtonsProps> = ({ onClearFiltersClick, onF
   const handleFindStringChange = (value) => dispatch(commonActions.setFindString({ value }))
   const handleClearFindString = () => dispatch(commonActions.setFindString({ value: '' }))
 
+
   const handleTypeClick = (type) => {
     dispatch(ordersActions.setFilterByType({ filterByType: type }))
+    const LStypes = localStorage.getItem('filterByType')
+    if (LStypes === type) {
+      localStorage.setItem('filterByType', '')
+    }
   }
+
+  useEffect(() => {
+    const typesJointString = selectedTypes.join(',')
+
+    if (typesJointString) {
+      localStorage.setItem('filterByType', selectedTypes.join(','))
+    }
+
+    console.log('selectedTypes', selectedTypes);
+  }, [selectedTypes])
+
+  useEffect(() => {
+    const LStypes = localStorage.getItem('filterByType')
+    if (!LStypes) {
+      localStorage.setItem('filterByType', '')
+    }
+    if (LStypes !== '' && LStypes !== null) {
+      LStypes.split(',').forEach((el: OrderType) => dispatch(ordersActions.setFilterByType({ filterByType: el })))
+    }
+  }, [])
 
   const TYPES_LIST = currentPath === Paths.ORDERS ? ORDER_TYPE_BUTTONS_LIST : RETURN_TYPE_BUTTONS_LIST
 

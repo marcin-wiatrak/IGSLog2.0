@@ -1,4 +1,4 @@
-import { Autocomplete, Stack, TextField } from '@mui/material'
+import { Autocomplete, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material'
 import { FC, useMemo } from 'react'
 import { commonSelectors, ordersActions, ordersSelectors, returnsActions, returnsSelectors } from '@src/store'
 import { useDispatch, useSelector } from 'react-redux'
@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 import { DatePicker } from '@mui/x-date-pickers'
 import { SideDrawer } from '@components/SideDrawer'
 import { Close } from '@mui/icons-material'
-import { Paths } from '@src/types'
+import { OrderStatuses, Paths } from '@src/types'
 import { useGetUsersList } from '@src/hooks'
 
 type FiltersDrawerProps = {
@@ -62,6 +62,12 @@ export const FiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose }) => {
       : dispatch(returnsActions.setFilters({ createdAtEnd: dayjs(date).endOf('day').format() }))
   }
 
+  const handleChangeFilterStatus = ({ target }) => {
+    currentPath === Paths.ORDERS
+      ? dispatch(ordersActions.setFilterStatus({ status: target.value }))
+      : dispatch(returnsActions.setFilters({ status: target.value }))
+  }
+
   return (
     <SideDrawer
       title="Filtruj zlecenia"
@@ -87,6 +93,16 @@ export const FiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose }) => {
         <Autocomplete
           multiple
           value={filters.handleBy as any[]}
+          renderOption={(props, option) => {
+            return (
+              <li
+                {...props}
+                key={option.id}
+              >
+                {option.label}
+              </li>
+            )
+          }}
           onChange={handleChangeFilterUserId}
           renderInput={(params) => (
             <TextField
@@ -111,6 +127,22 @@ export const FiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose }) => {
           value={dayjs(filters.createdAtEnd)}
           onChange={handleChangeFilterCreatedAtEnd}
         />
+        <FormControl
+        >
+          <InputLabel id="role-label">Status</InputLabel>
+        <Select
+
+          label="Status"
+          value={filters.status}
+          onChange={handleChangeFilterStatus}
+        >
+          <MenuItem value="NEW">Zarejestrowano</MenuItem>
+          <MenuItem value="PICKED_UP">Ustalone</MenuItem>
+          <MenuItem value="DELIVERED">Odebrane</MenuItem>
+          <MenuItem value="CLOSED">Zakończone</MenuItem>
+          <MenuItem value="PAUSED">Wstrzymane</MenuItem>
+        </Select>
+        </FormControl>
       </Stack>
     </SideDrawer>
   )

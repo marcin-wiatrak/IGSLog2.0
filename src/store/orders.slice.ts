@@ -15,6 +15,7 @@ export type OrdersStateProps = {
   filterLocalization: string
   filterCreatedAtStart: string
   filterCreatedAtEnd: string
+  filterStatus: string
   createOrder: CreateOrder
   uploadedFiles: string[]
   localization: string
@@ -59,6 +60,10 @@ type SetFilterCreatedAtEndPayload = {
   filterCreatedAtEnd: string
 }
 
+type SetFilterStatusPayload = {
+  status: string
+}
+
 type SetUploadedFilesPayload = {
   uploadedFiles: string[]
 }
@@ -96,6 +101,7 @@ const initialState: OrdersStateProps = {
   filterLocalization: '',
   filterCreatedAtStart: null,
   filterCreatedAtEnd: null,
+  filterStatus: null,
   uploadedFiles: null,
   localization: '',
   orderDetails: {
@@ -129,6 +135,7 @@ export const ordersState = createSlice({
       state.filterLocalization = initialState.filterLocalization
       state.filterCreatedAtStart = initialState.filterCreatedAtStart
       state.filterCreatedAtEnd = initialState.filterCreatedAtEnd
+      state.filterStatus = initialState.filterStatus
     },
     resetOrderForm: (state) => {
       state.createOrder = initialState.createOrder
@@ -159,6 +166,9 @@ export const ordersState = createSlice({
     },
     setFilterCreatedAtEnd: (state, { payload }: PayloadAction<SetFilterCreatedAtEndPayload>) => {
       state.filterCreatedAtEnd = payload.filterCreatedAtEnd
+    },
+    setFilterStatus: (state, { payload }: PayloadAction<SetFilterStatusPayload>) => {
+      state.filterStatus = payload.status
     },
     setCreateOrder: (state, { payload }: PayloadAction<SetCreateOrderPayload>) => {
       state.createOrder = { ...state.createOrder, ...payload }
@@ -195,6 +205,7 @@ export const ordersSelectors = {
     localization: order.filterLocalization,
     createdAtStart: order.filterCreatedAtStart,
     createdAtEnd: order.filterCreatedAtEnd,
+    status: order.filterStatus,
   })),
   selectOrderForm: createSelector(getOrder, (order) => ({
     type: order.createOrder.type,

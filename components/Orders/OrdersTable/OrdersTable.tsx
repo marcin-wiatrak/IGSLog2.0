@@ -154,6 +154,7 @@ export const OrdersTable = () => {
           (filterByType.length ? filterByType.some((el) => order.type.includes(el)) : true) &&
           (filters.registeredBy.length ? filters.registeredBy.some((el) => el.id === order.registeredById) : true) &&
           (filters.handleBy.length ? filters.handleBy.some((el) => el.id === order.handleById) : true) &&
+          (filters.status ? filters.status === order.status : true) &&
           (filters.localization && (!!order.localization || !order.localization)
             ? order.localization === null
               ? false
@@ -173,17 +174,27 @@ export const OrdersTable = () => {
       filters.handleBy,
       filters.localization,
       filters.registeredBy,
+      filters.status,
       findString,
     ]
   )
 
   const sortOrders = useCallback(
     (orders) => {
-      const sort =
-        sortDirection === 'asc'
-          ? R.sortWith([R.ascend(R.prop(sortBy) || '')])
-          : R.sortWith([R.descend(R.prop(sortBy) || '')])
-      return sort(orders)
+      if (sortBy === 'pickupAt') {
+        const isNull = R.pipe(R.prop(sortBy), R.isNil)
+        const sort =
+          sortDirection === 'asc'
+            ? R.sortWith([R.ascend(R.pipe(isNull)), R.ascend(R.prop(sortBy))])
+            : R.sortWith([R.descend(R.pipe(isNull, R.not)), R.descend(R.prop(sortBy))])
+        return sort(orders)
+      } else {
+        const sort =
+          sortDirection === 'asc'
+            ? R.sortWith([R.ascend(R.prop('createdAt') || '')])
+            : R.sortWith([R.descend(R.prop('createdAt') || '')])
+        return sort(orders)
+      }
     },
     [sortBy, sortDirection]
   )
@@ -282,6 +293,14 @@ export const OrdersTable = () => {
         Brak odbiorów. Utwórz pierwszy korzystając z przycisku w dolnym prawym rogu ekranu
       </Typography>
     )
+  }
+
+  const handleClearPickupDate = async () => {
+    await axios.post(`/api/order/${orderDetails.id}/update`, { pickupAt: null }).then((res) => {
+      onPickupAtModalClose()
+      refreshOrdersList()
+      handleClearOrderDetails()
+    })
   }
 
   return (
@@ -515,6 +534,7 @@ export const OrdersTable = () => {
           isOpen={isPickupAtModalOpen}
           onClose={onPickupAtModalClose}
           onConfirm={handleUpdatePickupAt}
+          onClearDate={handleClearPickupDate}
         />
       )}
     </>

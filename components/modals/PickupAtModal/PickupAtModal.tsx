@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { commonSelectors, ordersActions, ordersSelectors, returnsActions, returnsSelectors } from '@src/store'
 import { useEffect, useState } from 'react'
@@ -11,9 +11,10 @@ type PickupAtModalProps = {
   isOpen: boolean
   onClose: () => void
   onConfirm: () => void
+  onClearDate: () => void
 }
 
-export const PickupAtModal = ({ isOpen, onClose, onConfirm }: PickupAtModalProps) => {
+export const PickupAtModal = ({ isOpen, onClose, onConfirm, onClearDate }: PickupAtModalProps) => {
   const dispatch = useDispatch()
   const { pickupAt } = useSelector(ordersSelectors.selectOrderDetails)
   const { returnAt } = useSelector(returnsSelectors.selectReturnDetails)
@@ -63,14 +64,21 @@ export const PickupAtModal = ({ isOpen, onClose, onConfirm }: PickupAtModalProps
           >
             Zamknij
           </Button>
-          <Box>
+          <Stack direction="row" spacing={1}>
+            <Button
+              color="error"
+              variant="contained"
+              onClick={onClearDate}
+            >
+              Usuń datę
+            </Button>
             <Button
               variant="contained"
               onClick={onConfirm}
             >
               Zapisz
             </Button>
-          </Box>
+          </Stack>
         </Box>
       </DialogActions>
     </Dialog>

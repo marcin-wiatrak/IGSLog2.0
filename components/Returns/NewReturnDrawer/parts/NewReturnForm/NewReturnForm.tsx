@@ -151,7 +151,7 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
 
   const usersListOption = useMemo(() => {
     if (usersList && usersList.length) {
-      return usersList.map((user) => ({
+      return usersList.filter(user => !user.hidden).filter(user => !user.hidden).map((user) => ({
         id: user.id,
         label: `${user.firstName} ${user.lastName}`,
       }))
@@ -219,6 +219,13 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
                     options={customersListOption}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                     onChange={(e, newValue) => onChange(newValue)}
+                    renderOption={(props, option) => {
+                      return (
+                        <li {...props} key={option.id}>
+                          {option.label}
+                        </li>
+                      )
+                    }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -299,6 +306,13 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
                 options={usersListOption}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 onChange={(e, newValue) => onChange(newValue)}
+                renderOption={(props, option) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.label}
+                    </li>
+                  )
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}

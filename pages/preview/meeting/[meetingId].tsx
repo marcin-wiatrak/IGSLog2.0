@@ -6,7 +6,6 @@ import axios from 'axios'
 import { Meeting, Unit, User } from '@prisma/client'
 import dayjs from 'dayjs'
 import { DateTemplate, DateTimeTemplate } from '@src/utils'
-import { useSession } from 'next-auth/react'
 
 type MeetingProps = Meeting & { unit: Unit; handleBy: User }
 

@@ -31,7 +31,7 @@ export const AssignUserModal: FC<AssignUserModalProps> = ({ isOpen, onClose, onA
   const handleById = isOrder ? orderHandleById : returnHandleById
 
   const usersList = useMemo(() => {
-    return usersLisRaw.map((user) => ({ id: user.id, label: `${user.firstName} ${user.lastName}` }))
+    return usersLisRaw.filter(user => !user.hidden).map((user) => ({ id: user.id, label: `${user.firstName} ${user.lastName}` }))
   }, [usersLisRaw])
 
   useEffect(() => {
@@ -63,6 +63,13 @@ export const AssignUserModal: FC<AssignUserModalProps> = ({ isOpen, onClose, onA
           onChange={(_, newValue: { id: string; label: string }) => setSelectedUser(newValue)}
           isOptionEqualToValue={(option, value) => option.id === value.id}
           options={usersList}
+          renderOption={(props, option) => {
+            return (
+              <li {...props} key={option.id}>
+                {option.label}
+              </li>
+            )
+          }}
           renderInput={(props) => (
             <TextField
               label="Osoba odpowiedzialna"

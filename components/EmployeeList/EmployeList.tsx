@@ -2,6 +2,7 @@ import { ConfirmationModal } from '@components/UI'
 import {
   Button,
   FormControl,
+  IconButton,
   MenuItem,
   Select,
   Stack,
@@ -16,7 +17,7 @@ import { useDisclose, useGetUsersList } from '@src/hooks'
 import { Role } from '@src/types'
 import axios from 'axios'
 import { useState } from 'react'
-import { Lock, LockOpen } from '@mui/icons-material'
+import { Lock, LockOpen, Visibility, VisibilityOff } from '@mui/icons-material'
 import { SnackbarFunctionProps, withSnackbar } from '@components/HOC'
 
 type UserDataType = {
@@ -103,6 +104,21 @@ const EmployeListComponent = ({ showSnackbar }: EmployeeListProps) => {
       })
   }
 
+  const handleHideUser = async (id: string, hidden: boolean) => {
+    axios
+      .post(`/api/user/${id}/hide`, { hidden })
+      .then((res) => {
+        if (res.statusText === 'OK') {
+          showSnackbar({
+            message: `Konto użytkownika zostało ${hidden ? 'ukryte' : 'odkryte'}`,
+            severity: 'success',
+          })
+        }
+        refreshUsersList()
+      })
+      .catch((err) => console.log(err))
+  }
+
   return (
     <>
       <Table>
@@ -160,7 +176,7 @@ const EmployeListComponent = ({ showSnackbar }: EmployeeListProps) => {
                   >
                     Zresetuj hasło
                   </Button>
-                  {!user.suspended ? (
+                  {user.suspended ? (
                     <Button
                       variant="contained"
                       color="error"
@@ -176,6 +192,15 @@ const EmployeListComponent = ({ showSnackbar }: EmployeeListProps) => {
                     >
                       <LockOpen />
                     </Button>
+                  )}
+                  {user.hidden ? (
+                    <IconButton onClick={() => handleHideUser(user.id, !user.hidden)}>
+                      <VisibilityOff />
+                    </IconButton>
+                  ) : (
+                    <IconButton onClick={() => handleHideUser(user.id, !user.hidden)}>
+                      <Visibility />
+                    </IconButton>
                   )}
                 </Stack>
               </TableCell>

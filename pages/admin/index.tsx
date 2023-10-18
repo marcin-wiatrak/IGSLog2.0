@@ -23,7 +23,6 @@ const Admin: NextPage = () => {
         </Grid>
         <Grid
           xs={12}
-          md={6}
         >
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>

@@ -13,26 +13,22 @@ import {
   Typography,
   Unstable_Grid2 as Grid,
 } from '@mui/material'
-import Router, { useRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import { Layout } from '@components/Layout'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { DateTemplate, DateTimeTemplate, getFullName, renameDownloadFile, toggleValueInArray } from '@src/utils'
+import { DateTemplate, DateTimeTemplate, renameDownloadFile } from '@src/utils'
 import { Customer, Order, User } from '@prisma/client'
 import { AutocompleteOptionType, ErrorMessages, OrderType, Paths } from '@src/types'
 import { getTypeIcon } from '@src/utils/typeIcons'
 import { formatFullName, translatedType } from '@src/utils/textFormatter'
-import { StatusSelector } from '@components/Orders'
 import { useDisclose, useGetCustomersList, useGetUsersList, usePath } from '@src/hooks'
-import { ordersActions } from '@src/store'
-import { useDispatch } from 'react-redux'
-import { DeleteOrderConfirmationModal, PickupAtModal } from '@components/modals'
+import { DeleteOrderConfirmationModal } from '@components/modals'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { DatePicker } from '@mui/x-date-pickers'
-import { ConfirmationModal } from '@components/UI'
 import { useSession } from 'next-auth/react'
 
 type OrderProps = Order & { handleBy: User; customer: Customer; registeredBy: User }
@@ -94,6 +90,7 @@ const OrderPreview = () => {
   const [orderData, setOrderData] = useState<OrderProps | null>(null)
   const [loadingData, setLoadingData] = useState(true)
   const [isUnlocked, setIsUnlocked] = useState(false)
+  const [rows, setRows] = useState(3)
 
   const confirmationModal = useDisclose()
 
@@ -156,7 +153,7 @@ const OrderPreview = () => {
 
   const usersListOption = useMemo(() => {
     if (usersList && usersList.length) {
-      return usersList.map((user) => ({
+      return usersList.filter(user => !user.hidden).map((user) => ({
         id: user.id,
         label: `${user.firstName} ${user.lastName}`,
       }))
@@ -201,6 +198,15 @@ const OrderPreview = () => {
     handleGetOrderDetails()
   }, [handleGetOrderDetails])
 
+  useEffect(() => {
+    const defaultRows = localStorage.getItem('defaultRows')
+    setRows(defaultRows ? +defaultRows : 3)
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('defaultRows', rows.toString())
+  }, [rows])
+
   usePath(Paths.ORDERS)
 
   if (loadingData) return <Loader />
@@ -239,9 +245,9 @@ const OrderPreview = () => {
                             color="text.secondary"
                             variant="overline"
                           >
-                            LP / ID
+                            LP
                           </Typography>
-                          <Typography>{`${orderData.no} / ${orderData.id}`}</Typography>
+                          <Typography>{orderData.no}</Typography>
                         </Stack>
                       </Grid>
                       <Grid xs={12}>
@@ -372,20 +378,6 @@ const OrderPreview = () => {
                           />
                         )}
                       />
-                      <Controller
-                        name="notes"
-                        control={control}
-                        render={({ field, fieldState: { error } }) => (
-                          <TextField
-                            {...field}
-                            label="Informacje dodatkowe / notatki"
-                            multiline
-                            rows="3"
-                            error={!!error}
-                            helperText={error?.message}
-                          />
-                        )}
-                      />
                       <Grid xs={12}>
                         <Stack>
                           <Typography
@@ -412,25 +404,62 @@ const OrderPreview = () => {
                           )}
                         </Stack>
                       </Grid>
+                      <Controller
+                        name="notes"
+                        control={control}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            label="Informacje dodatkowe / notatki"
+                            multiline
+                            rows={rows}
+                            error={!!error}
+                            helperText={error?.message}
+                          />
+                        )}
+                      />
+                      <Stack direction="row">
+                        <Button
+                          variant="contained"
+                          onClick={() => setRows((prev) => prev + 1)}
+                        >
+                          +
+                        </Button>
+                        <Button
+                          variant="contained"
+                          onClick={() => setRows((prev) => prev - 1)}
+                        >
+                          -
+                        </Button>
+                      </Stack>
                       <Stack
                         direction="row"
                         justifyContent="flex-end"
                         spacing={1}
                       >
-                        {isDirty && (
+                        {isDirty ? (
+                          <>
+                            <Button
+                              color="error"
+                              onClick={backToOrders}
+                            >
+                              Wróć bez zapisywania
+                            </Button>
+                            <Button
+                              variant="contained"
+                              onClick={handleSubmit(onSubmit)}
+                            >
+                              Zapisz zmiany
+                            </Button>
+                          </>
+                        ) : (
                           <Button
-                            color="error"
-                            onClick={backToOrders}
+                            variant="contained"
+                            onClick={() => router.back()}
                           >
-                            Wróć bez zapisywania
+                            Wróć
                           </Button>
                         )}
-                        <Button
-                          variant="contained"
-                          onClick={handleSubmit(onSubmit)}
-                        >
-                          {isDirty ? 'Zapisz zmiany' : 'Wróć'}
-                        </Button>
                       </Stack>
                     </Stack>
                   </Paper>

@@ -36,6 +36,18 @@ export const OrderContent = ({ orderData }: OrderContentProps) => {
               variant="caption"
               color="text.secondary"
             >
+              LP:
+            </Typography>
+            <Chip
+              label={orderData.no}
+              color="success"
+            />
+          </Grid>
+          <Grid>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+            >
               IGS/Sygnatura:
             </Typography>
             <Chip

@@ -96,11 +96,9 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
     try {
       if (!selectedFiles) return
       const formData = new FormData()
-      selectedFiles
-        .filter((file) => !isUploadedFile(file.name))
-        .forEach((el) => {
-          formData.append('file', el, el.name)
-        })
+      selectedFiles.forEach((el) => {
+        formData.append('file', el, el.name)
+      })
       await axios.post('/api/order/upload', formData).then((res) => {
         dispatch(
           ordersActions.setUploadedFiles({

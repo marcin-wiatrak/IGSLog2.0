@@ -6,6 +6,7 @@ import fs from 'fs/promises'
 export const config = {
   api: {
     bodyParser: false,
+    responseLimit: false,
   },
 }
 

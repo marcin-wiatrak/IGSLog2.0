@@ -96,6 +96,7 @@ const ReturnPreview = () => {
   const [returnData, setReturnData] = useState<ReturnProps | null>(null)
   const [loadingData, setLoadingData] = useState(true)
   const [isUnlocked, setIsUnlocked] = useState(false)
+  const [rows, setRows] = useState(3)
 
   const confirmationModal = useDisclose()
 
@@ -156,7 +157,7 @@ const ReturnPreview = () => {
 
   const usersListOption = useMemo(() => {
     if (usersList && usersList.length) {
-      return usersList.map((user) => ({
+      return usersList.filter(user => !user.hidden).map((user) => ({
         id: user.id,
         label: `${user.firstName} ${user.lastName}`,
       }))
@@ -199,6 +200,15 @@ const ReturnPreview = () => {
     handleGetReturnDetails()
   }, [handleGetReturnDetails])
 
+  useEffect(() => {
+    const defaultRows = localStorage.getItem('defaultRows')
+    setRows(defaultRows ? +defaultRows : 3)
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('defaultRows', rows.toString())
+  }, [rows])
+
   usePath(Paths.ORDERS)
 
   if (loadingData) return <Loader />
@@ -237,9 +247,9 @@ const ReturnPreview = () => {
                             color="text.secondary"
                             variant="overline"
                           >
-                            LP / ID
+                            LP
                           </Typography>
-                          <Typography>{`${returnData.no} / ${returnData.id}`}</Typography>
+                          <Typography>{returnData.no}</Typography>
                         </Stack>
                       </Grid>
                       <Grid xs={12}>
@@ -398,57 +408,54 @@ const ReturnPreview = () => {
                             {...field}
                             label="Informacje dodatkowe"
                             multiline
-                            rows="3"
+                            rows={rows}
                             error={!!error}
                             helperText={error?.message}
                           />
                         )}
                       />
-                      {/*<Grid xs={12}>*/}
-                      {/*  <Stack>*/}
-                      {/*    <Typography*/}
-                      {/*      color="text.secondary"*/}
-                      {/*      variant="overline"*/}
-                      {/*    >*/}
-                      {/*      Załączniki*/}
-                      {/*    </Typography>*/}
-                      {/*    {returnData.attachment.length ? (*/}
-                      {/*      returnData.attachment.map((att) => (*/}
-                      {/*        <Box key={att}>*/}
-                      {/*          <Link*/}
-                      {/*            href={`/upload/${att}`}*/}
-                      {/*            target="_blank"*/}
-                      {/*            sx={{ textDecoration: 'none', color: 'primary' }}*/}
-                      {/*            download={renameDownloadFile(att)}*/}
-                      {/*          >*/}
-                      {/*            {renameDownloadFile(att)}*/}
-                      {/*          </Link>*/}
-                      {/*        </Box>*/}
-                      {/*      ))*/}
-                      {/*    ) : (*/}
-                      {/*      <Typography>Brak załączników</Typography>*/}
-                      {/*    )}*/}
-                      {/*  </Stack>*/}
-                      {/*</Grid>*/}
+                      <Stack direction="row">
+                        <Button
+                          variant="contained"
+                          onClick={() => setRows((prev) => prev + 1)}
+                        >
+                          +
+                        </Button>
+                        <Button
+                          variant="contained"
+                          onClick={() => setRows((prev) => prev - 1)}
+                        >
+                          -
+                        </Button>
+                      </Stack>
                       <Stack
                         direction="row"
                         justifyContent="flex-end"
                         spacing={1}
                       >
-                        {isDirty && (
+                        {isDirty ? (
+                          <>
+                            <Button
+                              color="error"
+                              onClick={() => router.back()}
+                            >
+                              Wróć bez zapisywania
+                            </Button>
+                            <Button
+                              variant="contained"
+                              onClick={handleSubmit(onSubmit)}
+                            >
+                              Zapisz zmiany
+                            </Button>
+                          </>
+                        ) : (
                           <Button
-                            color="error"
-                            onClick={backToReturns}
+                            variant="contained"
+                            onClick={() => router.back()}
                           >
-                            Wróć bez zapisywania
+                            Wróć
                           </Button>
                         )}
-                        <Button
-                          variant="contained"
-                          onClick={isDirty ? handleSubmit(onSubmit) : backToReturns}
-                        >
-                          {isDirty ? 'Zapisz zmiany' : 'Wróć'}
-                        </Button>
                       </Stack>
                     </Stack>
                   </Paper>

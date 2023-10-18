@@ -9,7 +9,7 @@ export const TablePaginator = ({ pagination }) => {
       rowsPerPageOptions={[10, 25, 50, 100]}
       count={pagination.count}
       page={pagination.page}
-      rowsPerPage={pagination.rowsPerPage}
+      rowsPerPage={+pagination.rowsPerPage}
       onRowsPerPageChange={pagination.handleRowsPerPageChange}
       onPageChange={pagination.handlePageChange}
     />

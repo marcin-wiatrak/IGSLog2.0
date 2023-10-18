@@ -39,6 +39,18 @@ export const ReturnContent = ({ returnData }: ReturnContentProps) => {
               variant="caption"
               color="text.secondary"
             >
+              LP:
+            </Typography>
+            <Chip
+              label={returnData.no}
+              color="warning"
+            />
+          </Grid>
+          <Grid>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+            >
               IGS/Sygnatura:
             </Typography>
             <Chip

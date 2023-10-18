@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 export const usePagination = (data, defaultRowsPerPage) => {
   const [page, setPage] = useState(0)
@@ -11,8 +11,15 @@ export const usePagination = (data, defaultRowsPerPage) => {
   const handlePageChange = useCallback((_, newPage) => setPage(newPage), [])
 
   const handleRowsPerPageChange = useCallback((e) => {
-    setRowsPerPage(+e.target.value)
+    const rows = e.target.value
+    setRowsPerPage(rows)
+    localStorage.setItem('paginationCounter', rows)
     setPage(0)
+  }, [])
+
+  useEffect(() => {
+    const paginationCounter = localStorage.getItem('paginationCounter')
+    if (paginationCounter !== null) setRowsPerPage(paginationCounter)
   }, [])
 
   const handlePagination = useCallback(

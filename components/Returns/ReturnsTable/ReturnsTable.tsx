@@ -191,6 +191,7 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
           (filterByType.length ? filterByType.some((el) => ret.type.includes(el)) : true) &&
           (filters.registeredBy.length ? filters.registeredBy.some((el) => el.id === ret.registeredById) : true) &&
           (filters.handleBy.length ? filters.handleBy.some((el) => el.id === ret.handleById) : true) &&
+          (filters.status ? filters.status === ret.status : true) &&
           (filters.localization && (!!ret.localization || !ret.localization)
             ? ret.localization === null
               ? false
@@ -214,11 +215,20 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
 
   const sortOrders = useCallback(
     (returns) => {
-      const sort =
-        sortDirection === 'asc'
-          ? R.sortWith([R.ascend(R.prop(sortBy) || '')])
-          : R.sortWith([R.descend(R.prop(sortBy) || '')])
-      return sort(returns)
+      if (sortBy === 'returnAt') {
+        const isNull = R.pipe(R.prop(sortBy), R.isNil)
+        const sort =
+          sortDirection === 'asc'
+            ? R.sortWith([R.ascend(R.pipe(isNull)), R.ascend(R.prop(sortBy))])
+            : R.sortWith([R.descend(R.pipe(isNull, R.not)), R.descend(R.prop(sortBy))])
+        return sort(returns)
+      } else {
+        const sort =
+          sortDirection === 'asc'
+            ? R.sortWith([R.ascend(R.prop('createdAt') || '')])
+            : R.sortWith([R.descend(R.prop('createdAt') || '')])
+        return sort(returns)
+      }
     },
     [sortBy, sortDirection]
   )
@@ -299,6 +309,14 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
   const handleUpdateReturnAt = async () => {
     await axios.post(`/api/return/${returnDetails.id}/update`, { returnAt: returnDetails.returnAt }).then(() => {
       showSnackbar({ message: 'Data zwrotu zmieniona', severity: 'success' })
+      onPickupAtModalClose()
+      refreshReturnsList()
+      handleClearReturnDetails()
+    })
+  }
+
+  const handleClearReturnAtDate = async () => {
+    await axios.post(`/api/return/${returnDetails.id}/update`, { returnAt: null }).then(() => {
       onPickupAtModalClose()
       refreshReturnsList()
       handleClearReturnDetails()
@@ -578,6 +596,7 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
           isOpen={isPickupAtModalOpen}
           onClose={onPickupAtModalClose}
           onConfirm={handleUpdateReturnAt}
+          onClearDate={handleClearReturnAtDate}
         />
       )}
     </>
