@@ -186,8 +186,6 @@ const OrderPreview = () => {
     delete payload.customer
     delete payload.handleBy
 
-    console.log(data, payload)
-
     await axios
       .post(`/api/order/${orderId}/update`, payload)
       .then((res) => {

@@ -17,7 +17,6 @@ const Calendar: NextPage = () => {
 
   const handleChangeSelectedDay = (newDate) => {
     dispatch(commonActions.setCalendarDay({ calendarDay: dayjs(newDate).startOf('day').format() }))
-    console.log('newDate', newDate)
     localStorage.setItem('employeeTab', '0')
   }
 

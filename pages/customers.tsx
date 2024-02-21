@@ -47,8 +47,6 @@ const Customers: NextPage<CustomersProps> = ({ showSnackbar }) => {
   const newCustomerForm = useDisclose()
   const { customersList, refreshCustomersList } = useGetCustomersList()
 
-  console.log('customerID', customerId)
-
   const handleEditCustomer = (customer) => {
     if (customerId !== undefined) cancelCustomerEdit()
     setCustomerId(customer.id)
@@ -82,7 +80,6 @@ const Customers: NextPage<CustomersProps> = ({ showSnackbar }) => {
         phoneNumber: customerPhone,
       })
       .then((res) => {
-        console.log('res', res)
         if (res.status === 200) {
           cancelCustomerEdit()
           refreshCustomersList()

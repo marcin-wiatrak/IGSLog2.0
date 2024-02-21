@@ -23,9 +23,6 @@ export const FiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose }) => {
 
   const filters = currentPath === Paths.ORDERS ? ordersFilter : returnsFilters
 
-  console.log('filters', filters)
-  console.log('returnsFilters', returnsFilters)
-
   const dispatch = useDispatch()
 
   const usersOptions = useMemo(() => {

@@ -140,8 +140,6 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
   const filters = useSelector(returnsSelectors.selectFilters)
   // const [attachmentHover, setAttachmentHover] = useState('')
 
-  console.log(filters)
-
   const [sortBy, setSortBy] = useState('no')
   const [sortDirection, setSortDirection] = useState<TableOrderDirection>('desc')
 
@@ -331,8 +329,6 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
   const tableData = useMemo(() => {
     return sortOrders(filterOrders(returnsList))
   }, [filterOrders, returnsList, sortOrders])
-
-  console.log(tableData.length)
 
   const { handlePagination, ...pagination } = usePagination(tableData, 10)
 

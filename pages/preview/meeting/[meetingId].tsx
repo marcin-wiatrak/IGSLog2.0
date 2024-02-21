@@ -40,8 +40,6 @@ const MeetingPreview = () => {
     handleGetMeetingDetails()
   }, [handleGetMeetingDetails])
 
-  console.log(meetingData)
-
   return (
     <Layout>
       <Typography variant="h1">Szczegóły spotkania</Typography>

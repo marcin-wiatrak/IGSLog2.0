@@ -27,8 +27,6 @@ export const SummaryContent = ({ userId }: SummaryContentProps) => {
     [calendarData, selectedDay, userId]
   )
 
-  console.log(filterOrdersForUser)
-
   if (!filterOrdersForUser.orders.length && !filterOrdersForUser.returns.length) {
     return (
       <Typography

@@ -36,8 +36,6 @@ export const FilterButtons: FC<FilterButtonsProps> = ({ onClearFiltersClick, onF
     if (typesJointString) {
       localStorage.setItem('filterByType', selectedTypes.join(','))
     }
-
-    console.log('selectedTypes', selectedTypes);
   }, [selectedTypes])
 
   useEffect(() => {
