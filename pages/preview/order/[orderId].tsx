@@ -18,7 +18,7 @@ import { Layout } from '@components/Layout'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { DateTemplate, DateTimeTemplate, renameDownloadFile } from '@src/utils'
+import { DateTemplate, DateTimeTemplate, renameDownloadFile, toggleValueInArray } from '@src/utils'
 import { Customer, Order, User } from '@prisma/client'
 import { AutocompleteOptionType, ErrorMessages, OrderType, Paths } from '@src/types'
 import { getTypeIcon } from '@src/utils/typeIcons'
@@ -58,6 +58,7 @@ export interface IFormInput extends yup.InferType<typeof schema> {
   notes: string
   localization: string
   handleBy: AutocompleteOptionType
+  type: OrderType[]
 }
 
 const defaultValues = {
@@ -67,6 +68,7 @@ const defaultValues = {
   notes: '',
   localization: '',
   handleBy: null,
+  type: [],
 }
 
 const schema = yup.object({
@@ -99,14 +101,18 @@ const OrderPreview = () => {
     handleSubmit,
     reset,
     formState: { isDirty },
+    getValues
   } = useForm({ resolver: yupResolver(schema), defaultValues })
 
+  console.log('form', getValues(), isDirty)
   const backToOrders = () => router.push('/orders')
+
+  console.log('orderData', orderData)
 
   const handleDeleteOrder = () => {
     axios.post(`/api/order/${orderId}/delete`).then((res) => {
       confirmationModal.onClose()
-      if (res.statusText) {
+      if (res.status === 200) {
         backToOrders()
       }
     })
@@ -119,8 +125,6 @@ const OrderPreview = () => {
         .get(`/api/order/${orderId}`)
         .then((res) => {
           const data = res.data
-
-          console.log('orderData', data)
 
           const handleBy = data.handleBy
             ? {
@@ -141,6 +145,7 @@ const OrderPreview = () => {
             notes: data.notes,
             localization: data.localization,
             content: data.content,
+            type: data.type || []
           }
 
           reset(payload)
@@ -153,10 +158,12 @@ const OrderPreview = () => {
 
   const usersListOption = useMemo(() => {
     if (usersList && usersList.length) {
-      return usersList.filter(user => !user.hidden).map((user) => ({
-        id: user.id,
-        label: `${user.firstName} ${user.lastName}`,
-      }))
+      return usersList
+        .filter((user) => !user.hidden)
+        .map((user) => ({
+          id: user.id,
+          label: `${user.firstName} ${user.lastName}`,
+        }))
     } else {
       return []
     }
@@ -187,7 +194,7 @@ const OrderPreview = () => {
     await axios
       .post(`/api/order/${orderId}/update`, payload)
       .then((res) => {
-        if (res.statusText === 'OK') backToOrders()
+        if (res.status === 200) backToOrders()
       })
       .catch((err) => {
         console.error('WYSTĄPIŁ BŁĄD', orderId, err)
@@ -273,11 +280,24 @@ const OrderPreview = () => {
                             direction="row"
                             spacing={1}
                           >
-                            {orderData.type.map((type: OrderType) => (
-                              <Chip
-                                key={type}
-                                avatar={getTypeIcon(type)}
-                                label={translatedType[type]}
+                            {[
+                              OrderType.BIOLOGY,
+                              OrderType.PHYSICOCHEMISTRY,
+                              OrderType.TOXYCOLOGY,
+                              OrderType.FATHERHOOD,
+                            ].map((el) => (
+                              <Controller
+                                key={el}
+                                name="type"
+                                control={control}
+                                render={({ field: { onChange, value } }) => (
+                                  <Chip
+                                    avatar={getTypeIcon(el)}
+                                    label={translatedType[el]}
+                                    variant={value.includes(el) ? 'filled' : 'outlined'}
+                                    onClick={() => onChange(toggleValueInArray(value || [], el))}
+                                  />
+                                )}
                               />
                             ))}
                           </Stack>

@@ -1,16 +1,28 @@
 import { Paper, Tab, Tabs } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FullSummaryTab } from '@components/Calendar/TabView/FullSummaryTab'
 import { UserSummarizedTab } from '@components/Calendar/TabView/UserSummarizedTab'
 
 export const TabView = () => {
   const [tab, setTab] = useState(0)
 
+  const setLSTab = (newTab) => {
+    localStorage.setItem('calendarTab', newTab)
+  }
+
+  useEffect(() => {
+    const lsTab = localStorage.getItem('calendarTab')
+    if (lsTab) setTab(parseInt(lsTab))
+  }, [])
+
   return (
     <Paper sx={{ p: 3 }}>
       <Tabs
         value={tab}
-        onChange={(_, newTab) => setTab(newTab)}
+        onChange={(_, newTab) => {
+          setTab(newTab)
+          setLSTab(newTab)
+        }}
         orientation="horizontal"
         sx={{ borderBottom: 1, borderColor: 'divider' }}
       >

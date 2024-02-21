@@ -42,7 +42,7 @@ const EmployeListComponent = ({ showSnackbar }: EmployeeListProps) => {
     axios
       .post(`/api/user/${id}/role`, { role })
       .then((res) => {
-        if (res.statusText === 'OK') {
+        if (res.status === 200) {
           showSnackbar({ message: 'Rola użytkownika została zmieniona', severity: 'success' })
         }
         refreshUsersList()
@@ -83,7 +83,7 @@ const EmployeListComponent = ({ showSnackbar }: EmployeeListProps) => {
     axios
       .post(`/api/user/${id}/suspend`, { suspended })
       .then((res) => {
-        if (res.statusText === 'OK') {
+        if (res.status === 200) {
           showSnackbar({
             message: `Konto użytkownika zostało ${suspended ? 'dezaktywowane' : 'aktywowane'}`,
             severity: 'success',
@@ -108,7 +108,7 @@ const EmployeListComponent = ({ showSnackbar }: EmployeeListProps) => {
     axios
       .post(`/api/user/${id}/hide`, { hidden })
       .then((res) => {
-        if (res.statusText === 'OK') {
+        if (res.status === 200) {
           showSnackbar({
             message: `Konto użytkownika zostało ${hidden ? 'ukryte' : 'odkryte'}`,
             severity: 'success',

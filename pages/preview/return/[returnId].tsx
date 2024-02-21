@@ -21,7 +21,7 @@ import { Layout } from '@components/Layout'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { DateTemplate, DateTimeTemplate } from '@src/utils'
+import { DateTemplate, DateTimeTemplate, toggleValueInArray } from '@src/utils'
 import { Customer, Return, User } from '@prisma/client'
 import { AutocompleteOptionType, ErrorMessages, OrderType, Paths } from '@src/types'
 import { getTypeIcon } from '@src/utils/typeIcons'
@@ -62,6 +62,7 @@ export interface IFormInput extends yup.InferType<typeof schema> {
   localization: string
   handleBy: AutocompleteOptionType
   content: string
+  type: OrderType[]
 }
 
 const defaultValues = {
@@ -72,6 +73,7 @@ const defaultValues = {
   localization: '',
   handleBy: null,
   content: '',
+  type: [],
 }
 
 const schema = yup.object({
@@ -112,7 +114,7 @@ const ReturnPreview = () => {
   const handleDeleteOrder = () => {
     axios.post(`/api/return/${returnId}/delete`).then((res) => {
       confirmationModal.onClose()
-      if (res.statusText) {
+      if (res.status === 200) {
         backToReturns()
       }
     })
@@ -145,6 +147,7 @@ const ReturnPreview = () => {
             notes: data.notes,
             localization: data.localization,
             content: data.content,
+            type: data.type,
           }
 
           reset(payload)
@@ -157,10 +160,12 @@ const ReturnPreview = () => {
 
   const usersListOption = useMemo(() => {
     if (usersList && usersList.length) {
-      return usersList.filter(user => !user.hidden).map((user) => ({
-        id: user.id,
-        label: `${user.firstName} ${user.lastName}`,
-      }))
+      return usersList
+        .filter((user) => !user.hidden)
+        .map((user) => ({
+          id: user.id,
+          label: `${user.firstName} ${user.lastName}`,
+        }))
     } else {
       return []
     }
@@ -189,7 +194,7 @@ const ReturnPreview = () => {
     await axios
       .post(`/api/return/${returnId}/update`, payload)
       .then((res) => {
-        if (res.statusText === 'OK') backToReturns()
+        if (res.status === 200) backToReturns()
       })
       .catch((err) => {
         console.error('WYSTĄPIŁ BŁĄD', returnId, err)
@@ -275,11 +280,19 @@ const ReturnPreview = () => {
                             direction="row"
                             spacing={1}
                           >
-                            {returnData.type.map((type: OrderType) => (
-                              <Chip
-                                key={type}
-                                avatar={getTypeIcon(type)}
-                                label={translatedType[type]}
+                            {[OrderType.BIOLOGY, OrderType.PHYSICOCHEMISTRY, OrderType.TOXYCOLOGY].map((el) => (
+                              <Controller
+                                key={el}
+                                name="type"
+                                control={control}
+                                render={({ field: { onChange, value } }) => (
+                                  <Chip
+                                    avatar={getTypeIcon(el)}
+                                    label={translatedType[el]}
+                                    variant={value.includes(el) ? 'filled' : 'outlined'}
+                                    onClick={() => onChange(toggleValueInArray(value || [], el))}
+                                  />
+                                )}
                               />
                             ))}
                           </Stack>

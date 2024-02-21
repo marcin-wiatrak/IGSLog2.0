@@ -47,7 +47,7 @@ const Customers: NextPage<CustomersProps> = ({ showSnackbar }) => {
   const newCustomerForm = useDisclose()
   const { customersList, refreshCustomersList } = useGetCustomersList()
 
-  console.log(customerId)
+  console.log('customerID', customerId)
 
   const handleEditCustomer = (customer) => {
     if (customerId !== undefined) cancelCustomerEdit()
@@ -82,8 +82,8 @@ const Customers: NextPage<CustomersProps> = ({ showSnackbar }) => {
         phoneNumber: customerPhone,
       })
       .then((res) => {
-        console.log(res)
-        if (res.statusText === 'OK') {
+        console.log('res', res)
+        if (res.status === 200) {
           cancelCustomerEdit()
           refreshCustomersList()
           showSnackbar({ message: 'Zleceniodawca zaktualizowany', severity: 'success' })
