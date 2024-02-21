@@ -1,6 +1,6 @@
 import { TabPanel } from '@components/TabPanel'
 import { Box, Chip, Tab, Tabs } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useGetUsersList } from '@src/hooks'
 import { SummaryContent } from '../SummaryContent'
 import { useSelector } from 'react-redux'
@@ -10,6 +10,15 @@ import dayjs from 'dayjs'
 export const UserSummarizedTab = ({ index, value }) => {
   const { usersList } = useGetUsersList()
   const [tab, setTab] = useState(0)
+
+  const setLSTab = (newTab) => {
+    localStorage.setItem('employeeTab', newTab)
+  }
+
+  useEffect(() => {
+    const lsTab = localStorage.getItem('employeeTab')
+    if (lsTab) setTab(parseInt(lsTab))
+  }, [])
 
   const selectedDay = useSelector(commonSelectors.selectCalendarDay)
   const calendarData = useSelector(commonSelectors.selectCalendarData)
@@ -73,7 +82,10 @@ export const UserSummarizedTab = ({ index, value }) => {
       <Box sx={{ display: 'flex', flexGrow: 1 }}>
         <Tabs
           value={tab}
-          onChange={(_, tab) => setTab(tab)}
+          onChange={(_, tab) => {
+            setTab(tab)
+            setLSTab(tab)
+          }}
           orientation="vertical"
           variant="scrollable"
           sx={{ borderRight: 1, borderColor: 'divider' }}

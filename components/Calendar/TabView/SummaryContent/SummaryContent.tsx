@@ -48,7 +48,7 @@ export const SummaryContent = ({ userId }: SummaryContentProps) => {
         columnSpacing={3}
       >
         {!!filterOrdersForUser.orders.length && (
-          <Grid xs={12}>
+          <Grid xs={6}>
             <Typography
               variant="h6"
               align="center"
@@ -65,7 +65,7 @@ export const SummaryContent = ({ userId }: SummaryContentProps) => {
           </Grid>
         )}
         {!!filterOrdersForUser.returns.length && (
-          <Grid xs={12}>
+          <Grid xs={6}>
             <Typography
               variant="h6"
               align="center"

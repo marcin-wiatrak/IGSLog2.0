@@ -5,7 +5,7 @@ import { FiltersDrawer } from 'components/FiltersDrawer'
 import { useDisclose, useGetReturnsList, usePath } from '@src/hooks'
 import { NewReturnDrawer, ReturnsTable } from '@components/Returns'
 import { Add } from '@mui/icons-material'
-import { ordersActions } from '@src/store'
+import { ordersActions, returnsActions } from '@src/store'
 import { useDispatch } from 'react-redux'
 import { withSnackbar } from '@components/HOC/WithSnackbar'
 import { Paths } from '@src/types'
@@ -29,7 +29,7 @@ const Returns: NextPage = () => {
 
   const { refreshReturnsList } = useGetReturnsList()
 
-  const handleClearFilters = () => dispatch(ordersActions.resetFilters())
+  const handleClearFilters = () => dispatch(returnsActions.clearFilters())
 
   useEffect(() => {
     refreshReturnsList()

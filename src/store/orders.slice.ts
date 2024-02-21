@@ -15,7 +15,7 @@ export type OrdersStateProps = {
   filterLocalization: string
   filterCreatedAtStart: string
   filterCreatedAtEnd: string
-  filterStatus: string
+  filterStatus: string[]
   createOrder: CreateOrder
   uploadedFiles: string[]
   localization: string
@@ -61,7 +61,7 @@ type SetFilterCreatedAtEndPayload = {
 }
 
 type SetFilterStatusPayload = {
-  status: string
+  status: string[]
 }
 
 type SetUploadedFilesPayload = {
@@ -101,7 +101,7 @@ const initialState: OrdersStateProps = {
   filterLocalization: '',
   filterCreatedAtStart: null,
   filterCreatedAtEnd: null,
-  filterStatus: null,
+  filterStatus: [],
   uploadedFiles: null,
   localization: '',
   orderDetails: {

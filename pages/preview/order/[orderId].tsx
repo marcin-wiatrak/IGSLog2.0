@@ -104,10 +104,7 @@ const OrderPreview = () => {
     getValues
   } = useForm({ resolver: yupResolver(schema), defaultValues })
 
-  console.log('form', getValues(), isDirty)
   const backToOrders = () => router.push('/orders')
-
-  console.log('orderData', orderData)
 
   const handleDeleteOrder = () => {
     axios.post(`/api/order/${orderId}/delete`).then((res) => {

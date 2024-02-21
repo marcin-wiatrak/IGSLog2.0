@@ -137,8 +137,10 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
   const returnsList = useSelector(returnsSelectors.selectReturnsList)
   const returnDetails = useSelector(returnsSelectors.selectReturnDetails)
   const filterByType = useSelector(ordersSelectors.selectFilterByType)
-  const filters = useSelector(ordersSelectors.selectFilterRegisteredBy)
+  const filters = useSelector(returnsSelectors.selectFilters)
   // const [attachmentHover, setAttachmentHover] = useState('')
+
+  console.log(filters)
 
   const [sortBy, setSortBy] = useState('no')
   const [sortDirection, setSortDirection] = useState<TableOrderDirection>('desc')
@@ -191,7 +193,7 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
           (filterByType.length ? filterByType.some((el) => ret.type.includes(el)) : true) &&
           (filters.registeredBy.length ? filters.registeredBy.some((el) => el.id === ret.registeredById) : true) &&
           (filters.handleBy.length ? filters.handleBy.some((el) => el.id === ret.handleById) : true) &&
-          (filters.status ? filters.status === ret.status : true) &&
+          (filters.status.length ? filters.status.includes(ret.status) : true) &&
           (filters.localization && (!!ret.localization || !ret.localization)
             ? ret.localization === null
               ? false
@@ -201,7 +203,8 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
           (filters.createdAtEnd ? dayjs(ret.createdAt).isBefore(filters.createdAtEnd) : true) &&
           ((findString ? ret.localization?.toLowerCase().includes(findString.toLowerCase()) : true) ||
             (findString ? ret.customer?.name?.toLowerCase().includes(findString.toLowerCase()) : true) ||
-            (findString ? ret.signature?.toLowerCase().includes(findString.toLowerCase()) : true))
+            (findString ? ret.signature?.toLowerCase().includes(findString.toLowerCase()) : true) ||
+            (findString ? ret.no.toString().includes(findString.toLowerCase()) : true))
       ),
     [
       filterByType,
@@ -210,6 +213,8 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
       filters.handleBy,
       filters.localization,
       filters.registeredBy,
+      filters.status,
+      findString
     ]
   )
 
@@ -326,6 +331,8 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
   const tableData = useMemo(() => {
     return sortOrders(filterOrders(returnsList))
   }, [filterOrders, returnsList, sortOrders])
+
+  console.log(tableData.length)
 
   const { handlePagination, ...pagination } = usePagination(tableData, 10)
 

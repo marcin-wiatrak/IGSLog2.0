@@ -8,6 +8,7 @@ import { SideDrawer } from '@components/SideDrawer'
 import { Close } from '@mui/icons-material'
 import { OrderStatuses, Paths } from '@src/types'
 import { useGetUsersList } from '@src/hooks'
+import { toggleValueInArray } from '@src/utils'
 
 type FiltersDrawerProps = {
   isOpen: boolean
@@ -21,6 +22,9 @@ export const FiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose }) => {
   const returnsFilters = useSelector(returnsSelectors.selectFilters)
 
   const filters = currentPath === Paths.ORDERS ? ordersFilter : returnsFilters
+
+  console.log('filters', filters)
+  console.log('returnsFilters', returnsFilters)
 
   const dispatch = useDispatch()
 
@@ -68,6 +72,12 @@ export const FiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose }) => {
       : dispatch(returnsActions.setFilters({ status: target.value }))
   }
 
+  const resetFilters = () => {
+    currentPath === Paths.ORDERS
+      ? dispatch(ordersActions.resetFilters())
+      : dispatch(returnsActions.clearFilters())
+  }
+
   return (
     <SideDrawer
       title="Filtruj zlecenia"
@@ -75,7 +85,7 @@ export const FiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose }) => {
       variant="temporary"
       onClose={onClose}
       open={isOpen}
-      actionsList={[{ label: 'Wyczyść filtry', variant: 'contained', startIcon: <Close />, fullWidth: true }]}
+      actionsList={[{ label: 'Wyczyść filtry', variant: 'contained', startIcon: <Close />, fullWidth: true, onClick: resetFilters }]}
     >
       <Stack spacing={3}>
         <Autocomplete
@@ -131,10 +141,10 @@ export const FiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose }) => {
         >
           <InputLabel id="role-label">Status</InputLabel>
         <Select
-
           label="Status"
           value={filters.status}
           onChange={handleChangeFilterStatus}
+          multiple
         >
           <MenuItem value="NEW">Zarejestrowano</MenuItem>
           <MenuItem value="PICKED_UP">Ustalone</MenuItem>

@@ -82,7 +82,10 @@ const LayoutComponent = ({ children }) => {
           >
             <Menu />
           </IconButton>
+          <div>
+
           <UserMenu />
+          </div>
         </Toolbar>
       </AppBar>
       <Box padding={2}>{children}</Box>

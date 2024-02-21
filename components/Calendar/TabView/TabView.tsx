@@ -6,6 +6,8 @@ import { UserSummarizedTab } from '@components/Calendar/TabView/UserSummarizedTa
 export const TabView = () => {
   const [tab, setTab] = useState(0)
 
+  console.log(tab)
+
   const setLSTab = (newTab) => {
     localStorage.setItem('calendarTab', newTab)
   }

@@ -154,7 +154,7 @@ export const OrdersTable = () => {
           (filterByType.length ? filterByType.some((el) => order.type.includes(el)) : true) &&
           (filters.registeredBy.length ? filters.registeredBy.some((el) => el.id === order.registeredById) : true) &&
           (filters.handleBy.length ? filters.handleBy.some((el) => el.id === order.handleById) : true) &&
-          (filters.status ? filters.status === order.status : true) &&
+          (filters.status.length ? filters.status.includes(order.status) : true) &&
           (filters.localization && (!!order.localization || !order.localization)
             ? order.localization === null
               ? false

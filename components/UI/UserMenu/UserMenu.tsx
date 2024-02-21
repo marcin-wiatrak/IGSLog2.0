@@ -1,8 +1,9 @@
 import PersonIcon from '@mui/icons-material/Person'
-import { Avatar, IconButton, Menu, MenuItem, Stack, Tooltip, Typography } from '@mui/material'
-import { useDisclose } from '@src/hooks'
+import RefreshIcon from '@mui/icons-material/Refresh'
+import { Avatar, Button, IconButton, Menu, MenuItem, Stack, Tooltip, Typography } from '@mui/material'
+import { useDisclose, useGetCustomersList, useGetOrdersList, useGetReturnsList } from '@src/hooks'
 import { signOut, useSession } from 'next-auth/react'
-import { MouseEvent, useState } from 'react'
+import { MouseEvent, useEffect, useState } from 'react'
 import { ChangePasswordModal } from '@components/UI'
 import { getCurrentUserNameFromSession } from '@src/utils/textFormatter'
 
@@ -17,14 +18,49 @@ export const UserMenu = () => {
   } = useDisclose()
   const open = Boolean(anchor)
 
+  const { refreshReturnsList, isLoading: isReturnsLoading } = useGetReturnsList()
+  const { refreshCustomersList, isLoading: isCustomersLoading } = useGetCustomersList()
+  const { refreshOrdersList, isLoading: isOrdersLoading } = useGetOrdersList()
+
   const handleOpenMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchor(event.currentTarget)
   }
 
+  const refreshLoading = isReturnsLoading || isCustomersLoading || isOrdersLoading
+
   const handleCloseMenu = () => setAnchor(null)
 
+  const refreshData = () => {
+    refreshCustomersList()
+    refreshOrdersList()
+    refreshReturnsList()
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refreshData()
+    }, 5*6*1000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
-    <>
+    <Stack
+      direction="row"
+      alignItems="center"
+      gap={2}
+    >
+      <Tooltip title="Odśwież dane">
+        <Button
+          size="small"
+          onClick={refreshData}
+          variant="contained"
+          color={refreshLoading ? 'warning' : 'success'}
+        >
+          <RefreshIcon />
+          {/*<Typography>Odśwież</Typography>*/}
+          {/*Odśwież*/}
+        </Button>
+      </Tooltip>
       <Tooltip title="Ustawienia">
         <IconButton
           size="small"
@@ -99,6 +135,6 @@ export const UserMenu = () => {
           onClose={onChangePasswordModalClose}
         />
       )}
-    </>
+    </Stack>
   )
 }

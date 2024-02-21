@@ -16,7 +16,7 @@ type FilterProps = {
   createdAtStart: string
   createdAtEnd: string
   localization: string
-  status: string
+  status: string[]
   string: string
 }
 
@@ -37,7 +37,7 @@ const initialFilters = {
   createdAtStart: null,
   createdAtEnd: null,
   localization: '',
-  status: null,
+  status: [],
   string: '',
 }
 
