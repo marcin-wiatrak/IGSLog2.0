@@ -39,7 +39,7 @@ export const UserMenu = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       refreshData()
-    }, 5*6*1000)
+    }, 5*60*1000)
     return () => clearInterval(interval)
   }, [])
 
