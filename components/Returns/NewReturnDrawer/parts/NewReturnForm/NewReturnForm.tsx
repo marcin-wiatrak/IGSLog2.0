@@ -117,7 +117,7 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
       .post('/api/return/create', payload)
       .then(() => {
         refreshReturnsList()
-        // dispatch(ordersActions.clearUploadedFiles())
+        dispatch(ordersActions.clearUploadedFiles())
         reset(defaultValues)
       })
       .catch((err) => {

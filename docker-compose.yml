@@ -1,28 +1,15 @@
-version: '3.8'
+version: '3.9'
+
 services:
-  next:
-    build: .
+  db:
+    container_name: igslog-db
+    image: postgres:14-alpine
     ports:
-      - '3000:3000'
+      - 5432:5432
     volumes:
-      - /home/wicherixen/Dev/upload:/usr/app/public/upload:rw
-    env_file:
-      - .env
-    depends_on:
-      - postgres
-  postgres:
-    image: postgres:14.1-alpine
-    restart: always
-    volumes:
-      - ../db/:/var/lib/postgresql/data/:rw
-    env_file:
-      - .env.db
+      - /var/igslog-db:/var/lib/postgresql/data
     environment:
-      PGDATA: /var/lib/postgresql/data/
-    ports:
-      - '5433:5432'
-  nginx:
-    build: ./nginx
-    ports:
-      - '80:80'
-    restart: always
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+

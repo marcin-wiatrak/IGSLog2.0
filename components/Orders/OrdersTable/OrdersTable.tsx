@@ -162,6 +162,8 @@ export const OrdersTable = () => {
             : true) &&
           (filters.createdAtStart ? dayjs(order.createdAt).isAfter(filters.createdAtStart) : true) &&
           (filters.createdAtEnd ? dayjs(order.createdAt).isBefore(filters.createdAtEnd) : true) &&
+          (filters.pickupAtStart ? dayjs(order.pickupAt).isAfter(filters.pickupAtStart) : true) &&
+          (filters.pickupAtEnd ? dayjs(order.pickupAt).isBefore(filters.pickupAtEnd) : true) &&
           ((findString ? order.localization?.toLowerCase().includes(findString.toLowerCase()) : true) ||
             (findString ? order.customer?.name?.toLowerCase().includes(findString.toLowerCase()) : true) ||
             (findString ? order.signature?.toLowerCase().includes(findString.toLowerCase()) : true) ||

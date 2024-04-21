@@ -1,11 +1,11 @@
 import { NextPage } from 'next'
 import { Fab, Typography, Unstable_Grid2 as Grid } from '@mui/material'
 import { Layout } from '@components/Layout'
-import { FiltersDrawer } from 'components/FiltersDrawer'
+import { ReturnsFiltersDrawer } from 'components/FiltersDrawer'
 import { useDisclose, useGetReturnsList, usePath } from '@src/hooks'
 import { NewReturnDrawer, ReturnsTable } from '@components/Returns'
 import { Add } from '@mui/icons-material'
-import { ordersActions, returnsActions } from '@src/store'
+import { returnsActions } from '@src/store'
 import { useDispatch } from 'react-redux'
 import { withSnackbar } from '@components/HOC/WithSnackbar'
 import { Paths } from '@src/types'
@@ -87,7 +87,7 @@ const Returns: NextPage = () => {
         <Add sx={{ mr: 1 }} />
         Nowy zwrot
       </Fab>
-      <FiltersDrawer
+      <ReturnsFiltersDrawer
         isOpen={isFilterDrawerOpen}
         onClose={onFilterDrawerClose}
       />

@@ -2,7 +2,7 @@ import { NextPage } from 'next'
 import { Fab, Typography, Unstable_Grid2 as Grid } from '@mui/material'
 import { Layout } from '@components/Layout'
 import { FilterButtons } from '@components/FilterButtons/FilterButtons'
-import { FiltersDrawer } from 'components/FiltersDrawer'
+import { OrdersFiltersDrawer } from 'components/FiltersDrawer'
 import { useDisclose, useGetCustomersList, useGetOrdersList, usePath } from '@src/hooks'
 import { NewOrderDrawer, OrdersTable } from '@components/Orders'
 import { Add } from '@mui/icons-material'
@@ -85,7 +85,7 @@ const Orders: NextPage = ({}) => {
         <Add sx={{ mr: 1 }} />
         Nowy odbiór
       </Fab>
-      <FiltersDrawer
+      <OrdersFiltersDrawer
         isOpen={isFilterDrawerOpen}
         onClose={onFilterDrawerClose}
       />

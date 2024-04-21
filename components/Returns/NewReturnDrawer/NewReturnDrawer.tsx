@@ -1,10 +1,12 @@
 import { SideDrawer } from '@components/SideDrawer'
-import { Box, Stack } from '@mui/material'
+import { Badge, Box, Button, Stack, Typography } from '@mui/material'
 import { useRef } from 'react'
 import { NewReturnForm } from '@components/Returns/NewReturnDrawer/parts/NewReturnForm'
-import { Add, Clear } from '@mui/icons-material'
-import { useDispatch } from 'react-redux'
-import { returnsActions } from '@src/store'
+import { Add, AddCircle, Clear } from '@mui/icons-material'
+import { useDispatch, useSelector } from 'react-redux'
+import { ordersSelectors, returnsActions, returnsSelectors } from '@src/store'
+import { useDisclose } from '@src/hooks'
+import { UploadFileModal } from '@components/Orders'
 
 type NewReturnDrawerProps = {
   isOpen: boolean
@@ -12,8 +14,14 @@ type NewReturnDrawerProps = {
 }
 
 export const NewReturnDrawer = ({ isOpen, onClose }: NewReturnDrawerProps) => {
+  const { attachment: attachments } = useSelector(ordersSelectors.selectOrderForm)
   const dispatch = useDispatch()
   const formRef = useRef(null)
+  const {
+    isOpen: isUploadFileModalOpen,
+    onOpen: onUploadFileModalOpen,
+    onClose: onUploadFileModalClose,
+  } = useDisclose()
 
   const handleFormClear = () => {
     formRef.current.clearForm()
@@ -65,39 +73,47 @@ export const NewReturnDrawer = ({ isOpen, onClose }: NewReturnDrawerProps) => {
               ref={formRef}
               onDrawerClose={onClose}
             />
-            {/*  <Box>*/}
-            {/*    <Box*/}
-            {/*      sx={{*/}
-            {/*        display: 'flex',*/}
-            {/*        justifyContent: 'space-between',*/}
-            {/*      }}*/}
-            {/*    >*/}
-            {/*      <Button*/}
-            {/*        variant="contained"*/}
-            {/*        size="large"*/}
-            {/*        fullWidth*/}
-            {/*        startIcon={<AddCircle />}*/}
-            {/*        onClick={onUploadFileModalOpen}*/}
-            {/*      >*/}
-            {/*        <Badge*/}
-            {/*          badgeContent={attachments && attachments.length}*/}
-            {/*          color="error"*/}
-            {/*        >*/}
-            {/*          Dodaj załączniki*/}
-            {/*        </Badge>*/}
-            {/*      </Button>*/}
-            {/*    </Box>*/}
-            {/*  </Box>*/}
+            <Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  startIcon={<AddCircle />}
+                  onClick={onUploadFileModalOpen}
+                  disabled
+                >
+                  <Badge
+                    badgeContent={attachments && attachments.length}
+                    color="error"
+                  >
+                    Dodaj załączniki
+                  </Badge>
+                </Button>
+              </Box>
+            </Box>
+                <Typography
+                  variant="caption"
+                  align="center"
+                  color="red"
+                >
+                  Tymczasowo, proszę o utworzenie zwrotu bez załącznika i dodanie go z poziomu listy zleceń
+                </Typography>
           </Stack>
         </Box>
       </SideDrawer>
-      {/*{isUploadFileModalOpen && (*/}
-      {/*  <UploadFileModal*/}
-      {/*    isOpen={isUploadFileModalOpen}*/}
-      {/*    onClose={onUploadFileModalClose}*/}
-      {/*    method="createOrder"*/}
-      {/*  />*/}
-      {/*)}*/}
+      {isUploadFileModalOpen && (
+        <UploadFileModal
+          isOpen={isUploadFileModalOpen}
+          onClose={onUploadFileModalClose}
+          method="createOrder"
+        />
+      )}
     </>
   )
 }

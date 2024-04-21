@@ -1,4 +1,4 @@
-import { Customer, Order, Return, User } from '@prisma/client'
+import { Customer, Meeting, Order, Return, Unit, User } from '@prisma/client'
 
 export enum OrderType {
   BIOLOGY = 'BIOLOGY',
@@ -66,5 +66,6 @@ export enum ReturnContent {
 
 export type OrderExtended = Order & { handleBy?: User; customer?: Customer; registeredBy?: User }
 export type ReturnExtended = Return & { handleBy?: User; customer?: Customer; registeredBy?: User }
+export type MeetingExtended = Meeting & { registeredBy?: User, unit: Unit; handleBy: User }
 
 // export type ReturnContent

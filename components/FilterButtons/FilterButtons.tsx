@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, IconButton, Stack, TextField } from '@mui/material'
 import { ORDER_TYPE_BUTTONS_LIST, RETURN_TYPE_BUTTONS_LIST } from './FilterButtons.constants'
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Close } from '@mui/icons-material'
 import { useDispatch, useSelector } from 'react-redux'
 import { commonActions, commonSelectors, ordersActions, ordersSelectors } from '@src/store'
@@ -10,23 +10,34 @@ import { OrderType, Paths } from '@src/types'
 type FilterButtonsProps = {
   onClearFiltersClick: () => void
   onFilterDrawerOpen: () => void
+  disableTypes?: boolean
 }
 
-export const FilterButtons: FC<FilterButtonsProps> = ({ onClearFiltersClick, onFilterDrawerOpen }) => {
+export const FilterButtons: FC<FilterButtonsProps> = ({ onClearFiltersClick, onFilterDrawerOpen, disableTypes = false }) => {
   const dispatch = useDispatch()
   const selectedTypes = useSelector(ordersSelectors.selectFilterByType)
-  const findString = useSelector(commonSelectors.selectFindString)
   const currentPath = useSelector(commonSelectors.selectCurrentPath)
+  const [string, setString] = useState('')
 
-  const handleFindStringChange = (value) => dispatch(commonActions.setFindString({ value }))
-  const handleClearFindString = () => dispatch(commonActions.setFindString({ value: '' }))
+  const handleFindStringChange = () => dispatch(commonActions.setFindString( {value: string}))
+  const handleClearFindString = () => {
+    dispatch(commonActions.setFindString({ value: '' }))
+    setString('')
+  }
 
+  useEffect(() => {
+    const setter = setTimeout(() => {
+      handleFindStringChange()
+    }, 1000)
+
+    return () => clearTimeout(setter)
+  }, [string])
 
   const handleTypeClick = (type) => {
     dispatch(ordersActions.setFilterByType({ filterByType: type }))
-    const LStypes = localStorage.getItem('filterByType')
+    const LStypes = localStorage.getItem('filterByType${currentPath}')
     if (LStypes === type) {
-      localStorage.setItem('filterByType', '')
+      localStorage.setItem('filterByType${currentPath}', '')
     }
   }
 
@@ -34,24 +45,25 @@ export const FilterButtons: FC<FilterButtonsProps> = ({ onClearFiltersClick, onF
     const typesJointString = selectedTypes.join(',')
 
     if (typesJointString) {
-      localStorage.setItem('filterByType', selectedTypes.join(','))
+      localStorage.setItem(`filterByType${currentPath}`, selectedTypes.join(','))
     }
   }, [selectedTypes])
 
   useEffect(() => {
-    const LStypes = localStorage.getItem('filterByType')
+    const LStypes = localStorage.getItem(`filterByType${currentPath}`)
     if (!LStypes) {
-      localStorage.setItem('filterByType', '')
+      localStorage.setItem(`filterByType${currentPath}`, '')
     }
     if (LStypes !== '' && LStypes !== null) {
       LStypes.split(',').forEach((el: OrderType) => dispatch(ordersActions.setFilterByType({ filterByType: el })))
     }
-  }, [])
+  }, [currentPath])
 
   const TYPES_LIST = currentPath === Paths.ORDERS ? ORDER_TYPE_BUTTONS_LIST : RETURN_TYPE_BUTTONS_LIST
 
   return (
     <>
+      {!disableTypes && (
       <Box sx={{ display: 'flex', gap: '5px' }}>
         {TYPES_LIST.map((el) => (
           <Button
@@ -66,15 +78,18 @@ export const FilterButtons: FC<FilterButtonsProps> = ({ onClearFiltersClick, onF
           </Button>
         ))}
       </Box>
+        )}
       <Stack
         direction="row"
         spacing={1}
+        flex={1}
+        justifyContent="flex-end"
       >
         <TextField
           size="small"
           label="Szukaj"
-          value={findString}
-          onChange={({ target }) => handleFindStringChange(target.value)}
+          value={string}
+          onChange={({ target }) => setString(target.value)}
           InputProps={{
             endAdornment: (
               <IconButton

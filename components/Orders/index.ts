@@ -1,4 +1,4 @@
-export { FiltersDrawer } from '../FiltersDrawer'
+export { OrdersFiltersDrawer } from '../FiltersDrawer'
 export { NewOrderDrawer } from './NewOrderDrawer'
 export { FilterButtons } from '../FilterButtons'
 export { StatusSelector } from '../StatusSelector'

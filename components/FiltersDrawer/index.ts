@@ -1,1 +1,2 @@
-export { FiltersDrawer } from './FiltersDrawer'
+export { OrdersFiltersDrawer } from './OrdersFiltersDrawer'
+export { ReturnsFiltersDrawer } from './ReturnsFiltersDrawer'

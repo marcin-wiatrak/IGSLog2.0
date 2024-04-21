@@ -15,6 +15,8 @@ export type OrdersStateProps = {
   filterLocalization: string
   filterCreatedAtStart: string
   filterCreatedAtEnd: string
+  filterPickupAtStart: string
+  filterPickupAtEnd: string
   filterStatus: string[]
   createOrder: CreateOrder
   uploadedFiles: string[]
@@ -60,6 +62,14 @@ type SetFilterCreatedAtEndPayload = {
   filterCreatedAtEnd: string
 }
 
+type SetFilterPickupAtStartPayload = {
+  filterPickupAtStart: string
+}
+
+type SetFilterPickupAtEndPayload = {
+  filterPickupAtEnd: string
+}
+
 type SetFilterStatusPayload = {
   status: string[]
 }
@@ -101,6 +111,8 @@ const initialState: OrdersStateProps = {
   filterLocalization: '',
   filterCreatedAtStart: null,
   filterCreatedAtEnd: null,
+  filterPickupAtStart: null,
+  filterPickupAtEnd: null,
   filterStatus: [],
   uploadedFiles: null,
   localization: '',
@@ -135,6 +147,8 @@ export const ordersState = createSlice({
       state.filterLocalization = initialState.filterLocalization
       state.filterCreatedAtStart = initialState.filterCreatedAtStart
       state.filterCreatedAtEnd = initialState.filterCreatedAtEnd
+      state.filterPickupAtStart = initialState.filterPickupAtStart
+      state.filterPickupAtEnd = initialState.filterPickupAtEnd
       state.filterStatus = initialState.filterStatus
     },
     resetOrderForm: (state) => {
@@ -166,6 +180,12 @@ export const ordersState = createSlice({
     },
     setFilterCreatedAtEnd: (state, { payload }: PayloadAction<SetFilterCreatedAtEndPayload>) => {
       state.filterCreatedAtEnd = payload.filterCreatedAtEnd
+    },
+    setFilterPickupAtStart: (state, { payload }: PayloadAction<SetFilterPickupAtStartPayload>) => {
+      state.filterPickupAtStart = payload.filterPickupAtStart
+    },
+    setFilterPickupAtEnd: (state, { payload }: PayloadAction<SetFilterPickupAtEndPayload>) => {
+      state.filterPickupAtEnd = payload.filterPickupAtEnd
     },
     setFilterStatus: (state, { payload }: PayloadAction<SetFilterStatusPayload>) => {
       state.filterStatus = payload.status
@@ -205,6 +225,8 @@ export const ordersSelectors = {
     localization: order.filterLocalization,
     createdAtStart: order.filterCreatedAtStart,
     createdAtEnd: order.filterCreatedAtEnd,
+    pickupAtStart: order.filterPickupAtStart,
+    pickupAtEnd: order.filterPickupAtEnd,
     status: order.filterStatus,
   })),
   selectOrderForm: createSelector(getOrder, (order) => ({

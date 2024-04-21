@@ -132,6 +132,7 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
   const { data } = useSession()
   const dispatch = useDispatch()
   const [attachmentsMenuAnchor, setAttachmentsMenuAnchor] = useState(null)
+  const [attachmentHover, setAttachmentHover] = useState('')
   const customersList = useSelector(customersSelectors.selectCustomersList)
   const findString = useSelector(commonSelectors.selectFindString)
   const returnsList = useSelector(returnsSelectors.selectReturnsList)
@@ -171,14 +172,6 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
     setAttachmentsMenuAnchor(null)
   }
 
-  const mappedCustomersList = useMemo(() => {
-    if (customersList) {
-      return customersList.reduce((acc, customer) => {
-        return { ...acc, [customer.id]: customer }
-      }, {})
-    }
-  }, [customersList])
-
   const handleChangeSorting = (column: string) => {
     setSortBy(column)
     setSortDirection((prevState) => (prevState === 'desc' ? 'asc' : 'desc'))
@@ -195,10 +188,12 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
           (filters.localization && (!!ret.localization || !ret.localization)
             ? ret.localization === null
               ? false
-              : ret.localization.includes(filters.localization)
+              : ret.localization.toLowerCase().includes(filters.localization.toLowerCase())
             : true) &&
           (filters.createdAtStart ? dayjs(ret.createdAt).isAfter(filters.createdAtStart) : true) &&
           (filters.createdAtEnd ? dayjs(ret.createdAt).isBefore(filters.createdAtEnd) : true) &&
+          (filters.returnAtStart ? dayjs(ret.returnAt).isAfter(filters.returnAtStart) : true) &&
+          (filters.returnAtEnd ? dayjs(ret.returnAt).isBefore(filters.returnAtEnd) : true) &&
           ((findString ? ret.localization?.toLowerCase().includes(findString.toLowerCase()) : true) ||
             (findString ? ret.customer?.name?.toLowerCase().includes(findString.toLowerCase()) : true) ||
             (findString ? ret.signature?.toLowerCase().includes(findString.toLowerCase()) : true) ||
@@ -299,10 +294,10 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
     setAttachmentsMenuAnchor(null)
   }
 
-  // const handleAttachmentsMenuOpen = (e, attachments?: string[], orderId?: string) => {
-  //   dispatch(returnsActions.setReturnDetails({ attachment: attachments, id: orderId }))
-  //   setAttachmentsMenuAnchor(e.currentTarget)
-  // }
+  const handleAttachmentsMenuOpen = (e, attachments?: string[], orderId?: string) => {
+    dispatch(returnsActions.setReturnDetails({ attachment: attachments, id: orderId }))
+    setAttachmentsMenuAnchor(e.currentTarget)
+  }
 
   const handleReturnAtModalOpen = (returnId: string, returnAt?: string) => {
     dispatch(returnsActions.setReturnDetails({ id: returnId, returnAt }))
@@ -492,26 +487,26 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
                       />
                     </TableCell>
                     <TableCell>
-                      {/*  <IconButton*/}
-                      {/*    onMouseEnter={() => setAttachmentHover(order.id)}*/}
-                      {/*    onMouseLeave={() => setAttachmentHover('')}*/}
-                      {/*    onClick={(e) =>*/}
-                      {/*      !!order.attachment.length*/}
-                      {/*        ? handleAttachmentsMenuOpen(e, order.attachment, order.id)*/}
-                      {/*        : handleUploadFileModalOpen(order.id)*/}
-                      {/*    }*/}
-                      {/*  >*/}
-                      {/*    <Badge*/}
-                      {/*      badgeContent={order.attachment.length > 1 ? order.attachment.length : undefined}*/}
-                      {/*      color="primary"*/}
-                      {/*    >*/}
-                      {/*      {attachmentHover === order.id && !order.attachment.length ? (*/}
-                      {/*        <AddCircle />*/}
-                      {/*      ) : (*/}
-                      {/*        <AttachFile color={order.attachment.length ? 'error' : undefined} />*/}
-                      {/*      )}*/}
-                      {/*    </Badge>*/}
-                      {/*  </IconButton>*/}
+                        <IconButton
+                          onMouseEnter={() => setAttachmentHover(ret.id)}
+                          onMouseLeave={() => setAttachmentHover('')}
+                          onClick={(e) =>
+                            !!ret.attachment.length
+                              ? handleAttachmentsMenuOpen(e, ret.attachment, ret.id)
+                              : handleUploadFileModalOpen(ret.id)
+                          }
+                        >
+                          <Badge
+                            badgeContent={ret.attachment.length > 1 ? ret.attachment.length : undefined}
+                            color="primary"
+                          >
+                            {attachmentHover === ret.id && !ret.attachment.length ? (
+                              <AddCircle />
+                            ) : (
+                              <AttachFile color={ret.attachment.length ? 'error' : undefined} />
+                            )}
+                          </Badge>
+                        </IconButton>
                       <Link href={`/preview/return/${ret.id}`}>
                         <IconButton size="small">
                           <Info />

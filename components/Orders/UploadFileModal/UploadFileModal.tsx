@@ -13,12 +13,13 @@ import {
   Typography,
 } from '@mui/material'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ordersActions, ordersSelectors } from '@src/store'
+import { commonSelectors, ordersActions, ordersSelectors, returnsSelectors, returnsActions } from '@src/store'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import { AddCircle, Check, Close } from '@mui/icons-material'
-import { useGetOrdersList } from '@src/hooks'
+import { useGetOrdersList, useGetReturnsList } from '@src/hooks'
 import { SnackbarFunctionProps, withSnackbar } from '@components/HOC/WithSnackbar'
+import { Paths } from '@src/types'
 
 type UploadFileModalProps = {
   isOpen: boolean
@@ -31,15 +32,26 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
   const dispatch = useDispatch()
   const fileUploadInputRef = useRef(null)
   const [selectedFiles, setSelectedFiles] = useState<File[]>(null)
-  const uploadedFiles = useSelector(ordersSelectors.selectUploadedFiles)
+  const uploadedFilesOrders = useSelector(ordersSelectors.selectUploadedFiles)
+  const uploadedFilesReturns = useSelector(returnsSelectors.selectUploadedFiles)
   const orderDetails = useSelector(ordersSelectors.selectOrderDetails)
+  const returnDetails = useSelector(returnsSelectors.selectReturnDetails)
   const [isUploading, setIsUploading] = useState(false)
   const [preventCloseInfo, setPreventCloseInfo] = useState(false)
   const { refreshOrdersList } = useGetOrdersList()
+  const { refreshReturnsList } = useGetReturnsList()
+  const currentPath = useSelector(commonSelectors.selectCurrentPath)
+
+  const endpointPath = currentPath === Paths.ORDERS ? 'order' : 'return'
+
+  const uploadedFiles = currentPath === Paths.ORDERS ? uploadedFilesOrders : uploadedFilesReturns
 
   useEffect(() => {
     if (method === 'updateOrder' && orderDetails.attachment) {
       dispatch(ordersActions.setUploadedFiles({ uploadedFiles: orderDetails.attachment }))
+    }
+    if (method === 'updateOrder' && returnDetails.attachment) {
+      dispatch(returnsActions.setUploadedFiles({ uploadedFiles: returnDetails.attachment }))
     }
   }, [])
 
@@ -53,7 +65,11 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
     setPreventCloseInfo(false)
     fileUploadInputRef.current.value = ''
     fileUploadInputRef.current.files = undefined
-    dispatch(ordersActions.setUploadedFiles({ uploadedFiles: null }))
+    if (endpointPath === 'order') {
+      dispatch(ordersActions.setUploadedFiles({ uploadedFiles: null }))
+    } else {
+      dispatch(returnsActions.setUploadedFiles({ uploadedFiles: null }))
+    }
   }
 
   const handleRemoveUploadedFile = (fileName) => {
@@ -64,11 +80,19 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
   const handleRemoveFileFromUploadQueue = (fileName) => {
     setSelectedFiles((prevState) => prevState.filter((el) => el.name !== fileName))
     if (uploadedFiles && uploadedFiles.find((el) => el.includes(fileName))) {
-      dispatch(
-        ordersActions.setUploadedFiles({
-          uploadedFiles: uploadedFiles.filter((file) => !file.includes(fileName)),
-        })
-      )
+      if (endpointPath === 'order') {
+        dispatch(
+          ordersActions.setUploadedFiles({
+            uploadedFiles: uploadedFilesOrders.filter((file) => !file.includes(fileName)),
+          })
+        )
+      } else {
+        dispatch(
+          returnsActions.setUploadedFiles({
+            uploadedFiles: uploadedFilesReturns.filter((file) => !file.includes(fileName)),
+          })
+        )
+      }
     }
 
     const newFilesList = Array.from(fileUploadInputRef.current.files).filter((el: File) => el.name !== fileName)
@@ -99,12 +123,10 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
       selectedFiles.forEach((el) => {
         formData.append('file', el, el.name)
       })
-      await axios.post('/api/order/upload', formData).then((res) => {
-        dispatch(
-          ordersActions.setUploadedFiles({
-            uploadedFiles: uploadedFiles ? [...uploadedFiles, ...res.data.files] : res.data.files,
-          })
-        )
+      await axios.post(`/api/${endpointPath}/upload`, formData).then((res) => {
+        endpointPath === 'order'
+          ? dispatch(ordersActions.setUploadedFiles({ uploadedFiles: res.data.files }))
+          : dispatch(returnsActions.setUploadedFiles({ uploadedFiles: res.data.files }))
         setSelectedFiles(null)
         setPreventCloseInfo(false)
         setIsUploading(false)
@@ -116,14 +138,26 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
   }
 
   const handleSaveAttachments = async () => {
-    if (method === 'createOrder') {
-      dispatch(ordersActions.setCreateOrder({ attachment: uploadedFiles }))
-    } else {
-      await axios.post(`/api/order/${orderDetails.id}/update`, { attachment: uploadedFiles })
+    if (endpointPath === 'order') {
+      if (method === 'createOrder') {
+        dispatch(ordersActions.setCreateOrder({ attachment: uploadedFiles }))
+      } else {
+        await axios.post(`/api/order/${orderDetails.id}/update`, { attachment: uploadedFiles })
+      }
+      dispatch(ordersActions.setOrderDetails({ id: '' }))
+      refreshOrdersList()
+      onClose()
     }
-    dispatch(ordersActions.setOrderDetails({ id: '' }))
-    refreshOrdersList()
-    onClose()
+    if (endpointPath === 'return') {
+      if (method === 'createOrder') {
+        dispatch(returnsActions.setReturnDetails({ id: '' }))
+      } else {
+        await axios.post(`/api/return/${returnDetails.id}/update`, { attachment: uploadedFiles })
+      }
+      dispatch(returnsActions.clearReturnDetails())
+      refreshReturnsList()
+      onClose()
+    }
   }
 
   return (
@@ -142,11 +176,11 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
     >
       <DialogTitle>Dodaj załączniki</DialogTitle>
       <DialogContent>
-        {uploadedFiles && (
+        {uploadedFilesOrders && (
           <>
             <Typography variant="h4">Lista dodanych plików</Typography>
             <Stack spacing={1}>
-              {uploadedFiles.map((file) => (
+              {uploadedFilesOrders.map((file) => (
                 <Paper
                   key={file}
                   sx={{

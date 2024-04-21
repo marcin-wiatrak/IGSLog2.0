@@ -2,17 +2,19 @@ import { NextPage } from 'next'
 import { Fab, Typography, Unstable_Grid2 as Grid } from '@mui/material'
 import { Layout } from '@components/Layout'
 import { FilterButtons } from '@components/FilterButtons/FilterButtons'
-import { FiltersDrawer } from 'components/FiltersDrawer'
+import { OrdersFiltersDrawer } from 'components/FiltersDrawer'
 import { useDisclose, useGetCustomersList, useGetOrdersList, useGetUsersList, usePath } from '@src/hooks'
 import { NewOrderDrawer, OrdersTable } from '@components/Orders'
 import { Add } from '@mui/icons-material'
-import { ordersActions } from '@src/store'
+import { ordersActions, returnsActions } from '@src/store'
 import { useDispatch } from 'react-redux'
 import { withSnackbar } from '@components/HOC/WithSnackbar'
 import { Paths } from '@src/types'
 import { useEffect } from 'react'
 import { MeetingsTable } from '@components/Meetings/MeetingsTable'
 import { NewMeetingDrawer } from '@components/Meetings/NewMeetingDrawer'
+import { meetingsActions } from '@src/store/meetings.slice'
+import { MeetingsFiltersDrawer } from '@components/FiltersDrawer/MeetingsFiltersDrawer'
 
 const fabStyle = {
   position: 'absolute',
@@ -23,6 +25,9 @@ const fabStyle = {
 const Meetings: NextPage = () => {
   const dispatch = useDispatch()
   const newMeetingDrawer = useDisclose()
+  const { isOpen: isFilterDrawerOpen, onOpen: onFilterDrawerOpen, onClose: onFilterDrawerClose } = useDisclose()
+
+  const handleClearFilters = () => dispatch(meetingsActions.clearFilters())
 
   return (
     <>
@@ -47,10 +52,11 @@ const Meetings: NextPage = () => {
                   alignItems: { sm: 'center' },
                 }}
               >
-                {/*<FilterButtons*/}
-                {/*  onFilterDrawerOpen={onFilterDrawerOpen}*/}
-                {/*  onClearFiltersClick={handleClearFilters}*/}
-                {/*/>*/}
+                <FilterButtons
+                  onFilterDrawerOpen={onFilterDrawerOpen}
+                  onClearFiltersClick={handleClearFilters}
+                  disableTypes
+                />
               </Grid>
             </Grid>
           </Grid>
@@ -78,16 +84,10 @@ const Meetings: NextPage = () => {
         isOpen={newMeetingDrawer.isOpen}
         onClose={newMeetingDrawer.onClose}
       />
-      {/*<FiltersDrawer*/}
-      {/*  isOpen={isFilterDrawerOpen}*/}
-      {/*  onClose={onFilterDrawerClose}*/}
-      {/*/>*/}
-      {/*<NewOrderDrawer*/}
-      {/*  isOpen={isNewOrderDrawerOpen}*/}
-      {/*  onClose={onNewOrderDrawerClose}*/}
-      {/*  customersList={customersList}*/}
-      {/*  onRefreshCustomersList={refreshCustomersList}*/}
-      {/*/>*/}
+      <MeetingsFiltersDrawer
+        isOpen={isFilterDrawerOpen}
+        onClose={onFilterDrawerClose}
+      />
     </>
   )
 }

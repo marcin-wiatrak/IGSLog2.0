@@ -8,6 +8,7 @@ export type ReturnsStateProps = {
   returnsList: Return[]
   returnDetails: Partial<Return>
   filters: FilterProps
+  uploadedFiles: string[]
 }
 
 type FilterProps = {
@@ -15,6 +16,8 @@ type FilterProps = {
   handleBy: AutocompleteOptionType[]
   createdAtStart: string
   createdAtEnd: string
+  returnAtStart: string
+  returnAtEnd: string
   localization: string
   status: string[]
   string: string
@@ -31,11 +34,17 @@ type UpdateReturnStatusPayload = {
   status: ReturnStatus
 }
 
+type SetUploadedFilesPayload = {
+  uploadedFiles: string[]
+}
+
 const initialFilters = {
   registeredBy: [],
   handleBy: [],
   createdAtStart: null,
   createdAtEnd: null,
+  returnAtStart: null,
+  returnAtEnd: null,
   localization: '',
   status: [],
   string: '',
@@ -47,6 +56,7 @@ const initialState: ReturnsStateProps = {
     id: '',
   },
   filters: initialFilters,
+  uploadedFiles: [],
 }
 
 export const returnsState = createSlice({
@@ -72,6 +82,12 @@ export const returnsState = createSlice({
     clearFilters: (state) => {
       state.filters = initialFilters
     },
+    setUploadedFiles: (state, { payload }: PayloadAction<SetUploadedFilesPayload>) => {
+      state.uploadedFiles = payload.uploadedFiles
+    },
+    clearUploadedFiles: (state) => {
+      state.uploadedFiles = initialState.uploadedFiles
+    },
   },
 })
 
@@ -81,6 +97,7 @@ export const returnsSelectors = {
   selectReturnsList: createSelector(getReturn, (ret) => ret.returnsList),
   selectReturnDetails: createSelector(getReturn, (ret) => ret.returnDetails),
   selectFilters: createSelector(getReturn, (ret) => ret.filters),
+  selectUploadedFiles: createSelector(getReturn, (ret) => ret.uploadedFiles),
 }
 
 export const returnsActions = returnsState.actions
