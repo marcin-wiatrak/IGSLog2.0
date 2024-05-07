@@ -15,7 +15,7 @@ import { useGetUsersList } from '@src/hooks'
 type AssignUserModalProps = {
   isOpen: boolean
   onClose: () => void
-  onAssignUser: ({ selectedUser, selfAssign }?: { selectedUser?: string; selfAssign?: boolean }) => void
+  onAssignUser: ({ selectedUser, selfAssign, returnContent }?: { selectedUser?: string; selfAssign?: boolean, returnContent?: string }) => void
   onUnassignUser: ({ selectedUser, selfAssign }?: { selectedUser?: string; selfAssign?: boolean }) => void
 }
 
@@ -24,11 +24,11 @@ export const AssignUserModal: FC<AssignUserModalProps> = ({ isOpen, onClose, onA
   const currentPath = useSelector(commonSelectors.selectCurrentPath)
   const { usersList: usersLisRaw } = useGetUsersList()
   const { handleById: orderHandleById } = useSelector(ordersSelectors.selectOrderDetails)
-  const { handleById: returnHandleById } = useSelector(returnsSelectors.selectReturnDetails)
+  const { handleById: returnHandleById, handleByMaterialId, content } = useSelector(returnsSelectors.selectReturnDetails)
   const [selectedUser, setSelectedUser] = useState<{ id: string; label: string }>(null)
 
-  const isOrder = currentPath === Paths.ORDERS
-  const handleById = isOrder ? orderHandleById : returnHandleById
+  // const isOrder = currentPath === Paths.ORDERS
+  // const handleById = isOrder ? orderHandleById : returnHandleById
 
   const usersList = useMemo(() => {
     return usersLisRaw.filter(user => !user.hidden).map((user) => ({ id: user.id, label: `${user.firstName} ${user.lastName}` }))
@@ -38,16 +38,16 @@ export const AssignUserModal: FC<AssignUserModalProps> = ({ isOpen, onClose, onA
     if (selectedUser?.id) {
       currentPath === Paths.ORDERS
         ? dispatch(ordersActions.setOrderDetails({ handleById: selectedUser.id }))
-        : dispatch(returnsActions.setReturnDetails({ handleById: selectedUser.id }))
+        : dispatch(returnsActions.setReturnDetails({ [content === 'DOC' ? 'handleById' : 'handleByMaterialId']: selectedUser.id }))
     }
   }, [selectedUser])
 
   useEffect(() => {
-    if (handleById && usersList) {
-      const foundUser = usersList?.find((el) => el.id === handleById)
+    if ((orderHandleById || returnHandleById || handleByMaterialId) && usersList) {
+      const foundUser = usersList?.find((el) => el.id === orderHandleById || el.id === handleByMaterialId || el.id === returnHandleById)
       setSelectedUser(foundUser ? foundUser : null)
     }
-  }, [handleById, usersList])
+  }, [returnHandleById, orderHandleById, handleByMaterialId, usersList])
 
   return (
     <Dialog
@@ -99,7 +99,7 @@ export const AssignUserModal: FC<AssignUserModalProps> = ({ isOpen, onClose, onA
             </Button>
             <Button
               variant="contained"
-              onClick={() => onAssignUser({ selectedUser: selectedUser.id })}
+              onClick={() => onAssignUser({ selectedUser: selectedUser.id, returnContent: content })}
             >
               Przypisz
             </Button>

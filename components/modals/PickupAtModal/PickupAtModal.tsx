@@ -17,7 +17,7 @@ type PickupAtModalProps = {
 export const PickupAtModal = ({ isOpen, onClose, onConfirm, onClearDate }: PickupAtModalProps) => {
   const dispatch = useDispatch()
   const { pickupAt } = useSelector(ordersSelectors.selectOrderDetails)
-  const { returnAt } = useSelector(returnsSelectors.selectReturnDetails)
+  const { returnAt, returnAtMaterial, content } = useSelector(returnsSelectors.selectReturnDetails)
   const currentPath = useSelector(commonSelectors.selectCurrentPath)
   const [isEdit, setIsEdit] = useState(false)
 
@@ -25,16 +25,16 @@ export const PickupAtModal = ({ isOpen, onClose, onConfirm, onClearDate }: Picku
   // const localization = isOrder ? orderLocalization : returnLocalization
 
   useEffect(() => {
-    setIsEdit(!!pickupAt)
+    setIsEdit(!!pickupAt || !!returnAt || !!returnAtMaterial)
   }, [])
 
   const handleDateChange = (date) => {
     isOrder
       ? dispatch(ordersActions.setOrderDetails({ pickupAt: date }))
-      : dispatch(returnsActions.setReturnDetails({ returnAt: date }))
+      : dispatch(returnsActions.setReturnDetails({ [content === 'DOC' ? 'returnAt' : 'returnAtMaterial']: date }))
   }
 
-  const date = pickupAt || returnAt
+  const date = pickupAt || returnAt || returnAtMaterial
 
   return (
     <Dialog
@@ -44,7 +44,7 @@ export const PickupAtModal = ({ isOpen, onClose, onConfirm, onClearDate }: Picku
       fullWidth
     >
       <DialogTitle>
-        {isEdit ? 'Edytuj' : 'Ustal'} datę {isOrder ? 'odbioru' : 'zwrotu'}
+        {isEdit ? 'Edytuj' : 'Ustal'} datę {isOrder ? 'odbioru' : 'zwrotu'} {content === 'DOC' && `(Dokumentacja)`}{content === 'MAT' && `(Materiał)`}
       </DialogTitle>
       <DialogContent>
         <DatePicker

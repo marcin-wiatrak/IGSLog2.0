@@ -14,7 +14,7 @@ import {
   MenuItem,
   Select,
   Stack,
-  TextField,
+  TextField, Typography,
 } from '@mui/material'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -42,10 +42,13 @@ export interface IFormInput extends yup.InferType<typeof schema> {
   customer: AutocompleteOptionType
   signature: string
   returnAt: string
+  returnAtMaterial: string
   notes: string
   localization: string
+  localizationMaterial: string
   type: OrderType[]
   handleBy: AutocompleteOptionType
+  handleByMaterial: AutocompleteOptionType
   content: string
 }
 
@@ -53,10 +56,13 @@ const defaultValues = {
   customer: null,
   signature: '',
   returnAt: '',
+  returnAtMaterial: '',
   notes: '',
   localization: '',
+  localizationMaterial: '',
   type: [],
   handleBy: null,
+  handleByMaterial: null,
   content: '',
 }
 
@@ -64,13 +70,16 @@ const schema = yup.object({
   customer: yup.object().required(ErrorMessages.EMPTY),
   signature: yup.string().required(ErrorMessages.EMPTY),
   returnAt: yup.string().optional(),
+  returnAtMaterial: yup.string().optional(),
   localization: yup.string().optional(),
+  localizationMaterial: yup.string().optional(),
   notes: yup.string().optional(),
   type: yup
     .array()
     .of(yup.string())
     .test('Min test', ErrorMessages.TYPE_MIN_LENGTH, (arr) => arr.length >= 1),
   handleBy: yup.object().nullable(),
+  handleByMaterial: yup.object().nullable(),
   content: yup.string().required(ErrorMessages.EMPTY),
 })
 
@@ -91,6 +100,7 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
     setValue,
     watch,
     formState: { errors },
+    getValues,
   } = useForm({ resolver: yupResolver(schema), defaultValues })
 
   const handleSelectCreatedCustomer = (payload) => {
@@ -103,15 +113,19 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
     const payload = {
       ...data,
       returnAt: data.returnAt || undefined,
+      returnAtMaterial: data.returnAtMaterial || undefined,
       notes: data.notes || undefined,
       localization: data.localization || undefined,
+      localizationMaterial: data.localizationMaterial || undefined,
       customerId: data.customer.id,
       handleById: data.handleBy?.id,
+      handleByMaterialId: data.handleByMaterial?.id,
       attachment: attachment ?? undefined,
       registeredById: session.data.user.userId,
     }
     delete payload.customer
     delete payload.handleBy
+    delete payload.handleByMaterial
 
     await axios
       .post('/api/return/create', payload)
@@ -159,6 +173,8 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
       return []
     }
   }, [usersList])
+
+  console.log(JSON.stringify(errors, null, 2))
 
   return (
     <>
@@ -251,31 +267,6 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
             )}
           />
           <Controller
-            name="returnAt"
-            control={control}
-            render={({ field: { onChange, value, ...rest } }) => (
-              <DatePicker
-                {...rest}
-                value={dayjs(value)}
-                onChange={(date) => onChange(dayjs(date).format())}
-                label="Data zwrotu"
-                format={DateTemplate.DDMMYYYY}
-              />
-            )}
-          />
-          <Controller
-            name="localization"
-            control={control}
-            render={({ field, fieldState: { error } }) => (
-              <TextField
-                {...field}
-                label="Miejsce zwrotu"
-                error={!!error}
-                helperText={error?.message}
-              />
-            )}
-          />
-          <Controller
             name="content"
             control={control}
             render={({ field, fieldState: { error } }) => (
@@ -286,44 +277,150 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
                   label="Zawartość"
                   error={!!error}
                 >
-                  <MenuItem value="MAT">Materiał</MenuItem>
                   <MenuItem value="DOC">Dokumentacja</MenuItem>
-                  <MenuItem value="MAT+DOC">Materiał + Dokumentacja</MenuItem>
+                  <MenuItem value="MAT">Materiał</MenuItem>
+                  <MenuItem value="MAT+DOC">Dokumentacja + Materiał</MenuItem>
                 </Select>
                 {!!error && <FormHelperText error>{error.message || 'Zawartość jest wymagana'}</FormHelperText>}
               </FormControl>
             )}
           />
-          <Controller
-            name="handleBy"
-            control={control}
-            render={({ field: { onChange, value, ...rest }, fieldState: { error } }) => (
-              <Autocomplete
-                {...rest}
-                value={value}
-                fullWidth
-                blurOnSelect
-                options={usersListOption}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                onChange={(e, newValue) => onChange(newValue)}
-                renderOption={(props, option) => {
-                  return (
-                    <li {...props} key={option.id}>
-                      {option.label}
-                    </li>
-                  )
-                }}
-                renderInput={(params) => (
+          {(watch('content') === 'DOC' || watch('content') === 'MAT+DOC') && (
+            <Stack
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2 }}
+              spacing={2}
+            >
+              <Typography
+                variant="body1"
+                color="grey"
+              >
+                Dokumentacja
+              </Typography>
+              <Controller
+                name="returnAt"
+                control={control}
+                render={({ field: { onChange, value, ...rest } }) => (
+                  <DatePicker
+                    {...rest}
+                    value={dayjs(value)}
+                    onChange={(date) => onChange(dayjs(date).format())}
+                    label="Data zwrotu"
+                    format={DateTemplate.DDMMYYYY}
+                  />
+                )}
+              />
+              <Controller
+                name="localization"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
                   <TextField
-                    {...params}
-                    label="Osoba odpowiedzialna"
+                    {...field}
+                    label="Miejsce zwrotu"
                     error={!!error}
                     helperText={error?.message}
                   />
                 )}
               />
-            )}
-          />
+              <Controller
+                name="handleBy"
+                control={control}
+                render={({ field: { onChange, value, ...rest }, fieldState: { error } }) => (
+                  <Autocomplete
+                    {...rest}
+                    value={value}
+                    fullWidth
+                    blurOnSelect
+                    options={usersListOption}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    onChange={(e, newValue) => onChange(newValue)}
+                    renderOption={(props, option) => {
+                      return (
+                        <li {...props} key={option.id}>
+                          {option.label}
+                        </li>
+                      )
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Osoba odpowiedzialna"
+                        error={!!error}
+                        helperText={error?.message}
+                      />
+                    )}
+                  />
+                )}
+              />
+            </Stack>
+          )}
+          {(watch('content') === 'MAT' || watch('content') === 'MAT+DOC') && (
+            <Stack
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2 }}
+              spacing={2}
+            >
+              <Typography
+                variant="body1"
+                color="grey"
+              >
+                Materiał
+              </Typography>
+              <Controller
+                name="returnAtMaterial"
+                control={control}
+                render={({ field: { onChange, value, ...rest } }) => (
+                  <DatePicker
+                    {...rest}
+                    value={dayjs(value)}
+                    onChange={(date) => onChange(dayjs(date).format())}
+                    label="Data zwrotu"
+                    format={DateTemplate.DDMMYYYY}
+                  />
+                )}
+              />
+              <Controller
+                name="localizationMaterial"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    label="Miejsce zwrotu"
+                    error={!!error}
+                    helperText={error?.message}
+                  />
+                )}
+              />
+              <Controller
+                name="handleByMaterial"
+                control={control}
+                render={({ field: { onChange, value, ...rest }, fieldState: { error } }) => (
+                  <Autocomplete
+                    {...rest}
+                    value={value}
+                    fullWidth
+                    blurOnSelect
+                    options={usersListOption}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    onChange={(e, newValue) => onChange(newValue)}
+                    renderOption={(props, option) => {
+                      return (
+                        <li {...props} key={option.id}>
+                          {option.label}
+                        </li>
+                      )
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Osoba odpowiedzialna"
+                        error={!!error}
+                        helperText={error?.message}
+                      />
+                    )}
+                  />
+                )}
+              />
+            </Stack>
+          )}
           <Controller
             name="notes"
             control={control}

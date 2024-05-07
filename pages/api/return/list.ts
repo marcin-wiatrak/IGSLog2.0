@@ -27,6 +27,13 @@ const handler = async (req, res) => {
             lastName: true,
           },
         },
+        handleByMaterial: {
+          select: {
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        }
       },
       orderBy: {
         createdAt: 'asc',

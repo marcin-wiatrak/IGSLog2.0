@@ -23,6 +23,7 @@ model User {
   assignedTo        Order[]   @relation("handledBy")
   createdBy         Order[]   @relation("registeredBy")
   returnAssignedTo  Return[]  @relation("handleBy")
+  returnMaterialAssignedTo  Return[]  @relation("handleByMaterial")
   returnCreatedBy   Return[]  @relation("registeredBy")
   meetingAssignedTo Meeting[] @relation("handleBy")
   suspended         Boolean   @default(false)
@@ -78,25 +79,29 @@ model Customer {
 }
 
 model Return {
-  id             String       @id @default(uuid())
-  no             Int?         @default(autoincrement())
-  customer       Customer     @relation(fields: [customerId], references: [id])
-  customerId     String
-  attachment     String[]
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  registeredBy   User         @relation(name: "registeredBy", fields: [registeredById], references: [id])
-  registeredById String
-  handleBy       User?        @relation(name: "handleBy", fields: [handleById], references: [id])
-  handleById     String?
-  localization   String?
-  returnAt       DateTime?
-  content        String?
-  signature      String?
-  type           String[]
-  notes          String?
-  status         ReturnStatus @default(NEW)
-  deleted        Boolean      @default(false)
+  id                   String       @id @default(uuid())
+  no                   Int?         @default(autoincrement())
+  customer             Customer     @relation(fields: [customerId], references: [id])
+  customerId           String
+  attachment           String[]
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+  registeredBy         User         @relation(name: "registeredBy", fields: [registeredById], references: [id])
+  registeredById       String
+  handleBy             User?        @relation(name: "handleBy", fields: [handleById], references: [id])
+  handleById           String?
+  handleByMaterial     User?        @relation(name: "handleByMaterial", fields: [handleByMaterialId], references: [id])
+  handleByMaterialId   String?
+  localization         String?
+  localizationMaterial String?
+  returnAt             DateTime?
+  returnAtMaterial     DateTime?
+  content              String?
+  signature            String?
+  type                 String[]
+  notes                String?
+  status               ReturnStatus @default(NEW)
+  deleted              Boolean      @default(false)
 }
 
 enum ReturnStatus {

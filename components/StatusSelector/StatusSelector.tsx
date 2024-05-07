@@ -47,7 +47,7 @@ const StatusSelectorComponent = ({ status, orderId, showSnackbar }: StatusSelect
   return (
     <>
       {isOrder ? (
-        <Stack direction="row">
+        <Stack direction="row" justifyContent="center">
           <Tooltip
             title="Zarejestrowane"
             enterDelay={700}
@@ -149,7 +149,7 @@ const StatusSelectorComponent = ({ status, orderId, showSnackbar }: StatusSelect
           </Tooltip>
         </Stack>
       ) : (
-        <Stack direction="row">
+        <Stack direction="row" justifyContent="center">
           <Tooltip
             title="Zarejestrowane"
             enterDelay={700}

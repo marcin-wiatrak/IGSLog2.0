@@ -10,6 +10,7 @@ import {
   Menu,
   MenuItem,
   Skeleton,
+  Stack,
   Table as MuiTable,
   TableBody,
   TableCell,
@@ -81,6 +82,12 @@ const COLUMNS_SETUP = [
     allowSorting: true,
   },
   {
+    name: 'contained',
+    label: 'Zawartość',
+    displayMobile: true,
+    allowSorting: false,
+  },
+  {
     name: 'returnAt',
     label: 'Data zwrotu',
     displayMobile: true,
@@ -91,12 +98,6 @@ const COLUMNS_SETUP = [
     label: 'Miejsce zwrotu',
     displayMobile: true,
     allowSorting: true,
-  },
-  {
-    name: 'contained',
-    label: 'Zawartość',
-    displayMobile: true,
-    allowSorting: false,
   },
   {
     name: 'handleBy',
@@ -177,6 +178,8 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
     setSortDirection((prevState) => (prevState === 'desc' ? 'asc' : 'desc'))
   }
 
+  console.log('returnDetails', returnDetails)
+
   const filterOrders = useCallback(
     (returns: (Return & { customer?: Customer })[]) =>
       returns.filter(
@@ -184,16 +187,24 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
           (filterByType.length ? filterByType.some((el) => ret.type.includes(el)) : true) &&
           (filters.registeredBy.length ? filters.registeredBy.some((el) => el.id === ret.registeredById) : true) &&
           (filters.handleBy.length ? filters.handleBy.some((el) => el.id === ret.handleById) : true) &&
+          (filters.handleBy.length ? filters.handleBy.some((el) => el.id === ret.handleByMaterialId) : true) &&
           (filters.status.length ? filters.status.includes(ret.status) : true) &&
           (filters.localization && (!!ret.localization || !ret.localization)
             ? ret.localization === null
               ? false
               : ret.localization.toLowerCase().includes(filters.localization.toLowerCase())
             : true) &&
+          (filters.localization && (!!ret.localizationMaterial || !ret.localizationMaterial)
+            ? ret.localizationMaterial === null
+              ? false
+              : ret.localizationMaterial.toLowerCase().includes(filters.localization.toLowerCase())
+            : true) &&
           (filters.createdAtStart ? dayjs(ret.createdAt).isAfter(filters.createdAtStart) : true) &&
           (filters.createdAtEnd ? dayjs(ret.createdAt).isBefore(filters.createdAtEnd) : true) &&
           (filters.returnAtStart ? dayjs(ret.returnAt).isAfter(filters.returnAtStart) : true) &&
           (filters.returnAtEnd ? dayjs(ret.returnAt).isBefore(filters.returnAtEnd) : true) &&
+          (filters.returnAtStart ? dayjs(ret.returnAtMaterial).isAfter(filters.returnAtStart) : true) &&
+          (filters.returnAtEnd ? dayjs(ret.returnAtMaterial).isBefore(filters.returnAtEnd) : true) &&
           ((findString ? ret.localization?.toLowerCase().includes(findString.toLowerCase()) : true) ||
             (findString ? ret.customer?.name?.toLowerCase().includes(findString.toLowerCase()) : true) ||
             (findString ? ret.signature?.toLowerCase().includes(findString.toLowerCase()) : true) ||
@@ -207,7 +218,7 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
       filters.localization,
       filters.registeredBy,
       filters.status,
-      findString
+      findString,
     ]
   )
 
@@ -235,8 +246,8 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
     return index + 1
   })
 
-  const handleAssignUserModalOpen = (orderId: string, handleById?: string) => {
-    dispatch(returnsActions.setReturnDetails({ id: orderId, handleById }))
+  const handleAssignUserModalOpen = (orderId: string, handleById?: string, handleByMaterialId?: string, content?: string) => {
+    dispatch(returnsActions.setReturnDetails({ id: orderId, handleById, handleByMaterialId, content}))
     onAssignUserModalOpen()
   }
 
@@ -249,9 +260,11 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
     {
       selectedUser,
       selfAssign,
+      returnContent,
     }: {
       selectedUser?: string
       selfAssign?: boolean
+      returnContent?: string
     },
     orderId?: string
   ) => {
@@ -260,9 +273,11 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
       id = data.user.userId
     }
     if (selectedUser) {
-      id = returnDetails.handleById
+      id = returnDetails.handleById || returnDetails.handleByMaterialId
     }
-    await axios.post(`/api/return/${orderId || returnDetails.id}/update`, { handleById: id }).then(() => {
+
+    const payloadReturn = returnContent === 'DOC' ? { handleById: id } : { handleByMaterialId: id }
+    await axios.post(`/api/return/${orderId || returnDetails.id}/update`, returnContent ? payloadReturn : {handleById: id}).then(() => {
       refreshReturnsList()
       handleAssignUserModalClose()
     })
@@ -270,8 +285,8 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
 
   const handleClearReturnDetails = () => dispatch(returnsActions.clearReturnDetails())
 
-  const handleEditLocalizationModalOpen = (orderId: string, localization?: string) => {
-    dispatch(returnsActions.setReturnDetails({ id: orderId, localization }))
+  const handleEditLocalizationModalOpen = (orderId: string, localization?: string, localizationMaterial?: string, content?: string) => {
+    dispatch(returnsActions.setReturnDetails({ id: orderId, localization, localizationMaterial, content }))
     onLocalizationModalOpen()
   }
 
@@ -281,8 +296,12 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
   }
 
   const handleUpdateOrderLocalization = async () => {
+    const payload = {
+      localization: returnDetails.localization || undefined,
+      localizationMaterial: returnDetails.localizationMaterial || undefined
+    }
     await axios
-      .post(`/api/return/${returnDetails.id}/update`, { localization: returnDetails.localization })
+      .post(`/api/return/${returnDetails.id}/update`, payload)
       .then(() => {
         refreshReturnsList()
         handleEditLocalizationModalClose()
@@ -299,13 +318,17 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
     setAttachmentsMenuAnchor(e.currentTarget)
   }
 
-  const handleReturnAtModalOpen = (returnId: string, returnAt?: string) => {
-    dispatch(returnsActions.setReturnDetails({ id: returnId, returnAt }))
+  const handleReturnAtModalOpen = (returnId: string, returnAt?: string, returnAtMaterial?: string, content?: string) => {
+    dispatch(returnsActions.setReturnDetails({ id: returnId, returnAt, returnAtMaterial, content }))
     onPickupAtModalOpen()
   }
 
   const handleUpdateReturnAt = async () => {
-    await axios.post(`/api/return/${returnDetails.id}/update`, { returnAt: returnDetails.returnAt }).then(() => {
+    const payload = {
+      returnAt: returnDetails.returnAt || undefined,
+      returnAtMaterial: returnDetails.returnAtMaterial || undefined
+    }
+    await axios.post(`/api/return/${returnDetails.id}/update`, payload).then(() => {
       showSnackbar({ message: 'Data zwrotu zmieniona', severity: 'success' })
       onPickupAtModalClose()
       refreshReturnsList()
@@ -314,7 +337,11 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
   }
 
   const handleClearReturnAtDate = async () => {
-    await axios.post(`/api/return/${returnDetails.id}/update`, { returnAt: null }).then(() => {
+    const payload = {
+      returnAt: returnDetails.returnAt ? null : undefined,
+      returnAtMaterial: returnDetails.returnAtMaterial ? null : undefined
+    }
+    await axios.post(`/api/return/${returnDetails.id}/update`, payload).then(() => {
       onPickupAtModalClose()
       refreshReturnsList()
       handleClearReturnDetails()
@@ -357,6 +384,8 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
     }
   }
 
+  const checkReturnContent = (content, variant) => !!content.includes(variant)
+
   if (!returnsList.length) {
     return (
       <Typography
@@ -397,8 +426,8 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
           <TableBody>
             {returnsList ? (
               <>
-                {handlePagination(tableData).map((ret) => (
-                  <TableRow key={ret.id}>
+                {handlePagination(tableData).map((ret, index) => (
+                  <TableRow key={ret.id} style={index % 2 ? {backgroundColor: 'rgba(0, 0, 0, 0.03)'} : undefined }>
                     <TableCell>{ret.no}</TableCell>
                     <TableCell>
                       <TypeElement types={ret.type} />
@@ -406,107 +435,296 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
                     <TableCell>{ret.customer.name}</TableCell>
                     <TableCell>{ret.signature}</TableCell>
                     <TableCell>{dayjs(ret.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
-                    <TableCell>
-                      {ret.returnAt ? (
-                        <Box
-                          onClick={() => handleReturnAtModalOpen(ret.id, ret.returnAt)}
-                          sx={{
-                            display: 'inline',
-                            cursor: 'pointer',
-                            color: 'primary.main',
-                            '&:hover': { color: 'text.secondary', cursor: 'pointer' },
-                          }}
-                        >
-                          {dayjs(ret.returnAt).format('DD/MM/YYYY')}
+                    <TableCell
+                      padding="none"
+                      sx={{ padding: 0 }}
+                    >
+                      <Stack
+                        spacing={1}
+                        divider={
+                          <Divider
+                            orientation="horizontal"
+                            flexItem
+                          />
+                        }
+                        flex={1}
+                      >
+                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                          <Tooltip title="Dokumentacja">
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                              <Description
+                                color={checkReturnContent(ret.content, ReturnContent.DOC) ? 'success' : 'disabled'}
+                              />
+                            </Box>
+                          </Tooltip>
                         </Box>
-                      ) : (
-                        <Button
-                          onClick={() => handleReturnAtModalOpen(ret.id)}
-                          size="small"
-                        >
-                          Ustal
-                        </Button>
-                      )}
+                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                          <Tooltip title="Materiał">
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                              <Inventory
+                                color={checkReturnContent(ret.content, ReturnContent.MAT) ? 'warning' : 'disabled'}
+                              />
+                            </Box>
+                          </Tooltip>
+                        </Box>
+                      </Stack>
                     </TableCell>
-                    <TableCell>
-                      {ret.localization ? (
-                        <Box
-                          onClick={() => handleEditLocalizationModalOpen(ret.id, ret.localization)}
-                          sx={{
-                            display: 'inline',
-                            cursor: 'pointer',
-                            color: 'primary.main',
-                            '&:hover': { color: 'text.secondary', cursor: 'pointer' },
-                          }}
-                        >
-                          {ret.localization}
+                    <TableCell
+                      padding="none"
+                      sx={{ padding: 0 }}
+                    >
+                      <Stack
+                        spacing={1}
+                        divider={
+                          <Divider
+                            orientation="horizontal"
+                            flexItem
+                          />
+                        }
+                        flex={1}
+                      >
+                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                          {checkReturnContent(ret.content, ReturnContent.DOC) ? (
+                            ret.returnAt ? (
+                              <Box
+                                onClick={() => handleReturnAtModalOpen(ret.id, ret.returnAt, undefined,'DOC')}
+                                sx={{
+                                  display: 'inline',
+                                  cursor: 'pointer',
+                                  color: 'primary.main',
+                                  '&:hover': { color: 'text.secondary', cursor: 'pointer' },
+                                }}
+                              >
+                                {dayjs(ret.returnAt).format('DD/MM/YYYY')}
+                              </Box>
+                            ) : (
+                              <Button
+                                onClick={() => handleReturnAtModalOpen(ret.id, undefined, undefined,'DOC')}
+                                size="small"
+                              >
+                                Ustal
+                              </Button>
+                            )
+                          ) : (
+                            '-'
+                          )}
                         </Box>
-                      ) : (
-                        <Link onClick={() => handleEditLocalizationModalOpen(ret.id)}>Edytuj</Link>
-                      )}
+                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                          {checkReturnContent(ret.content, ReturnContent.MAT) ? (
+                            ret.returnAtMaterial ? (
+                              <Box
+                                onClick={() => handleReturnAtModalOpen(ret.id, undefined,ret.returnAtMaterial, 'MAT')}
+                                sx={{
+                                  display: 'inline',
+                                  cursor: 'pointer',
+                                  color: 'primary.main',
+                                  '&:hover': { color: 'text.secondary', cursor: 'pointer' },
+                                }}
+                              >
+                                {dayjs(ret.returnAtMaterial).format('DD/MM/YYYY')}
+                              </Box>
+                            ) : (
+                              <Button
+                                onClick={() => handleReturnAtModalOpen(ret.id, undefined, undefined, 'MAT')}
+                                size="small"
+                              >
+                                Ustal
+                              </Button>
+                            )
+                          ) : (
+                            '-'
+                          )}
+                        </Box>
+                      </Stack>
                     </TableCell>
-                    <TableCell>{formatContentToIcon(ret.content)}</TableCell>
-                    <TableCell>
-                      {ret.handleById ? (
-                        <Box
-                          onClick={() => handleAssignUserModalOpen(ret.id, ret.handleById)}
-                          sx={{
-                            display: 'inline',
-                            cursor: 'pointer',
-                            color: 'primary.main',
-                            '&:hover': { color: 'text.secondary' },
-                          }}
-                        >
-                          {formatFullName(ret.handleBy)}
+                    <TableCell
+                      padding="none"
+                      sx={{ padding: 0, paddingY: 1 }}
+                    >
+                      <Stack
+                        spacing={1}
+                        divider={
+                          <Divider
+                            orientation="horizontal"
+                            flexItem
+                          />
+                        }
+                        flex={1}
+                      >
+                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                          {checkReturnContent(ret.content, ReturnContent.DOC) ? (
+                            ret.localization ? (
+                                <Box
+                                  onClick={() => handleEditLocalizationModalOpen(ret.id, ret.localization, undefined, 'DOC')}
+                                  sx={{
+                                    display: 'inline',
+                                    cursor: 'pointer',
+                                    color: 'primary.main',
+                                    '&:hover': { color: 'text.secondary', cursor: 'pointer' },
+                                  }}
+                                >
+                                  {ret.localization}
+                                </Box>
+                              ) : (
+                            <Button
+                              variant="text"
+                              size="small"
+                              onClick={() => handleEditLocalizationModalOpen(ret.id, undefined, undefined, 'DOC')}
+                            >
+                              Edytuj
+                            </Button>
+                              )
+                          ) : (
+                            '-'
+                          )}
                         </Box>
-                      ) : (
-                        <>
-                          <Button
-                            variant="text"
-                            size="small"
-                            onClick={() => handleAssignUserModalOpen(ret.id)}
-                          >
-                            Przypisz
-                          </Button>
-                          <Button
-                            variant="text"
-                            size="small"
-                            color="warning"
-                            onClick={() => handleUpdateOrderHandleBy({ selfAssign: true }, ret.id)}
-                          >
-                            Do mnie
-                          </Button>
-                        </>
-                      )}
+                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                          {checkReturnContent(ret.content, ReturnContent.MAT) ? (
+                            ret.localizationMaterial ? (
+                              <Box
+                                onClick={() => handleEditLocalizationModalOpen(ret.id, undefined,ret.localizationMaterial)}
+                                sx={{
+                                  display: 'inline',
+                                  cursor: 'pointer',
+                                  color: 'primary.main',
+                                  '&:hover': { color: 'text.secondary', cursor: 'pointer' },
+                                }}
+                              >
+                                {ret.localizationMaterial}
+                              </Box>
+                            ) : (
+                            <Button
+                              variant="text"
+                              size="small"
+                              onClick={() => handleEditLocalizationModalOpen(ret.id, undefined, undefined, 'MAT')}
+                            >
+                              Edytuj
+                            </Button>
+                            )
+                          ) : (
+                            '-'
+                          )}
+                        </Box>
+                      </Stack>
+                    </TableCell>
+                    <TableCell
+                      padding="none"
+                      sx={{ padding: 0 }}
+                    >
+                      <Stack
+                        spacing={1}
+                        divider={
+                          <Divider
+                            orientation="horizontal"
+                            flexItem
+                          />
+                        }
+                        flex={1}
+                      >
+                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                          {checkReturnContent(ret.content, ReturnContent.DOC) ? (
+                            ret.handleById ? (
+                              <Box
+                                onClick={() => handleAssignUserModalOpen(ret.id, ret.handleById, undefined, 'DOC')}
+                                sx={{
+                                  display: 'inline',
+                                  cursor: 'pointer',
+                                  color: 'primary.main',
+                                  '&:hover': { color: 'text.secondary' },
+                                }}
+                              >
+                                {formatFullName(ret.handleBy)}
+                              </Box>
+                            ) : (
+                              <>
+                                <Button
+                                  variant="text"
+                                  size="small"
+                                  onClick={() => handleAssignUserModalOpen(ret.id, undefined, undefined, 'DOC')}
+                                >
+                                  Przypisz
+                                </Button>
+                                <Button
+                                  variant="text"
+                                  size="small"
+                                  color="warning"
+                                  onClick={() => handleUpdateOrderHandleBy({ selfAssign: true, returnContent: 'DOC' }, ret.id)}
+                                >
+                                  Do mnie
+                                </Button>
+                              </>
+                            )
+                          ) : (
+                            '-'
+                          )}
+                        </Box>
+                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                          {checkReturnContent(ret.content, ReturnContent.MAT) ? (
+                            ret.handleByMaterialId ? (
+                              <Box
+                                onClick={() => handleAssignUserModalOpen(ret.id, undefined, ret.handleByMaterialId, 'MAT')}
+                                sx={{
+                                  display: 'inline',
+                                  cursor: 'pointer',
+                                  color: 'primary.main',
+                                  '&:hover': { color: 'text.secondary' },
+                                }}
+                              >
+                                {formatFullName(ret.handleByMaterial)}
+                              </Box>
+                            ) : (
+                              <>
+                                <Button
+                                  variant="text"
+                                  size="small"
+                                  onClick={() => handleAssignUserModalOpen(ret.id, undefined, undefined, 'MAT')}
+                                >
+                                  Przypisz
+                                </Button>
+                                <Button
+                                  variant="text"
+                                  size="small"
+                                  color="warning"
+                                  onClick={() => handleUpdateOrderHandleBy({ selfAssign: true, returnContent: 'MAT' }, ret.id)}
+                                >
+                                  Do mnie
+                                </Button>
+                              </>
+                            )
+                          ) : (
+                            '-'
+                          )}
+                        </Box>
+                      </Stack>
                     </TableCell>
                     <TableCell>{formatFullName(ret.registeredBy)}</TableCell>
-                    <TableCell>
+                    <TableCell style={{padding: 0}}>
                       <StatusSelector
                         status={ret.status}
                         orderId={ret.id}
                       />
                     </TableCell>
                     <TableCell>
-                        <IconButton
-                          onMouseEnter={() => setAttachmentHover(ret.id)}
-                          onMouseLeave={() => setAttachmentHover('')}
-                          onClick={(e) =>
-                            !!ret.attachment.length
-                              ? handleAttachmentsMenuOpen(e, ret.attachment, ret.id)
-                              : handleUploadFileModalOpen(ret.id)
-                          }
+                      <IconButton
+                        onMouseEnter={() => setAttachmentHover(ret.id)}
+                        onMouseLeave={() => setAttachmentHover('')}
+                        onClick={(e) =>
+                          !!ret.attachment.length
+                            ? handleAttachmentsMenuOpen(e, ret.attachment, ret.id)
+                            : handleUploadFileModalOpen(ret.id)
+                        }
+                      >
+                        <Badge
+                          badgeContent={ret.attachment.length > 1 ? ret.attachment.length : undefined}
+                          color="primary"
                         >
-                          <Badge
-                            badgeContent={ret.attachment.length > 1 ? ret.attachment.length : undefined}
-                            color="primary"
-                          >
-                            {attachmentHover === ret.id && !ret.attachment.length ? (
-                              <AddCircle />
-                            ) : (
-                              <AttachFile color={ret.attachment.length ? 'error' : undefined} />
-                            )}
-                          </Badge>
-                        </IconButton>
+                          {attachmentHover === ret.id && !ret.attachment.length ? (
+                            <AddCircle />
+                          ) : (
+                            <AttachFile color={ret.attachment.length ? 'error' : undefined} />
+                          )}
+                        </Badge>
+                      </IconButton>
                       <Link href={`/preview/return/${ret.id}`}>
                         <IconButton size="small">
                           <Info />

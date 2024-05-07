@@ -13,22 +13,23 @@ type LocalizationModalProps = {
 export const LocalizationModal = ({ isOpen, onClose, onConfirm }: LocalizationModalProps) => {
   const dispatch = useDispatch()
   const { localization: orderLocalization } = useSelector(ordersSelectors.selectOrderDetails)
-  const { localization: returnLocalization } = useSelector(returnsSelectors.selectReturnDetails)
+  const { localization: returnLocalization, localizationMaterial, content } = useSelector(returnsSelectors.selectReturnDetails)
   const currentPath = useSelector(commonSelectors.selectCurrentPath)
   const [isEdit, setIsEdit] = useState<boolean>(false)
 
   const isOrder = currentPath === Paths.ORDERS
-  const localization = isOrder ? orderLocalization : returnLocalization
 
   useEffect(() => {
-    setIsEdit(!!localization)
+    setIsEdit( !!localizationMaterial || !!orderLocalization || !!returnLocalization)
   }, [])
 
   const handleLocalizationChange = (localization) => {
+    console.log('loc', localization)
     isOrder
       ? dispatch(ordersActions.setOrderDetails({ localization }))
-      : dispatch(returnsActions.setReturnDetails({ localization }))
+      : dispatch(returnsActions.setReturnDetails({ [content === 'DOC' ? 'localization' : 'localizationMaterial']: localization }))
   }
+  const localization = orderLocalization || returnLocalization || localizationMaterial
 
   return (
     <Dialog
@@ -38,7 +39,7 @@ export const LocalizationModal = ({ isOpen, onClose, onConfirm }: LocalizationMo
       fullWidth
     >
       <DialogTitle>
-        {isEdit ? 'Edytuj' : 'Ustal'} miejsce {isOrder ? 'odbioru' : 'zwrotu'}
+        {isEdit ? 'Edytuj' : 'Ustal'} miejsce {isOrder ? 'odbioru' : 'zwrotu'} {content === 'DOC' && `(Dokumentacja)`}{content === 'MAT' && `(Materiał)`}
       </DialogTitle>
       <DialogContent>
         <TextField
