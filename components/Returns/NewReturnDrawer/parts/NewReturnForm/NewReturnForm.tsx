@@ -14,7 +14,8 @@ import {
   MenuItem,
   Select,
   Stack,
-  TextField, Typography,
+  TextField,
+  Typography,
 } from '@mui/material'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -26,7 +27,7 @@ import { DateTemplate, toggleValueInArray } from '@src/utils'
 import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react'
 import { AddCircle } from '@mui/icons-material'
 import { useDispatch, useSelector } from 'react-redux'
-import { customersSelectors, ordersActions, ordersSelectors, usersSelectors } from '@src/store'
+import { customersSelectors, ordersActions, ordersSelectors } from '@src/store'
 import { NewCustomerForm } from '@components/Orders/NewOrderDrawer/parts'
 import { useDisclose, useGetReturnsList, useGetUsersList } from '@src/hooks'
 import { translatedType } from '@src/utils/textFormatter'
@@ -100,7 +101,6 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
     setValue,
     watch,
     formState: { errors },
-    getValues,
   } = useForm({ resolver: yupResolver(schema), defaultValues })
 
   const handleSelectCreatedCustomer = (payload) => {
@@ -165,16 +165,17 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
 
   const usersListOption = useMemo(() => {
     if (usersList && usersList.length) {
-      return usersList.filter(user => !user.hidden).filter(user => !user.hidden).map((user) => ({
-        id: user.id,
-        label: `${user.firstName} ${user.lastName}`,
-      }))
+      return usersList
+        .filter((user) => !user.hidden)
+        .filter((user) => !user.hidden)
+        .map((user) => ({
+          id: user.id,
+          label: `${user.firstName} ${user.lastName}`,
+        }))
     } else {
       return []
     }
   }, [usersList])
-
-  console.log(JSON.stringify(errors, null, 2))
 
   return (
     <>
@@ -237,7 +238,10 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
                     onChange={(e, newValue) => onChange(newValue)}
                     renderOption={(props, option) => {
                       return (
-                        <li {...props} key={option.id}>
+                        <li
+                          {...props}
+                          key={option.id}
+                        >
                           {option.label}
                         </li>
                       )
@@ -335,7 +339,10 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
                     onChange={(e, newValue) => onChange(newValue)}
                     renderOption={(props, option) => {
                       return (
-                        <li {...props} key={option.id}>
+                        <li
+                          {...props}
+                          key={option.id}
+                        >
                           {option.label}
                         </li>
                       )
@@ -403,7 +410,10 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
                     onChange={(e, newValue) => onChange(newValue)}
                     renderOption={(props, option) => {
                       return (
-                        <li {...props} key={option.id}>
+                        <li
+                          {...props}
+                          key={option.id}
+                        >
                           {option.label}
                         </li>
                       )

@@ -21,23 +21,15 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { FC, useCallback, useMemo, useState } from 'react'
-import { Customer, Return, User } from '@prisma/client'
+import { useCallback, useMemo, useState } from 'react'
+import { Customer, Return } from '@prisma/client'
 import { ReturnContent, TableOrderDirection } from '@src/types'
-import { getFullName, renameDownloadFile } from '@src/utils'
+import { renameDownloadFile } from '@src/utils'
 import { AssignUserModal, StatusSelector, UploadFileModal } from '@components/Orders'
 import { LocalizationModal } from 'components/modals/LocalizationModal'
 import dayjs from 'dayjs'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  commonSelectors,
-  customersSelectors,
-  ordersActions,
-  ordersSelectors,
-  returnsActions,
-  returnsSelectors,
-  usersSelectors,
-} from '@src/store'
+import { commonSelectors, customersSelectors, ordersSelectors, returnsActions, returnsSelectors } from '@src/store'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import { useDisclose, useGetReturnsList } from '@src/hooks'
@@ -178,8 +170,6 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
     setSortDirection((prevState) => (prevState === 'desc' ? 'asc' : 'desc'))
   }
 
-  console.log('returnDetails', returnDetails)
-
   const filterOrders = useCallback(
     (returns: (Return & { customer?: Customer })[]) =>
       returns.filter(
@@ -246,8 +236,13 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
     return index + 1
   })
 
-  const handleAssignUserModalOpen = (orderId: string, handleById?: string, handleByMaterialId?: string, content?: string) => {
-    dispatch(returnsActions.setReturnDetails({ id: orderId, handleById, handleByMaterialId, content}))
+  const handleAssignUserModalOpen = (
+    orderId: string,
+    handleById?: string,
+    handleByMaterialId?: string,
+    content?: string
+  ) => {
+    dispatch(returnsActions.setReturnDetails({ id: orderId, handleById, handleByMaterialId, content }))
     onAssignUserModalOpen()
   }
 
@@ -277,15 +272,22 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
     }
 
     const payloadReturn = returnContent === 'DOC' ? { handleById: id } : { handleByMaterialId: id }
-    await axios.post(`/api/return/${orderId || returnDetails.id}/update`, returnContent ? payloadReturn : {handleById: id}).then(() => {
-      refreshReturnsList()
-      handleAssignUserModalClose()
-    })
+    await axios
+      .post(`/api/return/${orderId || returnDetails.id}/update`, returnContent ? payloadReturn : { handleById: id })
+      .then(() => {
+        refreshReturnsList()
+        handleAssignUserModalClose()
+      })
   }
 
   const handleClearReturnDetails = () => dispatch(returnsActions.clearReturnDetails())
 
-  const handleEditLocalizationModalOpen = (orderId: string, localization?: string, localizationMaterial?: string, content?: string) => {
+  const handleEditLocalizationModalOpen = (
+    orderId: string,
+    localization?: string,
+    localizationMaterial?: string,
+    content?: string
+  ) => {
     dispatch(returnsActions.setReturnDetails({ id: orderId, localization, localizationMaterial, content }))
     onLocalizationModalOpen()
   }
@@ -298,14 +300,12 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
   const handleUpdateOrderLocalization = async () => {
     const payload = {
       localization: returnDetails.localization || undefined,
-      localizationMaterial: returnDetails.localizationMaterial || undefined
+      localizationMaterial: returnDetails.localizationMaterial || undefined,
     }
-    await axios
-      .post(`/api/return/${returnDetails.id}/update`, payload)
-      .then(() => {
-        refreshReturnsList()
-        handleEditLocalizationModalClose()
-      })
+    await axios.post(`/api/return/${returnDetails.id}/update`, payload).then(() => {
+      refreshReturnsList()
+      handleEditLocalizationModalClose()
+    })
   }
 
   const handleAttachmentsMenuClose = () => {
@@ -318,7 +318,12 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
     setAttachmentsMenuAnchor(e.currentTarget)
   }
 
-  const handleReturnAtModalOpen = (returnId: string, returnAt?: string, returnAtMaterial?: string, content?: string) => {
+  const handleReturnAtModalOpen = (
+    returnId: string,
+    returnAt?: string,
+    returnAtMaterial?: string,
+    content?: string
+  ) => {
     dispatch(returnsActions.setReturnDetails({ id: returnId, returnAt, returnAtMaterial, content }))
     onPickupAtModalOpen()
   }
@@ -326,7 +331,7 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
   const handleUpdateReturnAt = async () => {
     const payload = {
       returnAt: returnDetails.returnAt || undefined,
-      returnAtMaterial: returnDetails.returnAtMaterial || undefined
+      returnAtMaterial: returnDetails.returnAtMaterial || undefined,
     }
     await axios.post(`/api/return/${returnDetails.id}/update`, payload).then(() => {
       showSnackbar({ message: 'Data zwrotu zmieniona', severity: 'success' })
@@ -339,7 +344,7 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
   const handleClearReturnAtDate = async () => {
     const payload = {
       returnAt: returnDetails.returnAt ? null : undefined,
-      returnAtMaterial: returnDetails.returnAtMaterial ? null : undefined
+      returnAtMaterial: returnDetails.returnAtMaterial ? null : undefined,
     }
     await axios.post(`/api/return/${returnDetails.id}/update`, payload).then(() => {
       onPickupAtModalClose()
@@ -427,7 +432,10 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
             {returnsList ? (
               <>
                 {handlePagination(tableData).map((ret, index) => (
-                  <TableRow key={ret.id} style={index % 2 ? {backgroundColor: 'rgba(0, 0, 0, 0.03)'} : undefined }>
+                  <TableRow
+                    key={ret.id}
+                    style={index % 2 ? { backgroundColor: 'rgba(0, 0, 0, 0.03)' } : undefined}
+                  >
                     <TableCell>{ret.no}</TableCell>
                     <TableCell>
                       <TypeElement types={ret.type} />
@@ -449,7 +457,7 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
                         }
                         flex={1}
                       >
-                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <Box sx={{ height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <Tooltip title="Dokumentacja">
                             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                               <Description
@@ -458,7 +466,7 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
                             </Box>
                           </Tooltip>
                         </Box>
-                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <Box sx={{ height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <Tooltip title="Materiał">
                             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                               <Inventory
@@ -483,11 +491,11 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
                         }
                         flex={1}
                       >
-                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <Box sx={{ height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           {checkReturnContent(ret.content, ReturnContent.DOC) ? (
                             ret.returnAt ? (
                               <Box
-                                onClick={() => handleReturnAtModalOpen(ret.id, ret.returnAt, undefined,'DOC')}
+                                onClick={() => handleReturnAtModalOpen(ret.id, ret.returnAt, undefined, 'DOC')}
                                 sx={{
                                   display: 'inline',
                                   cursor: 'pointer',
@@ -499,7 +507,7 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
                               </Box>
                             ) : (
                               <Button
-                                onClick={() => handleReturnAtModalOpen(ret.id, undefined, undefined,'DOC')}
+                                onClick={() => handleReturnAtModalOpen(ret.id, undefined, undefined, 'DOC')}
                                 size="small"
                               >
                                 Ustal
@@ -509,11 +517,11 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
                             '-'
                           )}
                         </Box>
-                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <Box sx={{ height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           {checkReturnContent(ret.content, ReturnContent.MAT) ? (
                             ret.returnAtMaterial ? (
                               <Box
-                                onClick={() => handleReturnAtModalOpen(ret.id, undefined,ret.returnAtMaterial, 'MAT')}
+                                onClick={() => handleReturnAtModalOpen(ret.id, undefined, ret.returnAtMaterial, 'MAT')}
                                 sx={{
                                   display: 'inline',
                                   cursor: 'pointer',
@@ -551,38 +559,42 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
                         }
                         flex={1}
                       >
-                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <Box sx={{ height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           {checkReturnContent(ret.content, ReturnContent.DOC) ? (
                             ret.localization ? (
-                                <Box
-                                  onClick={() => handleEditLocalizationModalOpen(ret.id, ret.localization, undefined, 'DOC')}
-                                  sx={{
-                                    display: 'inline',
-                                    cursor: 'pointer',
-                                    color: 'primary.main',
-                                    '&:hover': { color: 'text.secondary', cursor: 'pointer' },
-                                  }}
-                                >
-                                  {ret.localization}
-                                </Box>
-                              ) : (
-                            <Button
-                              variant="text"
-                              size="small"
-                              onClick={() => handleEditLocalizationModalOpen(ret.id, undefined, undefined, 'DOC')}
-                            >
-                              Edytuj
-                            </Button>
-                              )
+                              <Box
+                                onClick={() =>
+                                  handleEditLocalizationModalOpen(ret.id, ret.localization, undefined, 'DOC')
+                                }
+                                sx={{
+                                  display: 'inline',
+                                  cursor: 'pointer',
+                                  color: 'primary.main',
+                                  '&:hover': { color: 'text.secondary', cursor: 'pointer' },
+                                }}
+                              >
+                                {ret.localization}
+                              </Box>
+                            ) : (
+                              <Button
+                                variant="text"
+                                size="small"
+                                onClick={() => handleEditLocalizationModalOpen(ret.id, undefined, undefined, 'DOC')}
+                              >
+                                Edytuj
+                              </Button>
+                            )
                           ) : (
                             '-'
                           )}
                         </Box>
-                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <Box sx={{ height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           {checkReturnContent(ret.content, ReturnContent.MAT) ? (
                             ret.localizationMaterial ? (
                               <Box
-                                onClick={() => handleEditLocalizationModalOpen(ret.id, undefined,ret.localizationMaterial)}
+                                onClick={() =>
+                                  handleEditLocalizationModalOpen(ret.id, undefined, ret.localizationMaterial)
+                                }
                                 sx={{
                                   display: 'inline',
                                   cursor: 'pointer',
@@ -593,13 +605,13 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
                                 {ret.localizationMaterial}
                               </Box>
                             ) : (
-                            <Button
-                              variant="text"
-                              size="small"
-                              onClick={() => handleEditLocalizationModalOpen(ret.id, undefined, undefined, 'MAT')}
-                            >
-                              Edytuj
-                            </Button>
+                              <Button
+                                variant="text"
+                                size="small"
+                                onClick={() => handleEditLocalizationModalOpen(ret.id, undefined, undefined, 'MAT')}
+                              >
+                                Edytuj
+                              </Button>
                             )
                           ) : (
                             '-'
@@ -621,7 +633,7 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
                         }
                         flex={1}
                       >
-                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <Box sx={{ height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           {checkReturnContent(ret.content, ReturnContent.DOC) ? (
                             ret.handleById ? (
                               <Box
@@ -648,7 +660,15 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
                                   variant="text"
                                   size="small"
                                   color="warning"
-                                  onClick={() => handleUpdateOrderHandleBy({ selfAssign: true, returnContent: 'DOC' }, ret.id)}
+                                  onClick={() =>
+                                    handleUpdateOrderHandleBy(
+                                      {
+                                        selfAssign: true,
+                                        returnContent: 'DOC',
+                                      },
+                                      ret.id
+                                    )
+                                  }
                                 >
                                   Do mnie
                                 </Button>
@@ -658,11 +678,13 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
                             '-'
                           )}
                         </Box>
-                        <Box sx={{height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <Box sx={{ height: 25, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           {checkReturnContent(ret.content, ReturnContent.MAT) ? (
                             ret.handleByMaterialId ? (
                               <Box
-                                onClick={() => handleAssignUserModalOpen(ret.id, undefined, ret.handleByMaterialId, 'MAT')}
+                                onClick={() =>
+                                  handleAssignUserModalOpen(ret.id, undefined, ret.handleByMaterialId, 'MAT')
+                                }
                                 sx={{
                                   display: 'inline',
                                   cursor: 'pointer',
@@ -685,7 +707,15 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
                                   variant="text"
                                   size="small"
                                   color="warning"
-                                  onClick={() => handleUpdateOrderHandleBy({ selfAssign: true, returnContent: 'MAT' }, ret.id)}
+                                  onClick={() =>
+                                    handleUpdateOrderHandleBy(
+                                      {
+                                        selfAssign: true,
+                                        returnContent: 'MAT',
+                                      },
+                                      ret.id
+                                    )
+                                  }
                                 >
                                   Do mnie
                                 </Button>
@@ -698,7 +728,7 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
                       </Stack>
                     </TableCell>
                     <TableCell>{formatFullName(ret.registeredBy)}</TableCell>
-                    <TableCell style={{padding: 0}}>
+                    <TableCell style={{ padding: 0 }}>
                       <StatusSelector
                         status={ret.status}
                         orderId={ret.id}

@@ -5,7 +5,8 @@ import {
   CircularProgress,
   FormControlLabel,
   Paper,
-  Stack, TextField,
+  Stack,
+  TextField,
   Typography,
   Unstable_Grid2 as Grid,
 } from '@mui/material'
@@ -22,7 +23,7 @@ import { DeleteMeetingConfirmationModal } from '@components/modals'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { AutocompleteOptionType, ErrorMessages, OrderType } from '@src/types'
+import { AutocompleteOptionType, ErrorMessages } from '@src/types'
 
 type MeetingProps = Meeting & { unit: Unit; handleBy: User }
 
@@ -85,10 +86,8 @@ const MeetingPreview = () => {
     handleSubmit,
     reset,
     formState: { isDirty, errors },
-    getValues
+    getValues,
   } = useForm({ resolver: yupResolver(schema), defaultValues })
-
-  console.log(errors)
 
   const handleDeleteMeeting = () => {
     axios.post(`/api/meeting/${meetingId}/delete`).then((res) => {
@@ -128,9 +127,9 @@ const MeetingPreview = () => {
 
           const handleBy = data.handleBy
             ? {
-              id: data.handleById,
-              label: `${data.handleBy.firstName} ${data.handleBy.lastName}`,
-            }
+                id: data.handleById,
+                label: `${data.handleBy.firstName} ${data.handleBy.lastName}`,
+              }
             : undefined
 
           const payload = {
@@ -184,262 +183,267 @@ const MeetingPreview = () => {
 
   return (
     <>
-    <Layout>
-      <Typography variant="h1">Szczegóły spotkania</Typography>
-      <Grid
-        xs={12}
-        container
-        sx={{
-          my: 3,
-        }}
-      >
-        {meetingData ? (
-          <>
-            <Grid xs />
-            <Grid
-              xs={12}
-              sm={10}
-              md={8}
-              lg={6}
-              xl={4}
-            >
-              <Stack spacing={3}>
-                <Paper
-                  sx={{
-                    p: 2,
-                  }}
-                >
-                  <Stack spacing={2}>
-                    <Grid xs={12}>
-                      <Stack>
-                        <Typography
-                          color="text.secondary"
-                          variant="overline"
-                        >
-                          LP
-                        </Typography>
-                        <Typography>{meetingData.no}</Typography>
-                      </Stack>
-                    </Grid>
-                    <Grid xs={12}>
-                      <Stack>
-                        <Typography
-                          color="text.secondary"
-                          variant="overline"
-                        >
-                          Data utworzenia
-                        </Typography>
-                        <Typography>{dayjs(meetingData.createdAt).format(DateTimeTemplate.DDMMYYYYHHmm)}</Typography>
-                      </Stack>
-                    </Grid>
-                    <Grid xs={12}>
-                      <Stack>
-                        <Typography
-                          color="text.secondary"
-                          variant="overline"
-                        >
-                          Data spotkania
-                        </Typography>
-                        <Typography>{dayjs(meetingData.date).locale('pl').format(DateTemplate.DDMMMMYYYY)}</Typography>
-                      </Stack>
-                    </Grid>
-                    <Grid xs={12}>
-                      <Stack>
-                        <Typography
-                          color="text.secondary"
-                          variant="overline"
-                        >
-                          Jednostka:
-                        </Typography>
-                        <Typography>{meetingData.unit.name}</Typography>
-                      </Stack>
-                    </Grid>
-                    <Controller
-                      name="unitAgent"
-                      control={control}
-                      render={({ field, fieldState: { error } }) => (
-                        <TextField
-                          {...field}
-                          label="Przedstawiciel jednostki"
-                          error={!!error}
-                          helperText={error?.message}
-                        />
-                      )}
-                    />
-                    <Controller
-                      name="handleBy"
-                      control={control}
-                      render={({ field: { onChange, value, ...rest }, fieldState: { error } }) => (
-                        <Autocomplete
-                          {...rest}
-                          value={value}
-                          fullWidth
-                          blurOnSelect
-                          options={usersListOption}
-                          isOptionEqualToValue={(option, value) => option.id === value.id}
-                          onChange={(e, newValue) => onChange(newValue)}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Osoba odpowiedzialna"
-                              error={!!error}
-                              color="success"
-                              helperText={error?.message}
-                            />
-                          )}
-                        />
-                      )}
-                    />
-                    <Controller
-                      name="contact"
-                      control={control}
-                      render={({ field, fieldState: { error } }) => (
-                        <TextField
-                          {...field}
-                          label="Kontakt"
-                          error={!!error}
-                          helperText={error?.message}
-                        />
-                      )}
-                    />
-                    <Controller
-                      name="details"
-                      control={control}
-                      render={({ field, fieldState: { error } }) => (
-                        <TextField
-                          {...field}
-                          label="Ustalenia"
-                          multiline
-                          rows={rowsDetails}
-                          error={!!error}
-                          helperText={error?.message}
-                        />
-                      )}
-                    />
-                    <Stack direction="row" sx={{paddingBottom: 3}}>
-                      <Button
-                        variant="contained"
-                        onClick={() => setRowsDetails((prev) => prev + 1)}
-                      >
-                        +
-                      </Button>
-                      <Button
-                        variant="contained"
-                        onClick={() => setRowsDetails((prev) => prev - 1)}
-                      >
-                        -
-                      </Button>
-                    </Stack>
-                    <Controller
-                      name="notes"
-                      control={control}
-                      render={({ field, fieldState: { error } }) => (
-                        <TextField
-                          {...field}
-                          label="Noatatki/informacje dodatkowe"
-                          multiline
-                          rows={rows}
-                          error={!!error}
-                          helperText={error?.message}
-                        />
-                      )}
-                    />
-                    <Stack direction="row">
-                      <Button
-                        variant="contained"
-                        onClick={() => setRows((prev) => prev + 1)}
-                      >
-                        +
-                      </Button>
-                      <Button
-                        variant="contained"
-                        onClick={() => setRows((prev) => prev - 1)}
-                      >
-                        -
-                      </Button>
-                    </Stack>
-                    <Stack
-                      direction="row"
-                      justifyContent="flex-end"
-                      spacing={1}
-                    >
-                      {isDirty ? (
-                        <>
-                          <Button
-                            color="error"
-                            onClick={goBack}
-                          >
-                            Wróć bez zapisywania
-                          </Button>
-                          <Button
-                            variant="contained"
-                            onClick={handleSubmit(onSubmit)}
-                          >
-                            Zapisz zmiany
-                          </Button>
-                        </>
-                      ) : (
-                        <Button
-                          variant="contained"
-                          onClick={() => router.back()}
-                        >
-                          Wróć
-                        </Button>
-                      )}
-                    </Stack>
-                  </Stack>
-                </Paper>
-                {data?.user?.role === 'ADMIN' && (
+      <Layout>
+        <Typography variant="h1">Szczegóły spotkania</Typography>
+        <Grid
+          xs={12}
+          container
+          sx={{
+            my: 3,
+          }}
+        >
+          {meetingData ? (
+            <>
+              <Grid xs />
+              <Grid
+                xs={12}
+                sm={10}
+                md={8}
+                lg={6}
+                xl={4}
+              >
+                <Stack spacing={3}>
                   <Paper
                     sx={{
                       p: 2,
                     }}
                   >
-                    <Stack spacing={3}>
+                    <Stack spacing={2}>
+                      <Grid xs={12}>
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            variant="overline"
+                          >
+                            LP
+                          </Typography>
+                          <Typography>{meetingData.no}</Typography>
+                        </Stack>
+                      </Grid>
+                      <Grid xs={12}>
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            variant="overline"
+                          >
+                            Data utworzenia
+                          </Typography>
+                          <Typography>{dayjs(meetingData.createdAt).format(DateTimeTemplate.DDMMYYYYHHmm)}</Typography>
+                        </Stack>
+                      </Grid>
+                      <Grid xs={12}>
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            variant="overline"
+                          >
+                            Data spotkania
+                          </Typography>
+                          <Typography>
+                            {dayjs(meetingData.date).locale('pl').format(DateTemplate.DDMMMMYYYY)}
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                      <Grid xs={12}>
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            variant="overline"
+                          >
+                            Jednostka:
+                          </Typography>
+                          <Typography>{meetingData.unit.name}</Typography>
+                        </Stack>
+                      </Grid>
+                      <Controller
+                        name="unitAgent"
+                        control={control}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            label="Przedstawiciel jednostki"
+                            error={!!error}
+                            helperText={error?.message}
+                          />
+                        )}
+                      />
+                      <Controller
+                        name="handleBy"
+                        control={control}
+                        render={({ field: { onChange, value, ...rest }, fieldState: { error } }) => (
+                          <Autocomplete
+                            {...rest}
+                            value={value}
+                            fullWidth
+                            blurOnSelect
+                            options={usersListOption}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            onChange={(e, newValue) => onChange(newValue)}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Osoba odpowiedzialna"
+                                error={!!error}
+                                color="success"
+                                helperText={error?.message}
+                              />
+                            )}
+                          />
+                        )}
+                      />
+                      <Controller
+                        name="contact"
+                        control={control}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            label="Kontakt"
+                            error={!!error}
+                            helperText={error?.message}
+                          />
+                        )}
+                      />
+                      <Controller
+                        name="details"
+                        control={control}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            label="Ustalenia"
+                            multiline
+                            rows={rowsDetails}
+                            error={!!error}
+                            helperText={error?.message}
+                          />
+                        )}
+                      />
                       <Stack
                         direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
+                        sx={{ paddingBottom: 3 }}
                       >
-                        <Typography variant="h4">Usuń spotkanie</Typography>
-                        <FormControlLabel
-                          label="Odblokuj"
-                          control={
-                            <Checkbox
-                              checked={isUnlocked}
-                              onChange={({ target }) => setIsUnlocked(target.checked)}
-                            />
-                          }
-                        />
+                        <Button
+                          variant="contained"
+                          onClick={() => setRowsDetails((prev) => prev + 1)}
+                        >
+                          +
+                        </Button>
+                        <Button
+                          variant="contained"
+                          onClick={() => setRowsDetails((prev) => prev - 1)}
+                        >
+                          -
+                        </Button>
                       </Stack>
-                      <Button
-                        variant="contained"
-                        color="error"
-                        fullWidth
-                        disabled={!isUnlocked}
-                        onClick={confirmationModal.onOpen}
+                      <Controller
+                        name="notes"
+                        control={control}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            label="Noatatki/informacje dodatkowe"
+                            multiline
+                            rows={rows}
+                            error={!!error}
+                            helperText={error?.message}
+                          />
+                        )}
+                      />
+                      <Stack direction="row">
+                        <Button
+                          variant="contained"
+                          onClick={() => setRows((prev) => prev + 1)}
+                        >
+                          +
+                        </Button>
+                        <Button
+                          variant="contained"
+                          onClick={() => setRows((prev) => prev - 1)}
+                        >
+                          -
+                        </Button>
+                      </Stack>
+                      <Stack
+                        direction="row"
+                        justifyContent="flex-end"
+                        spacing={1}
                       >
-                        Usuń zlecenie
-                      </Button>
+                        {isDirty ? (
+                          <>
+                            <Button
+                              color="error"
+                              onClick={goBack}
+                            >
+                              Wróć bez zapisywania
+                            </Button>
+                            <Button
+                              variant="contained"
+                              onClick={handleSubmit(onSubmit)}
+                            >
+                              Zapisz zmiany
+                            </Button>
+                          </>
+                        ) : (
+                          <Button
+                            variant="contained"
+                            onClick={() => router.back()}
+                          >
+                            Wróć
+                          </Button>
+                        )}
+                      </Stack>
                     </Stack>
                   </Paper>
-                )}
-              </Stack>
-            </Grid>
-            <Grid xs />
-          </>
-        ) : (
-          <Loader />
-        )}
-      </Grid>
-    </Layout>
-  <DeleteMeetingConfirmationModal
-    isOpen={confirmationModal.isOpen}
-    onClose={confirmationModal.onClose}
-    onConfirm={handleDeleteMeeting}
-    data={meetingData}
-  />
-  </>
+                  {data?.user?.role === 'ADMIN' && (
+                    <Paper
+                      sx={{
+                        p: 2,
+                      }}
+                    >
+                      <Stack spacing={3}>
+                        <Stack
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Typography variant="h4">Usuń spotkanie</Typography>
+                          <FormControlLabel
+                            label="Odblokuj"
+                            control={
+                              <Checkbox
+                                checked={isUnlocked}
+                                onChange={({ target }) => setIsUnlocked(target.checked)}
+                              />
+                            }
+                          />
+                        </Stack>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          fullWidth
+                          disabled={!isUnlocked}
+                          onClick={confirmationModal.onOpen}
+                        >
+                          Usuń zlecenie
+                        </Button>
+                      </Stack>
+                    </Paper>
+                  )}
+                </Stack>
+              </Grid>
+              <Grid xs />
+            </>
+          ) : (
+            <Loader />
+          )}
+        </Grid>
+      </Layout>
+      <DeleteMeetingConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={confirmationModal.onClose}
+        onConfirm={handleDeleteMeeting}
+        data={meetingData}
+      />
+    </>
   )
 }
 

@@ -24,7 +24,6 @@ export const LocalizationModal = ({ isOpen, onClose, onConfirm }: LocalizationMo
   }, [])
 
   const handleLocalizationChange = (localization) => {
-    console.log('loc', localization)
     isOrder
       ? dispatch(ordersActions.setOrderDetails({ localization }))
       : dispatch(returnsActions.setReturnDetails({ [content === 'DOC' ? 'localization' : 'localizationMaterial']: localization }))
