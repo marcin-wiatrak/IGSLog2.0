@@ -6,9 +6,9 @@ import { translatedType } from '@src/utils/textFormatter'
 
 export const ORDER_TABLE_COLUMNS = [
   { key: 'no', title: 'ID', width: '5%' },
-  { key: 'type', title: 'Dział', width: '10%' },
+  { key: 'type', title: 'Dział', width: '5%' },
   { key: 'signature', title: 'Sygnatura', width: '10%' },
-  { key: 'localization', title: 'M. odbioru', width: '10%' },
+  { key: 'localization', title: 'M. odbioru', width: '15%' },
   { key: 'zg', title: 'Zgodność mat. z post.', width: '15%' }, //R
   { key: 'envelop', title: 'Nr koperty/pakiet', width: '20%' },
   { key: 'date', title: 'Data', width: '10%' },
@@ -63,6 +63,10 @@ export const OrderPDF = ({ data }) => {
         src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf',
         fontWeight: 400,
       },
+      {
+        src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf',
+        fontWeight: 700,
+      },
     ],
   })
 
@@ -75,7 +79,7 @@ export const OrderPDF = ({ data }) => {
         <LogoSVG />
       </View>
       <View style={styles.headerTextContainer}>
-        <Text>PROTOKÓŁ ZADWCZO-ODBIORCZY</Text>
+        <Text>PROTOKÓŁ ZDAWCZO-ODBIORCZY</Text>
         <Text style={styles.headerSubtitle}>ODBIÓR MATERIAŁU</Text>
       </View>
     </View>
@@ -137,12 +141,13 @@ export const OrderPDF = ({ data }) => {
           styles.tableCell,
           {
             width: ORDER_TABLE_COLUMNS[1].width,
+            fontWeight: 'bold',
           },
         ]}
       >
         <View style={styles.textFit}>
           <Text>
-            {(item.type || []).map((type: OrderType) => translatedType[type]).join(', ')}
+            {(item.type || []).map((type: OrderType) => translatedType[type].charAt(0)).join(', ')}
           </Text>
         </View>
       </View>
@@ -356,9 +361,10 @@ const styles = StyleSheet.create({
     width: '40%',
   },
   tableCell: {
+    justifyContent: 'center',
+    alignItems: 'center',
     fontSize: 8,
     border: '1px solid black',
-    paddingVertical: 8,
     paddingHorizontal: 3,
     marginLeft: -1,
     height: 30,
@@ -397,14 +403,13 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     border: '0.5px solid black',
-    // backgroundColor: '#ccc'
   },
   textFit: {
-    flex: 1,
-    textAlign: 'center',
     flexDirection: 'column',
-    justifyContent: 'space-evenly',
+    justifyContent: 'center',
     alignItems: 'center',
-    fontSize: 4,
+    fontSize: 8,
+    lineHeight: 1,
+    textAlign: 'center',
   },
 })

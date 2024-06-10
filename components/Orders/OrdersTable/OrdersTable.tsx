@@ -111,10 +111,12 @@ export const OrdersTable = () => {
   const [attachmentHover, setAttachmentHover] = useState('')
   const findString = useSelector(commonSelectors.selectFindString)
 
+
   const [sortBy, setSortBy] = useState('no')
   const [sortDirection, setSortDirection] = useState<TableOrderDirection>('desc')
 
   const { ordersList, refreshOrdersList } = useGetOrdersList()
+  console.log('filters2', filters, ordersList)
 
   const {
     isOpen: isAssignUserModalOpen,
@@ -173,6 +175,8 @@ export const OrdersTable = () => {
       filterByType,
       filters.createdAtEnd,
       filters.createdAtStart,
+      filters.pickupAtEnd,
+      filters.pickupAtStart,
       filters.handleBy,
       filters.localization,
       filters.registeredBy,
