@@ -170,31 +170,21 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
     setSortDirection((prevState) => (prevState === 'desc' ? 'asc' : 'desc'))
   }
 
+  console.log(filterByType, filterByType.length)
+
   const filterOrders = useCallback(
     (returns: (Return & { customer?: Customer })[]) =>
       returns.filter(
         (ret) =>
           (filterByType.length ? filterByType.some((el) => ret.type.includes(el)) : true) &&
           (filters.registeredBy.length ? filters.registeredBy.some((el) => el.id === ret.registeredById) : true) &&
-          (filters.handleBy.length ? filters.handleBy.some((el) => el.id === ret.handleById) : true) &&
-          (filters.handleBy.length ? filters.handleBy.some((el) => el.id === ret.handleByMaterialId) : true) &&
+          (filters.handleBy.length ? filters.handleBy.some((el) => el.id === ret.handleById || el.id === ret.handleByMaterialId) : true) &&
           (filters.status.length ? filters.status.includes(ret.status) : true) &&
-          (filters.localization && (!!ret.localization || !ret.localization)
-            ? ret.localization === null
-              ? false
-              : ret.localization.toLowerCase().includes(filters.localization.toLowerCase())
-            : true) &&
-          (filters.localization && (!!ret.localizationMaterial || !ret.localizationMaterial)
-            ? ret.localizationMaterial === null
-              ? false
-              : ret.localizationMaterial.toLowerCase().includes(filters.localization.toLowerCase())
-            : true) &&
+          (filters.localization ? (ret.localization?.toLowerCase().includes(filters.localization.toLowerCase()) || ret.localizationMaterial?.toLowerCase().includes(filters.localization.toLowerCase())) : true) &&
           (filters.createdAtStart ? dayjs(ret.createdAt).isAfter(filters.createdAtStart) : true) &&
           (filters.createdAtEnd ? dayjs(ret.createdAt).isBefore(filters.createdAtEnd) : true) &&
-          (filters.returnAtStart ? dayjs(ret.returnAt).isAfter(filters.returnAtStart) : true) &&
-          (filters.returnAtEnd ? dayjs(ret.returnAt).isBefore(filters.returnAtEnd) : true) &&
-          (filters.returnAtStart ? dayjs(ret.returnAtMaterial).isAfter(filters.returnAtStart) : true) &&
-          (filters.returnAtEnd ? dayjs(ret.returnAtMaterial).isBefore(filters.returnAtEnd) : true) &&
+          (filters.returnAtStart ? (dayjs(ret.returnAt).isAfter(filters.returnAtStart) || dayjs(ret.returnAtMaterial).isAfter(filters.returnAtStart)) : true) &&
+          (filters.returnAtEnd ? (dayjs(ret.returnAt).isBefore(filters.returnAtEnd) || dayjs(ret.returnAtMaterial).isBefore(filters.returnAtEnd)) : true) &&
           ((findString ? ret.localization?.toLowerCase().includes(findString.toLowerCase()) : true) ||
             (findString ? ret.customer?.name?.toLowerCase().includes(findString.toLowerCase()) : true) ||
             (findString ? ret.signature?.toLowerCase().includes(findString.toLowerCase()) : true) ||
@@ -204,6 +194,8 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
       filterByType,
       filters.createdAtEnd,
       filters.createdAtStart,
+      filters.returnAtStart,
+      filters.returnAtEnd,
       filters.handleBy,
       filters.localization,
       filters.registeredBy,

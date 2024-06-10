@@ -66,7 +66,7 @@ export const ReturnPDF = ({ data }) => {
         <LogoSVG />
       </View>
       <View style={styles.headerTextContainer}>
-        <Text>PROTOKÓŁ ZADWCZO-ODBIORCZY</Text>
+        <Text>PROTOKÓŁ ZDAWCZO-ODBIORCZY</Text>
         <Text style={styles.headerSubtitle}>ZWROT MATERIAŁU</Text>
       </View>
     </View>
@@ -286,9 +286,10 @@ const styles = StyleSheet.create({
     width: '40%',
   },
   tableCell: {
+    justifyContent: 'center',
+    alignItems: 'center',
     fontSize: 8,
     border: '1px solid black',
-    paddingVertical: 8,
     paddingHorizontal: 3,
     marginLeft: -1,
     height: 30,
@@ -330,11 +331,11 @@ const styles = StyleSheet.create({
     // backgroundColor: '#ccc'
   },
   textFit: {
-    flex: 1,
-    textAlign: 'left',
     flexDirection: 'column',
-    justifyContent: 'space-evenly',
+    justifyContent: 'center',
     alignItems: 'center',
-    fontSize: 5,
+    fontSize: 8,
+    lineHeight: 1,
+    textAlign: 'center',
   },
 })

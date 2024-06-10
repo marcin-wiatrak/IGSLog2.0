@@ -1,17 +1,18 @@
 import { prisma } from '@server/db'
 
 const handler = async (req, res) => {
+  const { meetingId } = req.query
   await prisma.meeting
-    .findMany({
-      where: {
-        deleted: false,
+    .update({
+      data: {
+        deleted: true,
       },
-      orderBy: {
-        createdAt: 'asc',
+      where: {
+        id: meetingId,
       },
     })
-    .then((response) => {
-      res.status(200).json(response)
+    .then(() => {
+      res.status(200).json({ isOk: true })
     })
     .finally(async () => {
       await prisma.$disconnect()

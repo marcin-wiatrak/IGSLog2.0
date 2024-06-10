@@ -125,8 +125,8 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
       })
       await axios.post(`/api/${endpointPath}/upload`, formData).then((res) => {
         endpointPath === 'order'
-          ? dispatch(ordersActions.setUploadedFiles({ uploadedFiles: res.data.files }))
-          : dispatch(returnsActions.setUploadedFiles({ uploadedFiles: res.data.files }))
+          ? dispatch(ordersActions.setUploadedFiles({ uploadedFiles: [...uploadedFiles, ...res.data.files] }))
+          : dispatch(returnsActions.setUploadedFiles({ uploadedFiles: [...uploadedFiles, ...res.data.files] }))
         setSelectedFiles(null)
         setPreventCloseInfo(false)
         setIsUploading(false)
