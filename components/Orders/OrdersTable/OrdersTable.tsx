@@ -116,7 +116,6 @@ export const OrdersTable = () => {
   const [sortDirection, setSortDirection] = useState<TableOrderDirection>('desc')
 
   const { ordersList, refreshOrdersList } = useGetOrdersList()
-  console.log('filters2', filters, ordersList)
 
   const {
     isOpen: isAssignUserModalOpen,

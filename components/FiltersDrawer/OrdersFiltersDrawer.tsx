@@ -18,8 +18,6 @@ export const OrdersFiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose })
   const { usersList: users } = useGetUsersList()
   const filters = useSelector(ordersSelectors.selectFilterRegisteredBy)
 
-  console.log('filters', filters)
-
   const dispatch = useDispatch()
 
   const usersOptions = useMemo(() => {
