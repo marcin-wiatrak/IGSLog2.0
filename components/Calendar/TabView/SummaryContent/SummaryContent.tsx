@@ -8,6 +8,7 @@ import dayjs from 'dayjs'
 import { DateTemplate } from '@src/utils'
 import { Summarize } from '@mui/icons-material'
 import Link from 'next/link'
+import { Return } from '@prisma/client'
 
 type SummaryContentProps = {
   userId: string
@@ -17,12 +18,19 @@ export const SummaryContent = ({ userId }: SummaryContentProps) => {
   const selectedDay = useSelector(commonSelectors.selectCalendarDay)
   const calendarData = useSelector(commonSelectors.selectCalendarData)
 
+  const calendarDataForReturns = !!calendarData?.returns?.length && calendarData.returns.map((el: Return, i) => {
+    if (el.content === 'MAT+DOC') {
+      return [el, {...el, returnAt: el.returnAtMaterial, localization: el.localizationMaterial, handleById: el.handleByMaterialId, index: i}]
+    }
+    return el
+  }).flat()
+
   const filterOrdersForUser = useMemo(
     () => ({
       orders: calendarData.orders.filter((el) =>
         el.handleById === userId && el.pickupAt ? dayjs(el.pickupAt).isSame(selectedDay, 'day') : false
       ),
-      returns: calendarData.returns.filter((el) =>
+      returns: calendarDataForReturns && calendarDataForReturns.filter((el) =>
         el.handleById === userId && el.returnAt ? dayjs(el.returnAt).isSame(selectedDay, 'day') : false
       ),
     }),
@@ -75,7 +83,8 @@ export const SummaryContent = ({ userId }: SummaryContentProps) => {
             </Box>
             {filterOrdersForUser.orders.map((el) => (
               <OrderContent
-                key={el.id}
+                // @ts-ignore
+                key={`${el.id}${el.index || ''}`}
                 orderData={el}
               />
             ))}

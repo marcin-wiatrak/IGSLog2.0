@@ -109,13 +109,13 @@ const ReturnPreview = () => {
     formState: { isDirty },
   } = useForm({ resolver: yupResolver(schema), defaultValues })
 
-  const backToReturns = () => router.push('/returns')
+  const goBack = () => router.back()
 
   const handleDeleteOrder = () => {
     axios.post(`/api/return/${returnId}/delete`).then((res) => {
       confirmationModal.onClose()
       if (res.status === 200) {
-        backToReturns()
+        goBack()
       }
     })
   }
@@ -194,7 +194,7 @@ const ReturnPreview = () => {
     await axios
       .post(`/api/return/${returnId}/update`, payload)
       .then((res) => {
-        if (res.status === 200) backToReturns()
+        if (res.status === 200) goBack()
       })
       .catch((err) => {
         console.error('WYSTĄPIŁ BŁĄD', returnId, err)

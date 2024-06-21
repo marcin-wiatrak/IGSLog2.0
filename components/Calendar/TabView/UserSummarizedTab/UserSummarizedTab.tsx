@@ -6,6 +6,7 @@ import { SummaryContent } from '../SummaryContent'
 import { useSelector } from 'react-redux'
 import { commonSelectors } from '@src/store'
 import dayjs from 'dayjs'
+import { Return } from '@prisma/client'
 
 export const UserSummarizedTab = ({ index, value }) => {
   const { usersList } = useGetUsersList()
@@ -22,6 +23,15 @@ export const UserSummarizedTab = ({ index, value }) => {
 
   const selectedDay = useSelector(commonSelectors.selectCalendarDay)
   const calendarData = useSelector(commonSelectors.selectCalendarData)
+  console.log('calendarData', calendarData?.returns)
+  const calendarDataForReturns = !!calendarData?.returns?.length && calendarData.returns.map((el: Return, i) => {
+    if (el.content === 'MAT+DOC') {
+      return [el, {...el, returnAt: el.returnAtMaterial, localization: el.localizationMaterial, handleById: el.handleByMaterialId, index: i}]
+    }
+    return el
+  }).flat()
+  console.log('calendarDataForReturns', calendarDataForReturns)
+
 
   const ordersForSelectedDay = useMemo(
     () => ({
@@ -29,11 +39,13 @@ export const UserSummarizedTab = ({ index, value }) => {
         calendarData?.orders.filter((el) => (el.pickupAt ? dayjs(el.pickupAt).isSame(selectedDay, 'day') : false)) ||
         [],
       returns:
-        calendarData?.returns.filter((el) => (el.returnAt ? dayjs(el.returnAt).isSame(selectedDay, 'day') : false)) ||
+        calendarDataForReturns && calendarDataForReturns?.filter((el) => (el.returnAt ? dayjs(el.returnAt).isSame(selectedDay, 'day'): false)) ||
         [],
     }),
-    [calendarData, selectedDay]
+    [calendarData, selectedDay, calendarDataForReturns]
   )
+
+  console.log('ordersForSelectedDay', ordersForSelectedDay)
 
   const filteredUsersByOrders = useMemo(() => {
     return ordersForSelectedDay

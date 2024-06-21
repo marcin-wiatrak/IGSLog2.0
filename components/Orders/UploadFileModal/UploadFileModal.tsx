@@ -44,7 +44,9 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
 
   const endpointPath = currentPath === Paths.ORDERS ? 'order' : 'return'
 
-  const uploadedFiles = currentPath === Paths.ORDERS ? uploadedFilesOrders : uploadedFilesReturns
+  const uploadedFiles = currentPath === Paths.ORDERS ? (uploadedFilesOrders || []) : (uploadedFilesReturns || [])
+
+  console.log('uploadedFiles', uploadedFiles)
 
   useEffect(() => {
     if (method === 'updateOrder' && orderDetails.attachment) {
