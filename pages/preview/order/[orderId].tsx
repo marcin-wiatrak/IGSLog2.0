@@ -104,13 +104,13 @@ const OrderPreview = () => {
     getValues
   } = useForm({ resolver: yupResolver(schema), defaultValues })
 
-  const backToOrders = () => router.push('/orders')
+  const goBack = () => router.back()
 
   const handleDeleteOrder = () => {
     axios.post(`/api/order/${orderId}/delete`).then((res) => {
       confirmationModal.onClose()
       if (res.status === 200) {
-        backToOrders()
+        goBack()
       }
     })
   }
@@ -189,7 +189,7 @@ const OrderPreview = () => {
     await axios
       .post(`/api/order/${orderId}/update`, payload)
       .then((res) => {
-        if (res.status === 200) backToOrders()
+        if (res.status === 200) goBack()
       })
       .catch((err) => {
         console.error('WYSTĄPIŁ BŁĄD', orderId, err)
@@ -456,7 +456,7 @@ const OrderPreview = () => {
                           <>
                             <Button
                               color="error"
-                              onClick={backToOrders}
+                              onClick={goBack}
                             >
                               Wróć bez zapisywania
                             </Button>

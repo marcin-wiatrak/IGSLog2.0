@@ -100,9 +100,7 @@ const MeetingPreview = () => {
 
   const { usersList } = useGetUsersList()
 
-  const goBack = () => {
-    router.back()
-  }
+  const goBack = () => router.back()
 
   const usersListOption = useMemo(() => {
     if (usersList && usersList.length) {
