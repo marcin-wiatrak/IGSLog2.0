@@ -8,9 +8,9 @@ export const RETURN_TABLE_COLUMNS = [
   { key: 'no', title: 'ID', width: '5%' },
   { key: 'localization', title: 'M. zwrotu', width: '20%' },
   { key: 'signature', title: 'Sygnatura', width: '20%' },
-  { key: 'content', title: 'Zawartość', width: '12%' },
+  { key: 'content', title: 'Zawartość', width: '30%' },
   { key: 'returnAt', title: 'Data', width: '8%' },
-  { key: 'podpis', title: 'Podpis', width: '35%' },
+  { key: 'podpis', title: 'Podpis', width: '17%' },
 ]
 
 export const TABLE_MAX_ROWS = 14
@@ -158,11 +158,11 @@ export const ReturnPDF = ({ data }) => {
         ]}
       >
         <View style={styles.textFit}>
-          <Text>
-            {item[RETURN_TABLE_COLUMNS[3].key] === 'DOC' && 'Dokumentacja'}
-            {item[RETURN_TABLE_COLUMNS[3].key] === 'MAT' && 'Materiał'}
-            {item[RETURN_TABLE_COLUMNS[3].key] === 'MAT+DOC' && 'Dokumentacja + Materiał'}
-          </Text>
+          {/*<Text>*/}
+          {/*  {item[RETURN_TABLE_COLUMNS[3].key] === 'DOC' && 'Dokumentacja'}*/}
+          {/*  {item[RETURN_TABLE_COLUMNS[3].key] === 'MAT' && 'Materiał'}*/}
+          {/*  {item[RETURN_TABLE_COLUMNS[3].key] === 'MAT+DOC' && 'Dokumentacja + Materiał'}*/}
+          {/*</Text>*/}
         </View>
       </View>
       {/* ####### col 5 ########*/}

@@ -3,7 +3,14 @@ import { ORDER_TYPE_BUTTONS_LIST, RETURN_TYPE_BUTTONS_LIST } from './FilterButto
 import { FC, useEffect, useState } from 'react'
 import { Close } from '@mui/icons-material'
 import { useDispatch, useSelector } from 'react-redux'
-import { commonActions, commonSelectors, ordersActions, ordersSelectors } from '@src/store'
+import {
+  commonActions,
+  commonSelectors,
+  ordersActions,
+  ordersSelectors,
+  returnsActions,
+  returnsSelectors,
+} from '@src/store'
 import { getTypeIcon } from '@src/utils/typeIcons'
 import { OrderType, Paths } from '@src/types'
 
@@ -15,9 +22,13 @@ type FilterButtonsProps = {
 
 export const FilterButtons: FC<FilterButtonsProps> = ({ onClearFiltersClick, onFilterDrawerOpen, disableTypes = false }) => {
   const dispatch = useDispatch()
-  const selectedTypes = useSelector(ordersSelectors.selectFilterByType)
-  const currentPath = useSelector(commonSelectors.selectCurrentPath)
+  const orderTypes = useSelector(ordersSelectors.selectFilterByType)
+  const returnTypes = useSelector(returnsSelectors.selectFilterByType)
   const [string, setString] = useState('')
+
+  const currentPath = useSelector(commonSelectors.selectCurrentPath)
+
+  const selectedTypes = currentPath === Paths.ORDERS ? orderTypes : returnTypes
 
   const handleFindStringChange = () => dispatch(commonActions.setFindString( {value: string}))
   const handleClearFindString = () => {
@@ -34,30 +45,13 @@ export const FilterButtons: FC<FilterButtonsProps> = ({ onClearFiltersClick, onF
   }, [string])
 
   const handleTypeClick = (type) => {
-    dispatch(ordersActions.setFilterByType({ filterByType: type }))
-    const LStypes = localStorage.getItem('filterByType${currentPath}')
-    if (LStypes === type) {
-      localStorage.setItem('filterByType${currentPath}', '')
+    if (currentPath === Paths.ORDERS) {
+      dispatch(ordersActions.setFilterByType({ filterByType: type }))
+    } else {
+      dispatch(returnsActions.setFilterByType({ filterByType: type }))
     }
   }
 
-  useEffect(() => {
-    const typesJointString = selectedTypes.join(',')
-
-    if (typesJointString) {
-      localStorage.setItem(`filterByType${currentPath}`, selectedTypes.join(','))
-    }
-  }, [selectedTypes])
-
-  useEffect(() => {
-    const LStypes = localStorage.getItem(`filterByType${currentPath}`)
-    if (!LStypes) {
-      localStorage.setItem(`filterByType${currentPath}`, '')
-    }
-    if (LStypes !== '' && LStypes !== null) {
-      LStypes.split(',').forEach((el: OrderType) => dispatch(ordersActions.setFilterByType({ filterByType: el })))
-    }
-  }, [currentPath])
 
   const TYPES_LIST = currentPath === Paths.ORDERS ? ORDER_TYPE_BUTTONS_LIST : RETURN_TYPE_BUTTONS_LIST
 

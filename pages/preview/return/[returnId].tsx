@@ -26,7 +26,14 @@ import { Customer, Return, User } from '@prisma/client'
 import { AutocompleteOptionType, ErrorMessages, OrderType, Paths } from '@src/types'
 import { getTypeIcon } from '@src/utils/typeIcons'
 import { formatFullName, translatedType } from '@src/utils/textFormatter'
-import { useDisclose, useGetCustomersList, useGetUsersList, usePath } from '@src/hooks'
+import {
+  useDisclose,
+  useGetCustomersList,
+  useGetOrdersList,
+  useGetReturnsList,
+  useGetUsersList,
+  usePath,
+} from '@src/hooks'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -58,9 +65,12 @@ export interface IFormInput extends yup.InferType<typeof schema> {
   customer: AutocompleteOptionType
   signature: string
   returnAt: string
+  returnAtMaterial: string
   notes: string
   localization: string
+  localizationMaterial: string
   handleBy: AutocompleteOptionType
+  handleByMaterial: AutocompleteOptionType
   content: string
   type: OrderType[]
 }
@@ -69,9 +79,12 @@ const defaultValues = {
   customer: null,
   signature: '',
   returnAt: '',
+  returnAtMaterial: '',
   notes: '',
   localization: '',
+  localizationMaterial: '',
   handleBy: null,
+  handleByMaterial: null,
   content: '',
   type: [],
 }
@@ -80,9 +93,12 @@ const schema = yup.object({
   customer: yup.object().required(ErrorMessages.EMPTY),
   signature: yup.string().required(ErrorMessages.EMPTY),
   returnAt: yup.string().nullable(),
+  returnAtMaterial: yup.string().nullable(),
   localization: yup.string().optional(),
+  localizationMaterial: yup.string().optional(),
   notes: yup.string().optional().nullable(),
   handleBy: yup.object().nullable(),
+  handleByMaterial: yup.object().nullable(),
   content: yup.string().required(ErrorMessages.EMPTY),
 })
 
@@ -100,14 +116,29 @@ const ReturnPreview = () => {
   const [isUnlocked, setIsUnlocked] = useState(false)
   const [rows, setRows] = useState(3)
 
+  const { refreshReturnsList } = useGetReturnsList()
+  const { refreshCustomersList} = useGetCustomersList()
+  const { refreshOrdersList } = useGetOrdersList()
+  const refreshData = () => {
+    refreshCustomersList()
+    refreshOrdersList()
+    refreshReturnsList()
+  }
+
   const confirmationModal = useDisclose()
 
   const {
     control,
     handleSubmit,
     reset,
+    getValues,
+    watch,
     formState: { isDirty },
   } = useForm({ resolver: yupResolver(schema), defaultValues })
+
+  const returnContent = getValues().content
+
+  console.log(getValues().content, watch().content)
 
   const goBack = () => router.back()
 
@@ -130,10 +161,18 @@ const ReturnPreview = () => {
 
           const handleBy = data.handleBy
             ? {
-                id: data.handleById,
-                label: `${data.handleBy.firstName} ${data.handleBy.lastName}`,
-              }
+              id: data.handleById,
+              label: `${data.handleBy.firstName} ${data.handleBy.lastName}`,
+            }
             : undefined
+
+          const handleByMaterial = data.handleByMaterial
+            ? {
+              id: data.handleByMaterialId,
+              label: `${data.handleByMaterial.firstName} ${data.handleByMaterial.lastName}`,
+            }
+            : undefined
+
           const customer = {
             id: data.customerId,
             label: data.customer.name,
@@ -142,10 +181,13 @@ const ReturnPreview = () => {
           const payload = {
             customer,
             handleBy,
+            handleByMaterial,
             signature: data.signature,
             returnAt: data.returnAt,
-            notes: data.notes,
-            localization: data.localization,
+            returnAtMaterial: data.returnAtMaterial,
+            notes: data.notes ?? "",
+            localization: data.localization ?? "",
+            localizationMaterial: data.localizationMaterial ?? "",
             content: data.content,
             type: data.type,
           }
@@ -187,14 +229,19 @@ const ReturnPreview = () => {
       ...data,
       customerId: data.customer.id,
       handleById: data.handleBy?.id,
+      handleByMaterialId: data.handleByMaterial?.id,
     }
     delete payload.customer
     delete payload.handleBy
+    delete payload.handleByMaterial
 
     await axios
       .post(`/api/return/${returnId}/update`, payload)
       .then((res) => {
-        if (res.status === 200) goBack()
+        if (res.status === 200) {
+          refreshData()
+          goBack()
+        }
       })
       .catch((err) => {
         console.error('WYSTĄPIŁ BŁĄD', returnId, err)
@@ -322,50 +369,6 @@ const ReturnPreview = () => {
                         )}
                       />
                       <Controller
-                        name="content"
-                        control={control}
-                        render={({ field, fieldState: { error } }) => (
-                          <FormControl>
-                            <InputLabel component="legend">Zawartość</InputLabel>
-                            <Select
-                              {...field}
-                              label="Zawartość"
-                              error={!!error}
-                            >
-                              <MenuItem value="MAT">Materiał</MenuItem>
-                              <MenuItem value="DOC">Dokumentacja</MenuItem>
-                              <MenuItem value="MAT+DOC">Materiał + Dokumentacja</MenuItem>
-                            </Select>
-                            {!!error && (
-                              <FormHelperText error>{error.message || 'Zawartość jest wymagana'}</FormHelperText>
-                            )}
-                          </FormControl>
-                        )}
-                      />
-                      <Controller
-                        name="handleBy"
-                        control={control}
-                        render={({ field: { onChange, value, ...rest }, fieldState: { error } }) => (
-                          <Autocomplete
-                            {...rest}
-                            value={value}
-                            fullWidth
-                            blurOnSelect
-                            options={usersListOption}
-                            isOptionEqualToValue={(option, value) => option.id === value.id}
-                            onChange={(e, newValue) => onChange(newValue)}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                label="Osoba odpowiedzialna"
-                                error={!!error}
-                                helperText={error?.message}
-                              />
-                            )}
-                          />
-                        )}
-                      />
-                      <Controller
                         name="customer"
                         control={control}
                         render={({ field: { onChange, value, ...rest }, fieldState: { error } }) => (
@@ -389,30 +392,149 @@ const ReturnPreview = () => {
                         )}
                       />
                       <Controller
-                        name="localization"
+                        name="content"
                         control={control}
                         render={({ field, fieldState: { error } }) => (
-                          <TextField
-                            {...field}
-                            label="Miejsce zwrotu"
-                            error={!!error}
-                            helperText={error?.message}
-                          />
+                          <FormControl>
+                            <InputLabel component="legend">Zawartość</InputLabel>
+                            <Select
+                              {...field}
+                              label="Zawartość"
+                              error={!!error}
+                            >
+                              <MenuItem value="MAT">Materiał</MenuItem>
+                              <MenuItem value="DOC">Dokumentacja</MenuItem>
+                              <MenuItem value="MAT+DOC">Materiał + Dokumentacja</MenuItem>
+                            </Select>
+                            {!!error && (
+                              <FormHelperText error>{error.message || 'Zawartość jest wymagana'}</FormHelperText>
+                            )}
+                          </FormControl>
                         )}
                       />
-                      <Controller
-                        name="returnAt"
-                        control={control}
-                        render={({ field: { onChange, value, ...rest } }) => (
-                          <DatePicker
-                            {...rest}
-                            value={value ? dayjs(value) : null}
-                            onChange={(date) => onChange(dayjs(date).format())}
-                            label="Data zwrotu"
-                            format={DateTemplate.DDMMYYYY}
+                      {/*{(returnData.content === 'MAT' || returnData.content === 'MAT+DOC') && (*/}
+                      {(returnContent === 'MAT' || returnContent === 'MAT+DOC') && (
+                        <Stack
+                          sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2 }}
+                          spacing={2}
+                        >
+                          <Typography
+                            variant="body1"
+                            color="grey"
+                          >
+                            Materiał
+                          </Typography>
+                          <Controller
+                            name="handleByMaterial"
+                            control={control}
+                            render={({ field: { onChange, value, ...rest }, fieldState: { error } }) => (
+                              <Autocomplete
+                                {...rest}
+                                value={value}
+                                fullWidth
+                                blurOnSelect
+                                options={usersListOption}
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                onChange={(e, newValue) => onChange(newValue)}
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    label="Osoba odpowiedzialna"
+                                    error={!!error}
+                                    helperText={error?.message}
+                                  />
+                                )}
+                              />
+                            )}
                           />
-                        )}
-                      />
+                          <Controller
+                            name="localizationMaterial"
+                            control={control}
+                            render={({ field, fieldState: { error } }) => (
+                              <TextField
+                                {...field}
+                                label="Miejsce zwrotu"
+                                error={!!error}
+                                helperText={error?.message}
+                              />
+                            )}
+                          />
+                          <Controller
+                            name="returnAtMaterial"
+                            control={control}
+                            render={({ field: { onChange, value, ...rest } }) => (
+                              <DatePicker
+                                {...rest}
+                                value={value ? dayjs(value) : null}
+                                onChange={(date) => onChange(dayjs(date).format())}
+                                label="Data zwrotu"
+                                format={DateTemplate.DDMMYYYY}
+                              />
+                            )}
+                          />
+                        </Stack>
+                      )}
+                      {(returnContent === 'DOC' || returnContent === 'MAT+DOC') && (
+                        <Stack
+                          sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2 }}
+                          spacing={2}
+                        >
+                          <Typography
+                            variant="body1"
+                            color="grey"
+                          >
+                            Dokumentacja
+                          </Typography>
+                          <Controller
+                            name="handleBy"
+                            control={control}
+                            render={({ field: { onChange, value, ...rest }, fieldState: { error } }) => (
+                              <Autocomplete
+                                {...rest}
+                                value={value}
+                                fullWidth
+                                blurOnSelect
+                                options={usersListOption}
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                onChange={(e, newValue) => onChange(newValue)}
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    label="Osoba odpowiedzialna"
+                                    error={!!error}
+                                    helperText={error?.message}
+                                  />
+                                )}
+                              />
+                            )}
+                          />
+                          <Controller
+                            name="localization"
+                            control={control}
+                            render={({ field, fieldState: { error } }) => (
+                              <TextField
+                                {...field}
+                                label="Miejsce zwrotu"
+                                error={!!error}
+                                helperText={error?.message}
+                              />
+                            )}
+                          />
+                          <Controller
+                            name="returnAt"
+                            control={control}
+                            render={({ field: { onChange, value, ...rest } }) => (
+                              <DatePicker
+                                {...rest}
+                                value={value ? dayjs(value) : null}
+                                onChange={(date) => onChange(dayjs(date).format())}
+                                label="Data zwrotu"
+                                format={DateTemplate.DDMMYYYY}
+                              />
+                            )}
+                          />
+                        </Stack>
+                      )}
                       <Controller
                         name="notes"
                         control={control}

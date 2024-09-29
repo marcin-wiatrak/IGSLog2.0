@@ -9,15 +9,8 @@ export type OrdersStateProps = {
   ordersList: Order[]
   sorOrdersBy: string
   filterByType: OrderType[]
+  filters: FilterProps
   currentOrderId: string
-  filterRegisteredBy: AutocompleteOptionType[]
-  filterHandleBy: AutocompleteOptionType[]
-  filterLocalization: string
-  filterCreatedAtStart: string
-  filterCreatedAtEnd: string
-  filterPickupAtStart: string
-  filterPickupAtEnd: string
-  filterStatus: string[]
   createOrder: CreateOrder
   uploadedFiles: string[]
   localization: string
@@ -40,38 +33,6 @@ type SetCurrentOrderIdPayload = {
 
 type SetFilterByTypePayload = {
   filterByType: OrderType
-}
-
-type SetFilterHandleByPayload = {
-  filterHandleBy: AutocompleteOptionType[]
-}
-
-type SetFilterRegisteredByPayload = {
-  filterRegisteredBy: AutocompleteOptionType[]
-}
-
-type SetFilterLocalizationPayload = {
-  filterLocalization: string
-}
-
-type SetFilterCreatedAtStartPayload = {
-  filterCreatedAtStart: string
-}
-
-type SetFilterCreatedAtEndPayload = {
-  filterCreatedAtEnd: string
-}
-
-type SetFilterPickupAtStartPayload = {
-  filterPickupAtStart: string
-}
-
-type SetFilterPickupAtEndPayload = {
-  filterPickupAtEnd: string
-}
-
-type SetFilterStatusPayload = {
-  status: string[]
 }
 
 type SetUploadedFilesPayload = {
@@ -101,19 +62,36 @@ type UpdateOrderStatusPayload = {
   status: OrderStatus
 }
 
+type FilterProps = {
+  registeredBy: AutocompleteOptionType[]
+  handleBy: AutocompleteOptionType[]
+  localization: string
+  createdAtStart: string
+  createdAtEnd: string
+  pickupAtStart: string
+  pickupAtEnd: string
+  status: string[]
+  string: string
+}
+
+const initialFilters = {
+  registeredBy: [],
+  handleBy: [],
+  localization: '',
+  createdAtStart: null,
+  createdAtEnd: null,
+  pickupAtStart: null,
+  pickupAtEnd: null,
+  status: [],
+  string: '',
+}
+
 const initialState: OrdersStateProps = {
   ordersList: [],
   sorOrdersBy: 'createdAt',
   filterByType: [],
   currentOrderId: '',
-  filterRegisteredBy: [],
-  filterHandleBy: [],
-  filterLocalization: '',
-  filterCreatedAtStart: null,
-  filterCreatedAtEnd: null,
-  filterPickupAtStart: null,
-  filterPickupAtEnd: null,
-  filterStatus: [],
+  filters: initialFilters,
   uploadedFiles: null,
   localization: '',
   orderDetails: {
@@ -142,14 +120,7 @@ export const ordersState = createSlice({
   initialState,
   reducers: {
     resetFilters: (state) => {
-      state.filterRegisteredBy = initialState.filterRegisteredBy
-      state.filterHandleBy = initialState.filterHandleBy
-      state.filterLocalization = initialState.filterLocalization
-      state.filterCreatedAtStart = initialState.filterCreatedAtStart
-      state.filterCreatedAtEnd = initialState.filterCreatedAtEnd
-      state.filterPickupAtStart = initialState.filterPickupAtStart
-      state.filterPickupAtEnd = initialState.filterPickupAtEnd
-      state.filterStatus = initialState.filterStatus
+      state.filters = initialFilters
     },
     resetOrderForm: (state) => {
       state.createOrder = initialState.createOrder
@@ -166,29 +137,8 @@ export const ordersState = createSlice({
     setFilterByType: (state, { payload }: PayloadAction<SetFilterByTypePayload>) => {
       state.filterByType = toggleValueInArray(state.filterByType, payload.filterByType)
     },
-    setFilterRegisteredBy: (state, { payload }: PayloadAction<SetFilterRegisteredByPayload>) => {
-      state.filterRegisteredBy = payload.filterRegisteredBy
-    },
-    setFilterUserId: (state, { payload }: PayloadAction<SetFilterHandleByPayload>) => {
-      state.filterHandleBy = payload.filterHandleBy
-    },
-    setFilterLocalization: (state, { payload }: PayloadAction<SetFilterLocalizationPayload>) => {
-      state.filterLocalization = payload.filterLocalization
-    },
-    setFilterCreatedAtStart: (state, { payload }: PayloadAction<SetFilterCreatedAtStartPayload>) => {
-      state.filterCreatedAtStart = payload.filterCreatedAtStart
-    },
-    setFilterCreatedAtEnd: (state, { payload }: PayloadAction<SetFilterCreatedAtEndPayload>) => {
-      state.filterCreatedAtEnd = payload.filterCreatedAtEnd
-    },
-    setFilterPickupAtStart: (state, { payload }: PayloadAction<SetFilterPickupAtStartPayload>) => {
-      state.filterPickupAtStart = payload.filterPickupAtStart
-    },
-    setFilterPickupAtEnd: (state, { payload }: PayloadAction<SetFilterPickupAtEndPayload>) => {
-      state.filterPickupAtEnd = payload.filterPickupAtEnd
-    },
-    setFilterStatus: (state, { payload }: PayloadAction<SetFilterStatusPayload>) => {
-      state.filterStatus = payload.status
+    setFilters: (state, { payload }) => {
+      state.filters = { ...state.filters, ...payload }
     },
     setCreateOrder: (state, { payload }: PayloadAction<SetCreateOrderPayload>) => {
       state.createOrder = { ...state.createOrder, ...payload }
@@ -219,16 +169,7 @@ export const ordersSelectors = {
   selectSortOrdersBy: createSelector(getOrder, (order) => order.sorOrdersBy),
   selectFilterByType: createSelector(getOrder, (order) => order.filterByType),
   selectCurrentOrderId: createSelector(getOrder, (order) => order.currentOrderId),
-  selectFilterRegisteredBy: createSelector(getOrder, (order) => ({
-    registeredBy: order.filterRegisteredBy,
-    handleBy: order.filterHandleBy,
-    localization: order.filterLocalization,
-    createdAtStart: order.filterCreatedAtStart,
-    createdAtEnd: order.filterCreatedAtEnd,
-    pickupAtStart: order.filterPickupAtStart,
-    pickupAtEnd: order.filterPickupAtEnd,
-    status: order.filterStatus,
-  })),
+  selectFilters: createSelector(getOrder, (order) => order.filters),
   selectOrderForm: createSelector(getOrder, (order) => ({
     type: order.createOrder.type,
     customerId: order.createOrder.customerId,

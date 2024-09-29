@@ -1,12 +1,12 @@
 import { Autocomplete, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
-import { FC, useMemo } from 'react'
+import { FC, useEffect, useMemo } from 'react'
 import { commonSelectors, ordersActions, ordersSelectors, returnsActions, returnsSelectors } from '@src/store'
 import { useDispatch, useSelector } from 'react-redux'
 import dayjs from 'dayjs'
 import { DatePicker } from '@mui/x-date-pickers'
 import { SideDrawer } from '@components/SideDrawer'
 import { Close } from '@mui/icons-material'
-import { Paths } from '@src/types'
+import { OrderType, Paths } from '@src/types'
 import { useGetUsersList } from '@src/hooks'
 
 type FiltersDrawerProps = {
@@ -16,9 +16,9 @@ type FiltersDrawerProps = {
 
 export const OrdersFiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose }) => {
   const { usersList: users } = useGetUsersList()
-  const filters = useSelector(ordersSelectors.selectFilterRegisteredBy)
-
+  const filters = useSelector(ordersSelectors.selectFilters)
   const dispatch = useDispatch()
+
 
   const usersOptions = useMemo(() => {
     return users.map(({ id, firstName, lastName }) => ({ id, label: `${firstName} ${lastName}` }))
@@ -28,23 +28,23 @@ export const OrdersFiltersDrawer: FC<FiltersDrawerProps> = ({ isOpen, onClose })
     return [{ id: null, label: 'Nieprzypisany' }, ...usersOptions]
   }, [usersOptions])
 
-  const handleChangeFilterRegisteredBy = (_, newValue) => dispatch(ordersActions.setFilterRegisteredBy({ filterRegisteredBy: newValue }))
+  const handleChangeFilterRegisteredBy = (_, newValue) => dispatch(ordersActions.setFilters({ registeredBy: newValue }))
 
-  const handleChangeFilterUserId = (_, newValue) => dispatch(ordersActions.setFilterUserId({ filterHandleBy: newValue }))
+  const handleChangeFilterUserId = (_, newValue) => dispatch(ordersActions.setFilters({ handleBy: newValue }))
 
-  const handleChangeFilterLocalization = ({ target }) => dispatch(ordersActions.setFilterLocalization({ filterLocalization: target.value }))
+  const handleChangeFilterLocalization = ({ target }) => dispatch(ordersActions.setFilters({ localization: target.value }))
 
-  const handleChangeFilterCreatedAtStart = (date) => dispatch(ordersActions.setFilterCreatedAtStart({ filterCreatedAtStart: dayjs(date).format() }))
+  const handleChangeFilterCreatedAtStart = (date) => dispatch(ordersActions.setFilters({ createdAtStart: dayjs(date).format() }))
 
-  const handleChangeFilterCreatedAtEnd = (date) => dispatch(ordersActions.setFilterCreatedAtEnd({ filterCreatedAtEnd: dayjs(date).endOf('day').format() }))
+  const handleChangeFilterCreatedAtEnd = (date) => dispatch(ordersActions.setFilters({ createdAtEnd: dayjs(date).endOf('day').format() }))
 
   const handleChangeFilterPickupAtStart = (date) =>
-    dispatch(ordersActions.setFilterPickupAtStart({ filterPickupAtStart: dayjs(date).format() }))
+    dispatch(ordersActions.setFilters({ pickupAtStart: dayjs(date).format() }))
 
   const handleChangeFilterPickupAtEnd = (date) =>
-    dispatch(ordersActions.setFilterPickupAtEnd({ filterPickupAtEnd: dayjs(date).endOf('day').format() }))
+    dispatch(ordersActions.setFilters({ pickupAtEnd: dayjs(date).endOf('day').format() }))
 
-  const handleChangeFilterStatus = ({ target }) => dispatch(ordersActions.setFilterStatus({ status: target.value }))
+  const handleChangeFilterStatus = ({ target }) => dispatch(ordersActions.setFilters({ status: target.value }))
 
   const resetFilters = () => dispatch(ordersActions.resetFilters())
 

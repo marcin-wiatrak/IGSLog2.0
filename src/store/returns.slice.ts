@@ -2,11 +2,13 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { createSelector, createSlice } from '@reduxjs/toolkit'
 import { Return } from '@prisma/client'
 import { RootState } from '@src/store'
-import { AutocompleteOptionType, ReturnStatus } from '@src/types'
+import { AutocompleteOptionType, OrderType, ReturnStatus } from '@src/types'
+import { toggleValueInArray } from '@src/utils'
 
 export type ReturnsStateProps = {
   returnsList: Return[]
   returnDetails: Partial<Return>
+  filterByType: OrderType[]
   filters: FilterProps
   uploadedFiles: string[]
 }
@@ -38,6 +40,10 @@ type SetUploadedFilesPayload = {
   uploadedFiles: string[]
 }
 
+type SetFilterByTypePayload = {
+  filterByType: OrderType
+}
+
 const initialFilters = {
   registeredBy: [],
   handleBy: [],
@@ -55,6 +61,7 @@ const initialState: ReturnsStateProps = {
   returnDetails: {
     id: '',
   },
+  filterByType: [],
   filters: initialFilters,
   uploadedFiles: [],
 }
@@ -76,6 +83,9 @@ export const returnsState = createSlice({
       const ret = state.returnsList.find((el) => el.id === payload.returnId)
       ret.status = payload.status
     },
+    setFilterByType: (state, { payload }: PayloadAction<SetFilterByTypePayload>) => {
+      state.filterByType = toggleValueInArray(state.filterByType, payload.filterByType)
+    },
     setFilters: (state, { payload }) => {
       state.filters = { ...state.filters, ...payload }
     },
@@ -96,6 +106,7 @@ const getReturn = (state: RootState) => state.returns
 export const returnsSelectors = {
   selectReturnsList: createSelector(getReturn, (ret) => ret.returnsList),
   selectReturnDetails: createSelector(getReturn, (ret) => ret.returnDetails),
+  selectFilterByType: createSelector(getReturn, (ret) => ret.filterByType),
   selectFilters: createSelector(getReturn, (ret) => ret.filters),
   selectUploadedFiles: createSelector(getReturn, (ret) => ret.uploadedFiles),
 }

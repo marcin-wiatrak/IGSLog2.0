@@ -15,6 +15,13 @@ const handler = async (req, res) => {
             lastName: true,
           },
         },
+        handleByMaterial: {
+          select: {
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
         customer: {
           select: {
             name: true,

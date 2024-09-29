@@ -159,8 +159,9 @@ const ReturnsTableComponent = ({ showSnackbar }: ReturnsTableProps) => {
 
   const { isOpen: isPickupAtModalOpen, onOpen: onPickupAtModalOpen, onClose: onPickupAtModalClose } = useDisclose()
 
-  const handleUploadFileModalOpen = (orderId?) => {
-    if (orderId) dispatch(returnsActions.setReturnDetails({ id: orderId }))
+  const handleUploadFileModalOpen = (returnId?: string) => {
+    console.log(returnId)
+    if (returnId) dispatch(returnsActions.setReturnDetails({ id: returnId }))
     onUploadFileModalOpen()
     setAttachmentsMenuAnchor(null)
   }

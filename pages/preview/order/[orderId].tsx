@@ -30,6 +30,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useSession } from 'next-auth/react'
+import { clearGlobCache } from '@typescript-eslint/typescript-estree/dist/parseSettings/resolveProjectList'
 
 type OrderProps = Order & { handleBy: User; customer: Customer; registeredBy: User }
 
@@ -100,9 +101,11 @@ const OrderPreview = () => {
     control,
     handleSubmit,
     reset,
-    formState: { isDirty },
-    getValues
+    formState: { isDirty,  },
+    getValues,
   } = useForm({ resolver: yupResolver(schema), defaultValues })
+
+  console.log('state', getValues())
 
   const goBack = () => router.back()
 
@@ -142,7 +145,7 @@ const OrderPreview = () => {
             notes: data.notes,
             localization: data.localization,
             content: data.content,
-            type: data.type || []
+            type: data.type || [],
           }
 
           reset(payload)
@@ -181,11 +184,12 @@ const OrderPreview = () => {
     const payload = {
       ...data,
       customerId: data.customer.id,
-      handleById: data.handleBy?.id,
+      handleById: data.handleBy?.id || null,
     }
     delete payload.customer
     delete payload.handleBy
 
+    alert(JSON.stringify(payload, null, 2))
     await axios
       .post(`/api/order/${orderId}/update`, payload)
       .then((res) => {
@@ -327,7 +331,7 @@ const OrderPreview = () => {
                         render={({ field: { onChange, value, ...rest }, fieldState: { error } }) => (
                           <Autocomplete
                             {...rest}
-                            value={value}
+                            value={value || null}
                             fullWidth
                             blurOnSelect
                             options={usersListOption}
@@ -387,9 +391,19 @@ const OrderPreview = () => {
                           <DatePicker
                             {...rest}
                             value={value ? dayjs(value) : null}
-                            onChange={(date) => onChange(dayjs(date).format())}
+                            onChange={(date) => {
+                              console.log('dateeeee', date)
+                              onChange(dayjs(date).format())
+                            }}
                             label="Data odbioru"
                             format={DateTemplate.DDMMYYYY}
+                            slotProps={{
+                              actionBar: {
+                                actions: ['clear'],
+
+                              },
+                            }}
+                            onAccept={(newDate) => {newDate === null ? onChange(newDate) : onChange(dayjs(newDate).format())}}
                           />
                         )}
                       />

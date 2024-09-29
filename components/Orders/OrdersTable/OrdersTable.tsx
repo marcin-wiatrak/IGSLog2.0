@@ -107,7 +107,7 @@ export const OrdersTable = () => {
   const [attachmentsMenuAnchor, setAttachmentsMenuAnchor] = useState(null)
   const orderDetails = useSelector(ordersSelectors.selectOrderDetails)
   const filterByType = useSelector(ordersSelectors.selectFilterByType)
-  const filters = useSelector(ordersSelectors.selectFilterRegisteredBy)
+  const filters = useSelector(ordersSelectors.selectFilters)
   const [attachmentHover, setAttachmentHover] = useState('')
   const findString = useSelector(commonSelectors.selectFindString)
 

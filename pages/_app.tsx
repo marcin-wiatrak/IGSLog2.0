@@ -10,8 +10,9 @@ import { SessionProvider } from 'next-auth/react'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { Provider } from 'react-redux'
-import { store } from '@src/store/store'
+import { persistor, store } from '@src/store/store'
 import 'dayjs/locale/pl'
+import { PersistGate } from 'redux-persist/integration/react'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache()
@@ -24,6 +25,7 @@ const MyApp = (props: MyAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
   return (
     <Provider store={store}>
+      <PersistGate persistor={persistor} loading={null}>
       <CacheProvider value={emotionCache}>
         <Head>
           <meta
@@ -45,6 +47,7 @@ const MyApp = (props: MyAppProps) => {
           </LocalizationProvider>
         </ThemeProvider>
       </CacheProvider>
+      </PersistGate>
     </Provider>
   )
 }

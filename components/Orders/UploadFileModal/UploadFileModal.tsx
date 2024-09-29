@@ -76,7 +76,12 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
 
   const handleRemoveUploadedFile = (fileName) => {
     const newAttachments = uploadedFiles.filter((el) => el !== fileName)
-    dispatch(ordersActions.setUploadedFiles({ uploadedFiles: newAttachments }))
+    if (endpointPath === 'order') {
+      dispatch(ordersActions.setUploadedFiles({ uploadedFiles: newAttachments }))
+    } else {
+      dispatch(returnsActions.setUploadedFiles({ uploadedFiles: newAttachments }))
+    }
+
   }
 
   const handleRemoveFileFromUploadQueue = (fileName) => {
@@ -178,11 +183,11 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
     >
       <DialogTitle>Dodaj załączniki</DialogTitle>
       <DialogContent>
-        {uploadedFilesOrders && (
+        {uploadedFiles && (
           <>
             <Typography variant="h4">Lista dodanych plików</Typography>
             <Stack spacing={1}>
-              {uploadedFilesOrders.map((file) => (
+              {uploadedFiles.map((file) => (
                 <Paper
                   key={file}
                   sx={{
