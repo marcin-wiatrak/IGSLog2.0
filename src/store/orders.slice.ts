@@ -164,7 +164,9 @@ export const ordersState = createSlice({
 
 const getOrder = (state: RootState) => state.orders
 
+
 export const ordersSelectors = {
+  selectSelect: createSelector(getOrder, (order) => order),
   selectOrdersList: createSelector(getOrder, (order) => order.ordersList),
   selectSortOrdersBy: createSelector(getOrder, (order) => order.sorOrdersBy),
   selectFilterByType: createSelector(getOrder, (order) => order.filterByType),

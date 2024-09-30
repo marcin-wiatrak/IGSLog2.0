@@ -25,28 +25,31 @@ const MyApp = (props: MyAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
   return (
     <Provider store={store}>
-      <PersistGate persistor={persistor} loading={null}>
-      <CacheProvider value={emotionCache}>
-        <Head>
-          <meta
-            name="viewport"
-            content="initial-scale=1, width=device-width"
-          />
-        </Head>
-        <ThemeProvider theme={theme}>
-          <LocalizationProvider
-            dateAdapter={AdapterDayjs}
-            adapterLocale="pl"
-          >
-            <SessionProvider session={pageProps.session}>
-              {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-              <CssBaseline />
-              {/*@ts-ignore*/}
-              <Component {...pageProps} />
-            </SessionProvider>
-          </LocalizationProvider>
-        </ThemeProvider>
-      </CacheProvider>
+      <PersistGate
+        persistor={persistor}
+        loading={null}
+      >
+        <CacheProvider value={emotionCache}>
+          <Head>
+            <meta
+              name="viewport"
+              content="initial-scale=1, width=device-width"
+            />
+          </Head>
+          <ThemeProvider theme={theme}>
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+              adapterLocale="pl"
+            >
+              <SessionProvider session={pageProps.session}>
+                {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+                <CssBaseline />
+                {/*@ts-ignore*/}
+                <Component {...pageProps} />
+              </SessionProvider>
+            </LocalizationProvider>
+          </ThemeProvider>
+        </CacheProvider>
       </PersistGate>
     </Provider>
   )

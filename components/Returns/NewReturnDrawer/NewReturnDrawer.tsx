@@ -14,7 +14,10 @@ type NewReturnDrawerProps = {
 }
 
 export const NewReturnDrawer = ({ isOpen, onClose }: NewReturnDrawerProps) => {
-  const { attachment: attachments } = useSelector(ordersSelectors.selectOrderForm)
+  const attachment = useSelector(returnsSelectors.selectAttachments)
+  const uploadedFiles = useSelector(returnsSelectors.selectUploadedFiles)
+  console.log('attachment::::::', attachment)
+  console.log('uploadedFiles:::', uploadedFiles)
   const dispatch = useDispatch()
   const formRef = useRef(null)
   const {
@@ -86,10 +89,10 @@ export const NewReturnDrawer = ({ isOpen, onClose }: NewReturnDrawerProps) => {
                   fullWidth
                   startIcon={<AddCircle />}
                   onClick={onUploadFileModalOpen}
-                  disabled
+                  // disabled
                 >
                   <Badge
-                    badgeContent={attachments && attachments.length}
+                    badgeContent={attachment && attachment.length}
                     color="error"
                   >
                     Dodaj załączniki
@@ -97,13 +100,13 @@ export const NewReturnDrawer = ({ isOpen, onClose }: NewReturnDrawerProps) => {
                 </Button>
               </Box>
             </Box>
-                <Typography
-                  variant="caption"
-                  align="center"
-                  color="red"
-                >
-                  Tymczasowo, proszę o utworzenie zwrotu bez załącznika i dodanie go z poziomu listy zleceń
-                </Typography>
+                {/*<Typography*/}
+                {/*  variant="caption"*/}
+                {/*  align="center"*/}
+                {/*  color="red"*/}
+                {/*>*/}
+                {/*  Tymczasowo, proszę o utworzenie zwrotu bez załącznika i dodanie go z poziomu listy zleceń*/}
+                {/*</Typography>*/}
           </Stack>
         </Box>
       </SideDrawer>

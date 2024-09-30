@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import { ordersState } from '@src/store/orders.slice'
+import ordersSlice, { ordersState } from '@src/store/orders.slice'
 import customersState from '@src/store/customers.slice'
 import usersState from '@src/store/users.slice'
 import commonState from '@src/store/common.slice'
@@ -7,39 +7,23 @@ import returnsState from '@src/store/returns.slice'
 import meetingsState from '@src/store/meetings.slice'
 import { createTransform, persistReducer, persistStore } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
+import createFilter from 'redux-persist-transform-filter'
 
-const saveFilters = createTransform(
-  (inboundState, key) => {
-    // @ts-ignore
-    return { filters: inboundState.filters }
-  },
-  (outboundState, key) => {
-    return { filters: outboundState.filters }
-  },
-  { whitelist: ['orders', 'returns'] }
-)
-
-const saveTypes = createTransform(
-  (inboundState, key) => {
-    // @ts-ignore
-    return { filterByType: inboundState.filterByType }
-  },
-  (outboundState, key) => {
-    return { filterByType: outboundState.filterByType }
-  },
-  { whitelist: ['orders', 'returns'] }
-)
+const ordersFiltersTransform = createFilter('orders', ['filters'])
+const returnsFiltersTransform = createFilter('returns', ['filters'])
 
 const ordersPersistConfig = {
   key: 'orders',
   storage,
-  transforms: [saveFilters, saveTypes],
+  transforms: [ordersFiltersTransform],
+  whitelist: ['filters'],
 }
 
 const returnsPersistConfig = {
   key: 'returns',
   storage,
-  transforms: [saveFilters, saveTypes],
+  transforms: [returnsFiltersTransform],
+  whitelist: ['filters'],
 }
 
 export const rootReducer = combineReducers({

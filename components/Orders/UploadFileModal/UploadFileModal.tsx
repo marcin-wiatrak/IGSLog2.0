@@ -46,7 +46,7 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
 
   const uploadedFiles = currentPath === Paths.ORDERS ? (uploadedFilesOrders || []) : (uploadedFilesReturns || [])
 
-  console.log('uploadedFiles', uploadedFiles)
+  console.log('returnDetails', returnDetails)
 
   useEffect(() => {
     if (method === 'updateOrder' && orderDetails.attachment) {
@@ -158,6 +158,8 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
     if (endpointPath === 'return') {
       if (method === 'createOrder') {
         dispatch(returnsActions.setReturnDetails({ id: '' }))
+        dispatch(returnsActions.setNewReturnAttachments({ attachments: uploadedFiles }))
+        dispatch(returnsActions.setUploadedFiles({ uploadedFiles: null }))
       } else {
         await axios.post(`/api/return/${returnDetails.id}/update`, { attachment: uploadedFiles })
       }
@@ -171,9 +173,9 @@ const UploadFileModalComponent = ({ isOpen, onClose, method, showSnackbar }: Upl
     <Dialog
       open={isOpen}
       onClose={async (_, reason) => {
-        if ((reason === 'backdropClick' || reason === 'escapeKeyDown') && isEveryFileUploaded) {
-          await handleSaveAttachments()
-        }
+        // if ((reason === 'backdropClick' || reason === 'escapeKeyDown') && isEveryFileUploaded) {
+        //   await handleSaveAttachments()
+        // }
         if ((reason === 'backdropClick' || reason === 'escapeKeyDown') && !isEveryFileUploaded) {
           setPreventCloseInfo(true)
         }

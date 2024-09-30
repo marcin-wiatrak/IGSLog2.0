@@ -27,7 +27,7 @@ import { DateTemplate, toggleValueInArray } from '@src/utils'
 import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react'
 import { AddCircle } from '@mui/icons-material'
 import { useDispatch, useSelector } from 'react-redux'
-import { customersSelectors, ordersActions, ordersSelectors } from '@src/store'
+import { customersSelectors, ordersActions, ordersSelectors, returnsSelectors } from '@src/store'
 import { NewCustomerForm } from '@components/Orders/NewOrderDrawer/parts'
 import { useDisclose, useGetReturnsList, useGetUsersList } from '@src/hooks'
 import { translatedType } from '@src/utils/textFormatter'
@@ -93,7 +93,7 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
   const buttonSubmitRef = useRef(null)
   const customersList = useSelector(customersSelectors.selectCustomersList)
   const { usersList } = useGetUsersList()
-  const attachment = useSelector(ordersSelectors.selectUploadedFiles)
+  const attachment = useSelector(returnsSelectors.selectAttachments)
   const {
     control,
     handleSubmit,
@@ -105,7 +105,7 @@ export const NewReturnForm = forwardRef<any, NewOrderFormProps>((props, ref) => 
 
   const handleSelectCreatedCustomer = (payload) => {
     setValue('customer', payload)
-    dispatch(ordersActions.setCreateOrder({ registeredById: payload }))
+    // dispatch(ordersActions.setCreateOrder({ registeredById: payload }))
   }
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {

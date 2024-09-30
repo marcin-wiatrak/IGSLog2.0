@@ -11,6 +11,7 @@ export type ReturnsStateProps = {
   filterByType: OrderType[]
   filters: FilterProps
   uploadedFiles: string[]
+  attachments: string[]
 }
 
 type FilterProps = {
@@ -40,6 +41,10 @@ type SetUploadedFilesPayload = {
   uploadedFiles: string[]
 }
 
+type SetNewReturnAttachmentsPayload = {
+  attachments: string[]
+}
+
 type SetFilterByTypePayload = {
   filterByType: OrderType
 }
@@ -64,6 +69,7 @@ const initialState: ReturnsStateProps = {
   filterByType: [],
   filters: initialFilters,
   uploadedFiles: [],
+  attachments: [],
 }
 
 export const returnsState = createSlice({
@@ -98,6 +104,9 @@ export const returnsState = createSlice({
     clearUploadedFiles: (state) => {
       state.uploadedFiles = initialState.uploadedFiles
     },
+    setNewReturnAttachments: (state, { payload }: PayloadAction<SetNewReturnAttachmentsPayload>) => {
+      state.attachments = payload.attachments
+    }
   },
 })
 
@@ -109,6 +118,7 @@ export const returnsSelectors = {
   selectFilterByType: createSelector(getReturn, (ret) => ret.filterByType),
   selectFilters: createSelector(getReturn, (ret) => ret.filters),
   selectUploadedFiles: createSelector(getReturn, (ret) => ret.uploadedFiles),
+  selectAttachments: createSelector(getReturn, (ret) => ret.attachments),
 }
 
 export const returnsActions = returnsState.actions
